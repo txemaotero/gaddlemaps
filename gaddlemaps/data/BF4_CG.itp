@@ -1,0 +1,12 @@
+;;;; GENERATED WITH auto-martini
+; INPUT SMILES: [B-](F)(F)(F)F
+; Tristan Bereau (2014)
+
+[moleculetype]
+; molname       nrexcl
+  BF4           2
+
+[atoms]
+; id    type    resnr   residu  atom    cgnr    charge  smiles
+  1     Q0      1       BF4     Q01     1      -1     ; F[B-](F)(F)F
+

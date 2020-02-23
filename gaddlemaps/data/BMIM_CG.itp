@@ -1,0 +1,26 @@
+;;;; GENERATED WITH auto-martini
+; INPUT SMILES: CCCC[n+]1ccn(c1)C
+; Tristan Bereau (2014)
+
+[moleculetype]
+; molname       nrexcl
+  BMIM          2
+
+[atoms]
+; id    type    resnr   residu  atom    cgnr    charge  smiles
+  1     P1      1       BMIM    P01     1       0     ; CCC
+  2     SQ0     1       BMIM    S01     2       1     ; C[n+]1ccnc1
+  3     SP1     1       BMIM    S02     3       0     ; Cn1cc[n+]c1
+
+[bonds]
+; i j   funct   length  force.c.
+  1 2   1       0.30    1250
+
+[constraints]
+;  i   j     funct   length
+   2   3     1       0.22
+
+[angles]
+; i j k         funct   angle   force.c.
+  1 2 3         2       119.5   25.0
+

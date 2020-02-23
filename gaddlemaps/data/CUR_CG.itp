@@ -1,0 +1,42 @@
+[ moleculetype ]
+; Name   nrexcl
+CUR       1
+
+[ atoms ]
+;  nr  type  resnr  resid  atom  cgnr  charge    mass    total_charge
+    1  SNa   1      CUR     PA1   1     0     72
+    2  SP1   1      CUR     PA2   2     0     72
+    3  SC4   1      CUR     PA3   3     0     72
+    4  SNa   1      CUR     PA4   4     0     72
+    5  SNa   1      CUR     PA5   5     0     72
+    6  SC4   1      CUR     PA6   6     0     72
+    7  SP1   1      CUR     PA7   6     0     72
+    8  SNa   1      CUR     PA8   6     0     72
+
+[ bonds ]
+;  ai   aj  funct   c0         c1
+1 2 1 0.290 30000
+1 3 1 0.322 50000
+3 4 1 0.350 50000
+4 5 1 0.385  5000
+5 6 1 0.350 50000
+7 8 1 0.290 50000
+6 8 1 0.322 40000
+
+[ constraints ]
+2 3 1 0.275 
+6 7 1 0.275 
+
+[ angles ]
+;  ai   aj   ak  funct   angle     fc
+1 3 4 1 140 150.0
+2 3 4 1 170 150.0
+3 4 5 1 140 20.0
+4 5 6 1 140 20.0
+5 6 7 1 170 150.0
+5 6 8 1 140 150.0
+
+;[ dihedrals ]
+;  ai   aj   ak   al  funct   angle     fc
+
+
