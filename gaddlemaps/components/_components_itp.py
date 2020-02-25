@@ -1,15 +1,13 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
-
-
 """
 This module contains MoleculeItp and AtomItp objects which allows to load
 atom and molecule information from .itp files.
-
 """
 
 import warnings
 from itertools import groupby
+
+from typing import List, Dict, Any, Union, Tuple, Set
 
 from ..parsers import ItpLineAtom, ItpFile
 from . import GeneralAtom, GeneralMolecule
@@ -17,51 +15,51 @@ from . import GeneralAtom, GeneralMolecule
 
 class MoleculeItp(GeneralMolecule):
     """
-    Returns an object to load molecules from .itp topology file.
+    Loads molecules from .itp topology file.
 
     This class behaves like a list of atoms which has bonds defined.
 
     Parameters
     ----------
     fitp : string
-        The .itp file with the molecule information.
+        The path  to the .itp file with the molecule information.
 
     Raises
     ------
     IOError
-        If the input ipt file miss information
+        If the input itp file miss information.
 
     """
-    def __init__(self, fitp):
+    def __init__(self, fitp: str):
         super(MoleculeItp, self).__init__()
         self._itp_file = ItpFile(fitp)
         if 'moleculetype' not in self._itp_file:
             raise IOError('The input itp has to have "moleculetype" section.')
         if 'atoms' not in self._itp_file:
             raise IOError('The input itp has to have "atoms" section.')
-        self._name = None
-        self._atoms_itp = []
-        self._number_to_index = {}
+        self._name = ''
+        self._atoms_itp: List['AtomItp'] = []
+        self._number_to_index: Dict[int, int] = {}
         self._init_name()
         self._init_atoms()
         self._init_atoms_bonds()
 
-    def __getitem__(self, index):
+    def __getitem__(self, index: int) -> 'AtomItp':
         return self._atoms_itp[index]
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self._atoms_itp)
 
-    def __eq__(self, element):
+    def __eq__(self, element: Any) -> bool:
         if isinstance(element, MoleculeItp):
             if element.name == self.name:
                 return super(MoleculeItp, self).__eq__(element)
         return False
 
-    def __ne__(self, element):
+    def __ne__(self, element: Any) -> bool:
         return not self == element
 
-    def __str__(self):
+    def __str__(self) -> str:
         string = 'Molecule of {} from itp.'.format(self.name)
         return string
 
@@ -113,133 +111,54 @@ class MoleculeItp(GeneralMolecule):
                 warnings.warn('{}: There are bonds specifications but the '
                               'molecule has only one atom.'.format(self.name))
 
-    def _add_forcefield_angle(self, angle, forcefieldata):
-        nconst = len(angle._fields["const"])
-        if nconst == 2:
-            return
-        # Retrieve the bond info from the forcefield
-        atomi = self.hash2atom(angle.atom_one)
-        atomj = self.hash2atom(angle.atom_two)
-        atomk = self.hash2atom(angle.atom_three)
-        key1 = [atomi.aux_name, atomj.aux_name, atomk.aux_name]
-        if key1[0] > key1[-1]:
-            key1 = key1[::-1]
-        key1 = tuple(key1)
-        key2 = [atomi.type, atomj.type, atomk.type]
-        if key2[0] > key2[-1]:
-            key2 = key2[::-1]
-        key2 = tuple(key2)
-        bondtype = None
-
-        if key1 in forcefieldata.angletypes:
-            bondtype = forcefieldata.angletypes[key1]
-        elif key2 in forcefieldata.angletypes:
-            bondtype = forcefieldata.angletypes[key2]
-
-        if nconst == 1:
-            angle._fields["const"].append(bondtype.cth)
-        else:
-            angle._fields["const"] = [bondtype.th0, bondtype.cth]
-
-    def _add_forcefield_dihedral(self, dihedral, forcefieldata):
-        nconst = len(dihedral._fields["const"])
-        if nconst >= 4:
-            return
-        # Retrieve the bond info from the forcefield
-        atomi = self.hash2atom(dihedral.atom_one)
-        atomj = self.hash2atom(dihedral.atom_two)
-        atomk = self.hash2atom(dihedral.atom_three)
-        atoml = self.hash2atom(dihedral.atom_four)
-        key1 = [atomi.aux_name, atomj.aux_name, atomk.aux_name, atoml.aux_name]
-        if key1[0] > key1[-1]:
-            key1 = key1[::-1]
-        key1 = tuple(key1)
-        key2 = [atomi.type, atomj.type, atomk.type, atoml.type]
-        if key2[0] > key2[-1]:
-            key2 = key2[::-1]
-        key2 = tuple(key2)
-        dihedraltype = None
-
-        if key1 in forcefieldata.dihedraltypes:
-            dihedraltype = forcefieldata.dihedraltypes[key1]
-        elif key2 in forcefieldata.dihedraltypes:
-            dihedraltype = forcefieldata.dihedraltypes[key2]
-
-        if dihedraltype is None:
-            return
-        
-        consts = list(dihedral._fields["const"])
-        consts += list(dihedraltype.params)[nconst:]
-        dihedral._fields["const"] = tuple(consts)
-
-    def _add_forcefield_bond(self, bond, forcefieldata):
-        nconst = len(bond._fields["const"])
-        if nconst == 2:
-            return
-        # Retrieve the bond info from the forcefield
-        atomi = self.hash2atom(bond.atom_from)
-        atomj = self.hash2atom(bond.atom_to)
-        key1 = tuple(sorted((atomi.aux_name, atomj.aux_name)))
-        key2 = tuple(sorted((atomi.type, atomj.type)))
-        bondtype = None
-
-        if key1 in forcefieldata.bondtypes:
-            bondtype = forcefieldata.bondtypes[key1]
-        elif key2 in forcefieldata.bondtypes:
-            bondtype = forcefieldata.bondtypes[key2]
-
-        if nconst == 1:
-            bond._fields["const"].append(bondtype.kb)
-        else:
-            bond._fields["const"] = [bondtype.b0, bondtype.kb]
-
     @property
-    def fitp(self):
+    def fitp(self) -> str:
         """
-        string : The .itp file name of the molecule
+        string: The .itp file name of the molecule
         """
         return self._itp_file.fitp
 
     @property
-    def itp_file(self):
+    def itp_file(self) -> ItpFile:
         """
         ItpFile : The loaded ItpFile object to handle the molecule.
         """
         return self._itp_file
 
     @property
-    def name(self):
+    def name(self) -> str:
         """
         string : The molecule name.
         """
         return self._name
 
     @name.setter
-    def name(self, new_name):
+    def name(self, new_name: str):
         self._name = new_name
         for line in self._itp_file['moleculetype']:
             if line.content:
                 line.name = new_name
 
     @property
-    def resnames(self):
+    def resnames(self) -> List[str]:
         """
-        list : Resnames of the atom without consecutive repetitions.
+        list of str: Resnames of the atoms without consecutive repetitions.
         """
         tot_resnames = ('{:5}{}'.format(atom.resname, atom.resnr)
                         for atom in self)
         return [x[0][:5].strip() for x in groupby(tot_resnames)]
 
     @property
-    def resname_len_list(self):
+    def resname_len_list(self) -> List[Tuple[str, int]]:
         """
-        list of tuples of str : [(resname1, N_at_resname1),
-            (resname2, N_at_resname2)...]
+        list of tuple(str, int) : 
+            [(resname_1, number_of_atoms_with_resname_1),
+            (resname_2, number_of_atoms_with_resname_2), ...]
         """
         tot_resnames = ('{:5}{}'.format(atom.resname, atom.resnr)
                         for atom in self)
         res_len = []
-        old_resname = []
+        old_resname: List[Union[str, int]] = ['', 0]
         for resname in tot_resnames:
             if not old_resname:
                 old_resname = [resname, 1]
@@ -251,29 +170,7 @@ class MoleculeItp(GeneralMolecule):
         res_len.append((old_resname[0][:5].strip(), old_resname[1]))
         return res_len
 
-    def add_forcefield_data(self, forcefielddata):
-        """
-        Fills the missing info of the molecule using the forcefield
-        """
-
-        # The atomtypes
-        for atom in self:
-            atom.add_forcefield_data(forcefielddata)
-
-        # Bonds
-        if "bonds" in self.itp_file:
-            for bond in self.itp_file["bonds"]:
-                self._add_forcefield_bond(bond, forcefielddata)
-
-        if "angles" in self.itp_file:
-            for angle in self.itp_file["angles"]:
-                self._add_forcefield_angle(angle, forcefielddata)
-
-        if "dihedrals" in self.itp_file:
-            for dihedral in self.itp_file["dihedrals"]:
-                self._add_forcefield_dihedral(dihedral, forcefielddata)
-
-    def hash2atom(self, number):
+    def hash2atom(self, number: int) -> 'AtomItp':
         """
         Returns the atom with the corresponding number as hash.
 
@@ -290,29 +187,29 @@ class MoleculeItp(GeneralMolecule):
         """
         return self[self.hash2index(number)]
 
-    def hash2index(self, atom_hash):
+    def hash2index(self, atom_hash: int) -> int:
         """
         Returns the index of an atom by its hash.
 
         Parameters
         ----------
         atom_hash : int
-            The hash of the atom.
+            The hash of the atom (it usually starts in 1).
 
         Returns
         -------
         atom_index : int
-            The index of the atom in the molecule.
+            The index of the atom in the molecule (it usually starts in 0).
         """
         return self._number_to_index[atom_hash]
 
-    def index2hash(self, atom_index):
+    def index2hash(self, atom_index: int) -> int:
         """
         The reverse operation done by hash2index.
         """
         return hash(self[atom_index])
 
-    def index(self, atom):
+    def index(self, atom: 'AtomItp') -> int:
         """
         Returns the index of the atom in the molecule.
 
@@ -332,92 +229,47 @@ class MoleculeItp(GeneralMolecule):
 
 class AtomItp(GeneralAtom):
     """
-    Returns an object with the information of a .itp line corresponding to an
-    atom.
+    Contains the information of a .itp line corresponding to an atom.
 
     Parameters
     ----------
     itp_line_atom : ItpLineAtom or string
-        A parsed atom line from the itp (see parse_functions module) or
-        a string corresponding to an atom_line.
-    bonds : set of int
+        A parsed atom line from the itp (see parse module) or a string
+        corresponding to a line in the itp with atomic information.
+
+    Attributes
+    ----------
+    bonds: set of int
         A set with the hash of the atoms that are connected to self.
 
     """
-    def __init__(self, itp_line_atom):
+    def __init__(self, itp_line_atom: Union[str, 'ItpLineAtom']):
         if isinstance(itp_line_atom, ItpLineAtom):
             self._itp_line_atom = itp_line_atom
         elif isinstance(itp_line_atom, str):
             self._itp_line_atom = ItpLineAtom(itp_line_atom)
-        self.bonds = set()
+        self.bonds: Set[int] = set()
 
-    def __getattr__(self, attr):
+    def __getattr__(self, attr: str) -> Any:
         return getattr(self._itp_line_atom, attr)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         msg = 'Itp atom of {} of molecule {}'.format(self.atomname,
                                                      self.resname)
         return msg
 
     __str__ = __repr__
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return self.number
 
-    def __eq__(self, atom):
+    def __eq__(self, atom: 'AtomItp') -> bool:
         cond = super(AtomItp, self).__eq__(atom)
         if cond:
             return self.number == atom.number
         return False
 
-    def add_forcefield_data(self, forcefielddata):
-        """
-        Checks the missing information and retrieves it from the forcefield
-        """
-
-        atomtypes = forcefielddata.atomtypes
-        key = None
-        if self.type in atomtypes:
-            key = self.type
-            atomtype = atomtypes[key]
-        elif self.atomname in atomtypes:
-            key = self.atomname
-            atomtype = atomtypes[key]
-        else:
-            for _, atomtype in atomtypes.items():
-                if atomtype.label == self.atomname:
-                    text = ("Atom {} loaded from the "
-                            "forcefield using its atomname, "
-                            "due to nonexistant type {} in "
-                            "the forcefield. Check for "
-                            "inconsistent asignments.")
-                    text = text.format(str(self), self.type)
-                    warnings.warn(text)
-                    break
-            else:
-                text = ("Atom {} not found in the forcefield")
-                text = text.format(str(self))
-                raise ValueError(text)
-
-        # Look for a missing value in the mass and retrieve it from the ff
-        try:
-            _ = self.mass
-        except AttributeError:
-            self._itp_line_atom.mass = atomtype.mass
-
-        # Save the values of the pair interaction
-        # Check if the self interaction is in the nonbond_params
-        if (key, key) in forcefielddata.nonbond_params:
-            pair = forcefielddata.nonbond_params[(key, key)]
-        else:
-            pair = atomtype.pair_interaction
-        self._itp_line_atom.pair_interaction = pair
-
-        # Add the auxiliar name
-        self._itp_line_atom.aux_name = atomtype.label
-
-
-    def connect(self, atom):
+    def connect(self, atom: 'AtomItp'):
         """
         Connects self with other atom setting the bond.
 
@@ -430,9 +282,9 @@ class AtomItp(GeneralAtom):
         self.bonds.add(hash(atom))
         atom.bonds.add(hash(self))
 
-    def closest_atoms(self, natoms=2):
+    def closest_atoms(self, natoms: int = 2) -> List['AtomItp']:
         """
-        Returns the natoms bonded atoms to self.
+        Returns a list natoms bonded atoms to self.
 
         If more than natoms are bonded self, the natoms  with lower id_num are
         returned.

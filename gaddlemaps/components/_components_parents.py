@@ -1,15 +1,13 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
-
 '''
 This module contains parent classes for components.
-
 '''
 
 from abc import abstractmethod
+from typing import Any
 
 
-def are_the_same_object(object_type, *instances):
+def are_the_same_object(object_type: type, *instances: Any) -> bool:
     """
     Check if the input instances correspond to the same object.
 
@@ -44,21 +42,20 @@ def are_the_same_object(object_type, *instances):
 class GeneralAtom(object):
     """
     The parent of every atom classes.
-
     """
 
-    def __eq__(self, element):
+    def __eq__(self, element: Any) -> bool:
         if isinstance(element, GeneralAtom):
             condition = ((self.resname == element.resname) and
                          (self.atomname == element.atomname))
             return condition
         return False
 
-    def __ne__(self, element):
+    def __ne__(self, element: Any) -> bool:
         return not self == element
 
     @staticmethod
-    def are_the_same_atom(*atoms):
+    def are_the_same_atom(*atoms: 'GeneralAtom') -> bool:
         """
         Check if the input atoms correspond to the same atom.
 
@@ -82,14 +79,13 @@ class GeneralAtom(object):
 class GeneralMolecule(object):
     """
     The parent of every molecule classes.
-
     """
 
     @abstractmethod
     def __len__(self):
         pass
 
-    def __eq__(self, element):
+    def __eq__(self, element: Any) -> bool:
         if len(element) == len(self):
             for at1, at2 in zip(element, self):
                 if at1 != at2:
@@ -97,11 +93,11 @@ class GeneralMolecule(object):
             return True
         return False
 
-    def __ne__(self, element):
+    def __ne__(self, element: Any) -> bool:
         return not self == element
 
     @staticmethod
-    def are_the_same_molecule(*molecules):
+    def are_the_same_molecule(*molecules: 'GeneralMolecule') -> bool:
         """
         Check if the input molecules correspond to the same molecule.
 

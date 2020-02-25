@@ -1,7 +1,12 @@
+# -*- coding: utf-8 -*-
+"""
+This module defines the System and SystemGro classes.
+"""
+
 import os
 from itertools import groupby, product, islice
 from collections import Counter
-from typing import List, Tuple, Union, Generator, Set, Mapping
+from typing import List, Tuple, Union, Generator, Set, Mapping, Dict
 
 import numpy as np
 
@@ -11,25 +16,29 @@ from ..parsers import GroFile
 
 class System(object):
     """
-    Class to manage simulation systems with low memory requirements.
+    Class to manage simulation systems.
+
+    A System object is formed by Molecule objects. Only the molecules
+    corresponding to the input fitps will be loaded.
 
     Parameters
     ----------
     fgro : string
         Gromacs file with the system information.
-    fitps : string
-        Files with the itp files to load molecules.
+    *fitps : string
+        Paths with the itp files to load molecules.
 
     """
-    def __init__(self, fgro, *fitps):
+    def __init__(self, fgro: str, *fitps: str):
         self.system_gro = SystemGro(fgro)
-        self.different_molecules = []
-        self._molecules_ordered = []  # (ind_mol, ind_gro_start, ammount)
+        self.different_molecules: List[Molecule] = []
+        # (ind_mol, ind_gro_start, ammount)
+        self._molecules_ordered: List[Tuple[int, int, int]] = []
         self._available_mgro_ordered = np.array(list(self.system_gro.molecules_info_ordered_all))
         for fitp in fitps:
             self.add_fitp(fitp)
 
-    def __str__(self):
+    def __str__(self) -> str:
         string = 'Simulation system with:\n\n'
         string += '\n'.join(["{:6}: {}".format(k, v)
                              for k, v in sorted(self.composition.items())])
@@ -37,13 +46,13 @@ class System(object):
 
     __repr__ = __str__
 
-    def __iter__(self):
+    def __iter__(self) -> Molecule:
         for index, gro_start, gro_end in self._molecules_ordered_all_gen():
             m_gro = sum(self.system_gro[gro_start:gro_end])
             mol = self.different_molecules[index].copy(m_gro)
             yield mol
 
-    def __getitem__(self, index):
+    def __getitem__(self, index: int) -> Molecule:
         if isinstance(index, slice):
             molecules = []
             info = list(self._molecules_ordered_all_gen())
@@ -62,10 +71,11 @@ class System(object):
                 return mol
         raise IndexError('Molecule index out of range')
 
-    def __len__(self):
+    def __len__(self) -> int:
         return sum(elem[2] for elem in self._molecules_ordered)
 
-    def _check_index_in_available_mgro(self, index_array, mol_itp):
+    def _check_index_in_available_mgro(self, index_array: np.ndarray, 
+                                       mol_itp: MoleculeItp) -> int:
         start_index = None
         len_array = len(index_array)
         for mgro_index, mgro_pk in enumerate(self._available_mgro_ordered):
@@ -79,8 +89,9 @@ class System(object):
                            'the molecule is not recognized in the system.'))
         return start_index
 
-    def _find_all_molecules_and_replace(self, index_mol_gro, mol_index,
-                                        start_index=0):
+    def _find_all_molecules_and_replace(self, index_mol_gro: np.ndarray, 
+                                        mol_index: int,
+                                        start_index: int = 0):
         av_gro = self._available_mgro_ordered
         l_index_mol = len(index_mol_gro)
         new_block = True
@@ -97,20 +108,20 @@ class System(object):
                 new_block = True
                 start_index += 1
 
-    def _molecules_ordered_all_gen(self):
+    def _molecules_ordered_all_gen(self) -> Generator:
         for index, gro_start, ammount in self._molecules_ordered:
             len_mol = len(self.different_molecules[index].resnames)
             for i in range(ammount):
                 yield (index, gro_start+i*len_mol, gro_start+(i+1)*len_mol)
 
-    def add_fitp(self, fitp):
+    def add_fitp(self, fitp: str):
         """
         Adds and identifies the molecule from the fitp to the system.
         """
         mol_itp = MoleculeItp(fitp)
         self.add_molecule_itp(mol_itp)
 
-    def add_molecule_itp(self, mol_itp):
+    def add_molecule_itp(self, mol_itp: MoleculeItp):
         """
         Adds a molecule to the system and find it in the gro file.
         """
@@ -136,7 +147,7 @@ class System(object):
         self._molecules_ordered.sort(key=lambda x: x[1])
 
     @property
-    def composition(self):
+    def composition(self) -> Mapping[str, int]:
         """
         Counter of str: int : For each resname (key), how many molecules
             there are (value).
@@ -147,7 +158,7 @@ class System(object):
         return composition
 
     @property
-    def info(self):
+    def info(self) -> Dict[str, Optional[str, List[str]]]:
         """
         dict : A dictionary with the needed information to restore the
             system.
@@ -167,11 +178,11 @@ class System(object):
         return info
 
     @property
-    def fgro(self):
+    def fgro(self) -> str:
         return self.system_gro.fgro
 
     @property
-    def fitps(self):
+    def fitps(self) -> List[str]:
         """
         list of string : A list with the paths to the itp files of the loaded
             molecules.
@@ -179,7 +190,7 @@ class System(object):
         return [os.path.abspath(mol.fitp) for mol in self.different_molecules]
 
     @classmethod
-    def from_info(cls, info_dict):
+    def from_info(cls, info_dict: Dict[str, Optional[str, List[str]]]) -> 'System':
         """
         Builds the system from the information returned by info property.
 
@@ -205,7 +216,7 @@ class System(object):
 
 class SystemGro(object):
     """
-    Class to work with gro files without loading every molecules in memory.
+    Class to work with the information in gro files.
 
     Only one molecule of each resname is loaded. The position in the file of
     the rest of the molecules are storage and they are generated when requested.
@@ -216,15 +227,15 @@ class SystemGro(object):
         Gromacs file with the system information.
 
     """
-    def __init__(self, fgro):
+    def __init__(self, fgro: str):
         self.fgro = fgro
         self._open_fgro = GroFile(fgro)
-        self.different_molecules = []
-        self._molecules_pk = {}   # Dictionary with {(resname, len(mol)): index}
-        self._molecules_ordered = []
+        self.different_molecules: List[MoleculeGro] = []
+        self._molecules_pk: Dict[Tuple[str, int], int] = {}   # Dictionary with {(resname, len(mol)): index}
+        self._molecules_ordered: List[int] = []
         self._parse_gro()
 
-    def __str__(self):
+    def __str__(self) -> str:
         string = 'Simulation system with:\n\n'
         string += '\n'.join(["{:6}: {}".format(k, v)
                              for k, v in sorted(self.composition.items())])
@@ -241,7 +252,7 @@ class SystemGro(object):
     def __del__(self):
         self._open_fgro.close()
 
-    def __getitem__(self, index) -> Union[MoleculeGro, List[MoleculeGro]]:
+    def __getitem__(self, index: int) -> Union[MoleculeGro, List[MoleculeGro]]:
         if isinstance(index, slice):
             molecules = []
             for _, start, len_mol in islice(self._molecules_ordered_all_gen(),
@@ -259,7 +270,7 @@ class SystemGro(object):
                                     for _ in range(len_mol)])
         raise IndexError('Molecule index out of range')
 
-    def __len__(self):
+    def __len__(self) -> int:
         return sum(elem[1] for elem in self._pk_ammount_ordered_gen())
 
     def _parse_gro(self):
@@ -278,7 +289,7 @@ class SystemGro(object):
                 current_molecule = [atom]
         self._add_molecule_init(MoleculeGro(current_molecule))
 
-    def _add_molecule_init(self, molecule):
+    def _add_molecule_init(self, molecule: MoleculeGro):
         key = (molecule.resname, len(molecule))
         if molecule not in self.different_molecules:
             self.different_molecules.append(molecule)
@@ -291,11 +302,11 @@ class SystemGro(object):
         else:
             self._molecules_ordered[-1] += 1
 
-    def _pk_ammount_ordered_gen(self):
+    def _pk_ammount_ordered_gen(self) -> Generator[Tuple[int, int], None, None]:
         for i in range(0, len(self._molecules_ordered), 2):
             yield (self._molecules_ordered[i], self._molecules_ordered[i+1])
 
-    def _molecules_ordered_all_gen(self):
+    def _molecules_ordered_all_gen(self) -> Generator[Tuple[int, int, int], None, None]:
         start_atom = 0
         for index, ammount in self._pk_ammount_ordered_gen():
             len_mol = len(self.different_molecules[index])
@@ -324,7 +335,7 @@ class SystemGro(object):
     @property
     def comment_line(self) -> str:
         """
-        str : The comment line in the gro file.
+        str: The comment line in the gro file.
         """
         return self._open_fgro.comment
 
@@ -333,7 +344,7 @@ class SystemGro(object):
         self._open_fgro.comment = new_comment
 
     @property
-    def molecules_info_ordered_all(self):
+    def molecules_info_ordered_all(self) -> Generator[int, None, None]:
         """
         generator of int: Returns the index of the molecules in the
             different_molecules attribute in order of appearence.
@@ -343,7 +354,7 @@ class SystemGro(object):
                 yield index
 
     @property
-    def molecules_resname_len_index(self):
+    def molecules_resname_len_index(self) -> Dict[Tuple[str, int], int]:
         """
         dict of tuple (string, int): int: The keys of the dictionary are tuples
             with the resname and the number of atoms of the different molecules
@@ -353,7 +364,7 @@ class SystemGro(object):
         return self._molecules_pk
 
     @property
-    def composition(self):
+    def composition(self) -> Mapping[str, int]:
         """
         Counter of str: int : For each resname (key), how many molecules
             there are (value).

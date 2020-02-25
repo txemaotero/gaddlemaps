@@ -1,13 +1,13 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
-
 '''
-This module contains features to connect comments from gro and itp.
+This module contains Atom and Molecule objects which connect information from
+both gro and itp files.
 '''
 
 import warnings
 import os
 from collections import defaultdict
+from typing import Optional, Any, List, Dict, Tuple, Union
 from scipy.spatial.distance import euclidean
 from . import (AtomGro, AtomItp, GeneralAtom, GeneralMolecule, MoleculeItp,
                MoleculeGro, MacromoleculeGro)
@@ -17,7 +17,7 @@ class Atom(GeneralAtom):
     """
     An atom class that wraps the AtomItp and AtomGro classes.
 
-    Properties and methods are the same as AtomItp and AtomGro.
+    Properties and methods are the same as both AtomItp and AtomGro.
 
     Parameters
     ----------
@@ -35,22 +35,22 @@ class Atom(GeneralAtom):
 
     """
 
-    def __init__(self, atom_gro, atom_itp):
+    def __init__(self, atom_gro: AtomGro, atom_itp: AtomItp):
         super(Atom, self).__init__()
-        self._atom_gro = None
-        self._atom_itp = None
+        self._atom_gro: AtomGro = None
+        self._atom_itp: AtomItp = None
         self.atom_gro = atom_gro
         self.atom_itp = atom_itp
 
     @property
-    def atom_gro(self):
+    def atom_gro(self) -> AtomGro:
         """
         AtomGro : The input AtomGro object
         """
         return self._atom_gro
 
     @atom_gro.setter
-    def atom_gro(self, new_atom):
+    def atom_gro(self, new_atom: AtomGro):
         if not self._atom_itp is None:
             if not GeneralAtom.are_the_same_atom(new_atom, self._atom_itp):
                 msg = 'The input atoms do not correspond to the same atom.'
@@ -60,14 +60,14 @@ class Atom(GeneralAtom):
         self._atom_gro = new_atom
 
     @property
-    def atom_itp(self):
+    def atom_itp(self) -> AtomItp:
         """
         AtomItp : The input AtomItp object
         """
         return self._atom_itp
 
     @atom_itp.setter
-    def atom_itp(self, new_atom):
+    def atom_itp(self, new_atom: AtomItp):
         if self._atom_gro is not None:
             if not GeneralAtom.are_the_same_atom(new_atom, self._atom_gro):
                 msg = 'The input atoms do not correspond to the same atom.'
@@ -76,7 +76,7 @@ class Atom(GeneralAtom):
             raise TypeError('atom_itp input have to be an AtomItp instance.')
         self._atom_itp = new_atom
 
-    def __getattr__(self, attr):
+    def __getattr__(self, attr: str) -> Any:
         if hasattr(self._atom_gro, attr):
             return getattr(self._atom_gro, attr)
         elif hasattr(self._atom_itp, attr):
@@ -84,7 +84,7 @@ class Atom(GeneralAtom):
         else:
             raise AttributeError('Atom object has no attribute {}'.format(attr))
 
-    def __setattr__(self, attr, value):
+    def __setattr__(self, attr: str, value: Any):
         if attr in ['_atom_itp', '_atom_gro']:
             super(Atom, self).__setattr__(attr, value)
         # Special cases that are present in both atoms
@@ -100,7 +100,7 @@ class Atom(GeneralAtom):
         else:
             super(Atom, self).__setattr__(attr, value)
 
-    def __str__(self):
+    def __str__(self) -> str:
         string = 'Atom {} of molecule {} with number {}.'.format(self.atomname,
                                                                  self.resname,
                                                                  self.resid)
@@ -108,10 +108,10 @@ class Atom(GeneralAtom):
 
     __repr__ = __str__
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(self._atom_itp)
 
-    def __dir__(self):
+    def __dir__(self) -> List[str]:
         """
         For Ipython autocompletion.
         """
@@ -120,9 +120,9 @@ class Atom(GeneralAtom):
         _dir.update(dir(self._atom_itp))
         return list(_dir)
 
-    def copy(self):
+    def copy(self) -> 'Atom':
         """
-        Returns a copy of the atom.
+        Returns a copy of self.
 
         Only the gro atom is copied. The itp one remains the same.
 
@@ -137,7 +137,7 @@ class Atom(GeneralAtom):
         at._atom_itp = self._atom_itp
         return at
 
-    def __eq__(self, atom):
+    def __eq__(self, atom: Any) -> bool:
         cond = super(Atom, self).__eq__(atom)
         if cond:
             if isinstance(atom, (Atom, AtomItp)):
@@ -148,7 +148,7 @@ class Atom(GeneralAtom):
 
 class Molecule(GeneralMolecule):
     """
-    A Molecule class that loads a molecule itp and the .gro information.
+    Loads a molecule itp and the .gro information.
 
     This class wraps all the features of both MoleculeItp and MoleculeGro
     objects. Saves a copy of the molecule_gro and the original molecule_itp.
@@ -168,9 +168,9 @@ class Molecule(GeneralMolecule):
         If molecule_gro and molecule_itp represent different molecules.
 
     """
-    def __init__(self, molecule_gro, molecule_itp):
-        self._molecule_itp = None
-        self._molecule_gro = None
+    def __init__(self, molecule_gro: MoleculeGro, molecule_itp: MoleculeItp):
+        self._molecule_itp: MoleculeItp = None
+        self._molecule_gro: MoleculeGro = None
         self.molecule_itp = molecule_itp
         self.molecule_gro = molecule_gro
         self._atoms = [Atom(at_gro, at_itp)
@@ -178,14 +178,14 @@ class Molecule(GeneralMolecule):
                                                  self._molecule_itp)]
 
     @property
-    def molecule_itp(self):
+    def molecule_itp(self) -> MoleculeItp:
         """
         MoleculeItp : The object with the .itp information of the molecule.
         """
         return self._molecule_itp
 
     @molecule_itp.setter
-    def molecule_itp(self, new_molecule):
+    def molecule_itp(self, new_molecule: MoleculeItp):
         if not self._molecule_gro is None:
             if not self.are_the_same_molecule(self.molecule_gro, new_molecule):
                 raise IOError(('The input molecule_itp does not match with the'
@@ -197,14 +197,14 @@ class Molecule(GeneralMolecule):
         self._molecule_itp = new_molecule
 
     @property
-    def molecule_gro(self):
+    def molecule_gro(self) ->  MoleculeGro:
         """
         MoleculeGro : The object with the .gro information of the molecule.
         """
         return self._molecule_gro
 
     @molecule_gro.setter
-    def molecule_gro(self, new_molecule):
+    def molecule_gro(self, new_molecule: MoleculeGro):
         if not self._molecule_itp is None:
             if not self.are_the_same_molecule(self.molecule_itp, new_molecule):
                 raise IOError(('The input molecule_gro does not match with the'
@@ -215,17 +215,17 @@ class Molecule(GeneralMolecule):
             raise TypeError(msg)
         self._molecule_gro = new_molecule.copy()
 
-    def __getitem__(self, index):
+    def __getitem__(self, index: int) -> 'Molecule':
         return self._atoms[index]
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self._atoms)
 
-    def __iter__(self):
+    def __iter__(self) -> 'Atom':
         for atom in self._atoms:
             yield atom
 
-    def __getattr__(self, attr):
+    def __getattr__(self, attr: str) -> Any:
         if hasattr(self._molecule_itp, attr):
             return getattr(self._molecule_itp, attr)
         elif hasattr(self._molecule_gro, attr):
@@ -234,7 +234,7 @@ class Molecule(GeneralMolecule):
             raise AttributeError(('Molecule object has no attribute {}'
                                   '').format(attr))
 
-    def __setattr__(self, attr, value):
+    def __setattr__(self, attr: str, value: Any):
         if attr in ['_molecule_itp', '_molecule_gro']:
             super(Molecule, self).__setattr__(attr, value)
         elif attr in super(Molecule, self).__dir__():
@@ -246,21 +246,21 @@ class Molecule(GeneralMolecule):
         else:
             super(Molecule, self).__setattr__(attr, value)
 
-    def __str__(self):
+    def __str__(self) -> str:
         string = 'Molecule of {}.'.format(self.name)
         return string
 
     __repr__ = __str__
 
-    def __eq__(self, molecule):
+    def __eq__(self, molecule: Any) -> bool:
         if isinstance(molecule, Molecule):
             return super(Molecule, self).__eq__(molecule)
         return False
 
-    def __ne__(self, molecule):
+    def __ne__(self, molecule: Any) -> bool:
         return not self == molecule
 
-    def __dir__(self):
+    def __dir__(self) -> List[str]:
         """
         For Ipython autocompletion.
         """
@@ -270,21 +270,21 @@ class Molecule(GeneralMolecule):
         return list(_dir)
 
     @property
-    def atoms(self):
+    def atoms(self) -> List['Atom']:
         """
-        :obj:`list` of :obj:`Atom` : List with the copied atoms of the molecule.
+        list of Atom: List with the copies of the atoms of the molecule.
         """
         return [atom.copy() for atom in self._atoms]
 
     @property
-    def resname(self):
+    def resname(self) -> str:
         """
-        :obj:`string` : Resname of the molecule.
+        string: Resname of the molecule.
         """
         return self[0].resname
 
     @resname.setter
-    def resname(self, new_resname):
+    def resname(self, new_resname: str):
         if isinstance(new_resname, str):
             if len(new_resname) > 5:
                 old_resname = new_resname
@@ -298,12 +298,17 @@ class Molecule(GeneralMolecule):
         else:
             raise TypeError('Resname must be a string.')
 
-    def copy(self, new_molecule_gro=None):
+    def copy(self, new_molecule_gro: Optional[MoleculeGro] = None) -> 'Molecule':
         """
         Returns a copy of the molecule.
 
         If new_molecule_gro is passed, the old molecule_gro will be replaced
         to update the positions.
+
+        Parameters
+        ----------
+        new_molecule_gro: MoleculeGro
+            Molecule to replace the original positions.
 
         Returns
         -------
@@ -328,7 +333,7 @@ class Molecule(GeneralMolecule):
         # mol._init_atoms_bonds()
         return mol
 
-    def index(self, atom):
+    def index(self, atom: 'Atom') -> int:
         """
         Returns the index of the atom in the molecule.
 
@@ -345,7 +350,7 @@ class Molecule(GeneralMolecule):
         """
         return self._atoms.index(atom)
 
-    def hash2atom(self, number):
+    def hash2atom(self, number: int) -> 'Atom':
         """
         Returns the atom with the corresponding number as hash.
 
@@ -364,46 +369,8 @@ class Molecule(GeneralMolecule):
         """
         return self[self.hash2index(number)]
 
-    def plot(self, fig=None, bond_width=.01, bond_color='black', **kwargs):
-        """
-        Plot the molecule using mayavi.
-
-        Parameters
-        ----------
-        fig : mayavi.figure (optional)
-            The mayavi scene where the plot will be made. Default None.
-        bond_width : float (optional)
-            The width of the plotted bond. By default is 0.01.
-        bond_color : str (optional)
-            The color of the plotted bond. Available colors are listed in
-            function colors_codes(). By default is 'black'.
-        **kwargs
-            Arguments of the MoleculeGro.plot method.
-
-        Returns
-        -------
-        fig : mayavi.figure
-            The mayavi scene with the plot.
-
-        """
-
-        from mayavi import mlab
-        from .analyze.representations import color_codes
-
-        fig = mlab.figure(fig)
-        color = color_codes()[bond_color]
-        for ind_0, target in self.bonds_distance.items():
-            for ind_1, _ in target:
-                if ind_0 < ind_1:
-                    pos0 = self[ind_0].position
-                    pos1 = self[ind_1].position
-                    mlab.plot3d(*zip(pos0, pos1), tube_radius=bond_width,
-                                color=color)
-        self._molecule_gro.plot(fig=fig, **kwargs)
-        return fig
-
     @property
-    def bonds_distance(self):
+    def bonds_distance(self) -> Dict[int, List[Tuple[int, float]]]:
         """
         dict of int: list of tuple(int, float): A complex data structure
             that collect the information of the bond distances. The key of the
@@ -423,7 +390,7 @@ class Molecule(GeneralMolecule):
         return dict(bond_info)
 
     @property
-    def info(self):
+    def info(self) -> Dict[str, Union[str, List[Union[str, int, float]]]]:
         """
         dict : A dictionary with the needed information to restore the
             Molecule.
@@ -436,9 +403,9 @@ class Molecule(GeneralMolecule):
         return info
 
     @classmethod
-    def from_info(cls, info_dict):
+    def from_info(cls, info_dict: Dict[str, Union[str, List[Union[str, int, float]]]]) -> 'Molecule':
         """
-        Builds the Alignment from the information returned by info property.
+        Loads a molecule from the info porperty.
 
         Parameters
         ----------
@@ -471,7 +438,7 @@ class Molecule(GeneralMolecule):
         return Molecule(mol_gro, mol_itp)
 
     @classmethod
-    def from_gro_itp(self, fgro, fitp):
+    def from_gro_itp(cls, fgro: str, fitp: str) -> 'Molecule':
         """
         Loads the molecule from gro and itp file.
 

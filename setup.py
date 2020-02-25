@@ -4,6 +4,9 @@ from distutils.extension import Extension
 
 
 def scandir(dir, files=[]):
+    """
+    Search for pyx files.
+    """
     for file in os.listdir(dir):
         path = os.path.join(dir, file)
         if os.path.isfile(path) and path.endswith(".pyx"):
@@ -14,6 +17,9 @@ def scandir(dir, files=[]):
 
 
 def scancppdir(dir, files=[]):
+    """
+    Search for cpp files.
+    """
     for file in os.listdir(dir):
         path = os.path.join(dir, file)
         if os.path.isfile(path) and path.endswith(".cpp"):
@@ -23,6 +29,9 @@ def scancppdir(dir, files=[]):
 
 # generate an Extension object from its dotted name
 def makeExtension(extName, cpp, use_cython):
+    """
+    Create the extensions for external modules.
+    """
     extPath = extName.replace(".", os.path.sep)
     if use_cython:
         extPath += ".pyx"
@@ -51,12 +60,9 @@ else:
     cmdclass.update({'build_ext': build_ext})
 
 
-# get the list of extensions
 extNames = scandir("cython_backend")
 cpp = scancppdir("cython_backend/c++_src/")
-# and build up the set of Extension objects
 ext_modules = [makeExtension(name, cpp, use_cython) for name in extNames]
-
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -66,7 +72,7 @@ setuptools.setup(
     version="0.0.1",
     author='Hadrian Montes, Jose Manuel Otero Mato',
     author_email='hadrianmontes@gmail.com, josemanuel.otero.mato@gmail.com',
-    description="Python package with to apply the GADDLE-MAPS algorithm",
+    description="Python package to apply the GADDLE-MAPS algorithm",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="",

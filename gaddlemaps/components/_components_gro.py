@@ -1,17 +1,13 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
-
 """
-This module contains MoleculeGro and AtomGro objects which allows to load
-atom and molecule information from .gro lines.
-
+This module defines the MoleculeGro, MacromoleculeGro and AtomGro classes
 """
 
 import warnings
 import collections
 import re
 import numpy as np
-from typing import Tuple, Union, List, Optional
+from typing import Tuple, Union, List, Optional, Any
 
 from ..parsers import GroFile
 from . import GeneralAtom, GeneralMolecule
@@ -19,16 +15,19 @@ from . import GeneralAtom, GeneralMolecule
 
 class MoleculeGro(GeneralMolecule):
     """
-    Contains the information of a molecule atoms.
+    A class with the information of a residue in a .gro file.
+
+    This class creates objects that are enumerations of AtomGro instances. It
+    has methods to manipulate atoms positions maintaining the shape of the
+    molecule. You can also add two  molecules to obtain a  MacromoleculeGro.
 
     Parameters
     ----------
-    atoms : list of Atoms
-        A list with the atoms of the molecule
-
+    atoms : list of AtomsGro
+        A list with the atoms of the molecule.
     """
 
-    def __init__(self, atoms):
+    def __init__(self, atoms: List['AtomGro']):
         super(MoleculeGro, self).__init__()
         self._atoms_gro = atoms
 
@@ -64,39 +63,42 @@ class MoleculeGro(GeneralMolecule):
                                   '{}').format(other.parent_residname,
                                                self.residname))
         else:
-            raise TypeError(('It is not possible to sum a MoleculeGro and a {}'
+            raise TypeError(('It is not possible to add a MoleculeGro and a {}'
                              '').format(type(other)))
 
-    def __radd__(self, other):
+    def __radd__(self, other: Union['MacromoleculeGro',
+                                    'AtomGro',
+                                    'MoleculeGro']) -> Union['MacromoleculeGro',
+                                                             'MoleculeGro']:
         if not other:
             return self
         return self + other
 
-    def __getitem__(self, index) -> 'AtomGro':
+    def __getitem__(self, index: int) -> 'AtomGro':
         return self._atoms_gro[index]
 
     def __len__(self) -> int:
         return len(self._atoms_gro)
 
-    def __str__(self):
+    def __str__(self) ->  str:
         string = 'Molecule of {} with resid {}.'.format(self.resname,
                                                         self.resid)
         return string
 
     __repr__ = __str__
 
-    def __eq__(self, element):
+    def __eq__(self, element: Any) ->  bool:
         if isinstance(element, MoleculeGro):
             return super(MoleculeGro, self).__eq__(element)
         return False
 
-    def __ne__(self, element):
+    def __ne__(self, element: Any) ->  bool:
         return not self == element
 
     @property
     def atoms(self) -> List['AtomGro']:
         """
-        :obj:`list` of :obj:`AtomGro` : List with the atoms of the molecule.
+        list of AtomGro: List with a copy of the atoms of the molecule.
         """
         return [atom.copy() for atom in self._atoms_gro]
 
@@ -131,7 +133,7 @@ class MoleculeGro(GeneralMolecule):
     @property
     def atoms_ids(self) -> List[int]:
         """
-        list : A list with the ids of the atoms molecule.
+        list of int: A list with the ids of the atoms of the molecule.
         """
         return [at.atomid for at in self]
 
@@ -145,36 +147,35 @@ class MoleculeGro(GeneralMolecule):
     @property
     def geometric_center(self) -> np.ndarray:
         """
-        :obj:`numpy.ndarray` (3) :
-        Coordinates of the geometric center of the molecule.
+        numpy.ndarray(3): Coordinates of the geometric center of the molecule.
         """
         return np.mean(self.atoms_positions, axis=0)
 
     @property
     def x(self) -> float:
         """
-        The x coordinate of the geometric center
+        float: The x coordinate of the geometric center of the molecule.
         """
         return self.geometric_center[0]
 
     @property
     def y(self) -> float:
         """
-        The y coordinate of the geometric center
+        float: The y coordinate of the geometric center of the molecule.
         """
         return self.geometric_center[1]
 
     @property
     def z(self) -> float:
         """
-        The z coordinate of the geometric center
+        float: The z coordinate of the geometric center of the molecule.
         """
         return self.geometric_center[2]
 
     @property
     def resname(self) -> str:
         """
-        :obj:`string` : Resname of the molecule.
+        string: Resname of the molecule.
         """
         return self[0].resname
 
@@ -196,7 +197,7 @@ class MoleculeGro(GeneralMolecule):
     @property
     def resid(self) -> Optional[int]:
         """
-        :obj:`int` : Resid of the molecule.
+        int Residue number of the molecule.
         """
         try:
             return self[0].resid
@@ -212,7 +213,7 @@ class MoleculeGro(GeneralMolecule):
     @property
     def residname(self) -> str:
         """
-        string : An idtentier of the molecule (resid+name)
+        string: An identifier of the molecule (resid+name)
         """
         return '{}{}'.format(self.resid, self.resname)
 
@@ -225,12 +226,10 @@ class MoleculeGro(GeneralMolecule):
         ----------
         rotation_matrix : numpy.ndarray
             3x3 array with the rotation matrix.
-            Advice: construct the matrix with the help of "rotation_matrix"
-            function placed in compyna.
+            ADVICE: create the matrix with the help of "rotation_matrix"
+            function placed in the root of the package.
 
         """
-        # Se desplaza el centro de masas de la molécula al origen se
-        # rota y se desplaza
         com = self.geometric_center
         atoms_pos = self.atoms_positions - com
         new_pos = np.dot(atoms_pos, np.transpose(rotation_matrix)) + com
@@ -243,7 +242,7 @@ class MoleculeGro(GeneralMolecule):
         Parameters
         ----------
         atom : AtomGro
-             The atom we want to remove from the molecule.
+             The atom you want to remove from the molecule.
         """
         self._atoms_gro.remove(atom)
 
@@ -262,7 +261,7 @@ class MoleculeGro(GeneralMolecule):
 
     def move(self, displacement: np.ndarray):
         """
-        Displaces the molecule given a displacement vector.
+        Moves the molecule a given displacement vector.
 
         Parameters
         ----------
@@ -271,59 +270,6 @@ class MoleculeGro(GeneralMolecule):
 
         """
         self.atoms_positions = self.atoms_positions + displacement
-
-    def plot(self, colors=None, atom_size=.1, fig=None, show=False):
-        """
-        This method makes a mayavi plot of the molecule.
-
-        This method does not return nothing, remember to run mlab.show() to
-        display the result.
-
-        Parameters
-        ----------
-        colors : dictionary, optional
-            One can specify the colors of the different atoms. Available colors
-            are listed in function colors_codes(). If None a default
-            set of colors will be used.
-        atom_size : float
-            The size for the sphere representing the atoms.
-        fig : mayavi.figure (optional)
-            The mayavi scene where the plot will be made.
-
-        Returns
-        -------
-        fig : mayavi.figure
-            The mayavi scene with the plot.
-
-        Examples
-        --------
-        >>> colors = {'H':'white', 'C':'black', 'N':'blue'}
-
-        """
-
-        from .analyze.representations import (asign_atoms_color, color_codes,
-                                              DEFAULT_COLORMAP)
-        from mayavi import mlab
-
-        fig = mlab.figure(fig)
-
-        if colors is None:
-            colors = DEFAULT_COLORMAP
-        # Se completan los colores
-        colors = asign_atoms_color([at.atomname for at in self], colors)
-        # Se representan los átomos
-        codes = color_codes()
-        for atom in self:
-            coord = atom.position
-            mlab.points3d(
-                *coord,
-                scale_factor=atom_size,
-                resolution=20,
-                color=codes[colors[atom.atomname]],
-                scale_mode='none')
-        if show:
-            mlab.show()
-        return fig
 
     def copy(self) -> 'MoleculeGro':
         """
@@ -346,16 +292,20 @@ class MoleculeGro(GeneralMolecule):
         Parameters
         ----------
         fout : str
-            The path with the file to write the file.
+            The path with the file to write the information.
 
         """
         with GroFile(fout, 'w') as fgro:
             for atom in self:
                 fgro.writeline(atom.gro_line())
 
-    def update_from_molecule_itp(self, mitp):
+    def update_from_molecule_itp(self, mitp: 'MoleculeItp'):
         """
         Modifies the atoms information to match the itp.
+
+        This method is very useful when you have a miss-match between the atom
+        names in the itp and gro files. This will modify the MoleculeGro atom
+        names to match the names in the itp.
 
         Parameters
         ----------
@@ -375,11 +325,13 @@ class MoleculeGro(GeneralMolecule):
         for at_gro, at_itp in zip(self, mitp):
             at_gro.atomname = at_itp.atomname
 
-    def distance_to(self, mol, box_vects=None, inv=False) -> float:
+    def distance_to(self, mol: Union['MoleculeGro', np.ndarray],
+                    box_vects: np.ndarray = None,
+                    inv: bool = False) -> float:
         """
         Returns the distance between self and mol.
 
-        mol can be a molecules instance or a 3D vector.
+        mol can be a molecule instance or a 3D vector.
 
         Parameters
         ----------
@@ -410,13 +362,15 @@ class MoleculeGro(GeneralMolecule):
 
         return np.linalg.norm(vect)
 
-    def align_to(self, atom_sel):
+    def align_to(self, atom_sel: 'MDAnalysis.AtomGroup'):
         """
-        Aligns self to an atom selection.
+        Aligns self to an atom selection from MDAnalysis.
 
         Calculates the self.atoms_positions coordinates in an axis base
         determined by the atoms with the same name as in atom_sel and then
         that positions are projected in the same base determined by atom_sel.
+        This is very useful when you need to change the position of the
+        molecule to match a configuration from other system.
 
         Parameters
         ----------
@@ -425,7 +379,7 @@ class MoleculeGro(GeneralMolecule):
             allowed in calculate_ba
 
         """
-        from .analyze.orientation import calcule_base
+        from .. import calcule_base
         sel_pos, sel_names = zip(*[(atom.position, atom.name)
                                    for atom in atom_sel])
         mol_pos = [atom.position for name in sel_names
@@ -462,15 +416,14 @@ class MacromoleculeGro(MoleculeGro):
     Raises
     ------
     IOError
-        If less than two molecule molecules are input or every molecules has
-        the same resname.
+        If less than two MoleculeGro molecules are input or if every molecule
+        has the same resname. In this case, use the simple MoleculeGro.
     TypeError
         If one of the input molecule is not instance of MoleculeGro.
 
     """
 
-    def __init__(self, *molecules_gro):
-
+    def __init__(self, *molecules_gro: 'MoleculeGro'):
         # Input validation
         if len(molecules_gro) < 2:
             raise IOError(('To initialize a MacromoleculeGro more than two '
@@ -494,7 +447,7 @@ class MacromoleculeGro(MoleculeGro):
 
         super(MacromoleculeGro, self).__init__(atoms)
 
-    def __add__(self, other) -> 'MacromoleculeGro':
+    def __add__(self, other: Union['MoleculeGro', 'MacromoleculeGro']) -> 'MacromoleculeGro':
         if isinstance(other, MacromoleculeGro):
             if other.residname[-1] != self.residname[0]:
                 molecules = self.molecules + other.molecules
@@ -524,19 +477,19 @@ class MacromoleculeGro(MoleculeGro):
     @property
     def resname(self) -> List[str]:
         """
-        :obj:`list` : Resname list of the molecule.
+        list: List with all the resnames of the molecule.
         """
         return self._resnames_list
 
     @property
     def resnames(self) -> List[str]:
         """
-        :obj:`list` : Resname list of the molecule.
+        list: same as resname.
         """
         return self.resname
 
     @resname.setter
-    def resname(self, new_resname):
+    def resname(self, new_resname: List[str]):
         if isinstance(new_resname, (list, tuple)):
             if len(new_resname) != self._resnames_list:
                 raise IOError(('The number of input resnames must be {}'
@@ -555,12 +508,12 @@ class MacromoleculeGro(MoleculeGro):
     @property
     def resid(self) -> List[int]:
         """
-        :obj:`int` : Resid of the molecule.
+        list of int: List with all the resids of the molecule.
         """
         return [mol.resid for mol in self._molecules]
 
     @resid.setter
-    def resid(self, value):
+    def resid(self, value: List[int]):
         if isinstance(value, collections.abc.Iterable):
             for mol, resid in zip(self._molecules, value):
                 mol.resid = resid
@@ -573,7 +526,7 @@ class MacromoleculeGro(MoleculeGro):
     @property
     def residname(self) -> List[str]:
         """
-        string : An idtentier of the molecule (resid+name)
+        list of string: A list with the idtentiers of the molecule (resid+name)
         """
         return ['{}{}'.format(resid, res)
                 for resid, res in zip(self.resid, self.resname)]
@@ -592,7 +545,7 @@ class MacromoleculeGro(MoleculeGro):
         Returns
         -------
         molecule : MacromoleculeGro
-            The copy of the molecule.
+            The copy of self..
 
         """
         mol = self.__new__(self.__class__)
@@ -604,19 +557,19 @@ class MacromoleculeGro(MoleculeGro):
 
 class AtomGro(GeneralAtom):
     """
-    Returns an object with the information of a .gro line corresponding to an
-    atom.
+    It contains the information of a .gro line corresponding to an atom.
+
+    You can add atoms to form molecules.
 
     Parameters
     ----------
     parsed_gro_line : list
-        A list returned by the read_gro function when a correct formatted .gro
-        line is input.
+        A list returned by the GroFile read_line method when a correct
+        formatted .gro line is input.
 
     """
-    # pylint: disable=too-few-public-methods
 
-    def __init__(self, parsed_gro_line):
+    def __init__(self, parsed_gro_line: List[Union[str, int, float]]):
         super(AtomGro, self).__init__()
         (self.resid,
          self.resname,
@@ -633,7 +586,7 @@ class AtomGro(GeneralAtom):
         else:
             self.velocity = np.array(velocities)
 
-    def __add__(self, other) -> 'MoleculeGro':
+    def __add__(self, other: 'AtomGro') -> 'MoleculeGro':
         if isinstance(other, AtomGro):
             if other.parent_residname == self.parent_residname:
                 return MoleculeGro([self, other])
@@ -648,7 +601,7 @@ class AtomGro(GeneralAtom):
             # has the addition defined
             return other + self
 
-    def __str__(self):
+    def __str__(self) -> str:
         string = 'Atom {} of molecule {} with number {}.'.format(self.atomname,
                                                                  self.resname,
                                                                  self.resid)
@@ -656,15 +609,15 @@ class AtomGro(GeneralAtom):
 
     __repr__ = __str__
 
-    def gro_line(self, parsed=True) -> List: 
+    def gro_line(self, parsed: bool = True) -> List[Union[str, int,  float]]: 
         """
         Returns the gro line corresponding to the atom.
 
         Parameters
         ----------
         parsed : bool
-            If True, the line is returned as read_gro function output.
-            Else, formated line is returned.
+            If True, the line is returned as FileGro.read_line method output.
+            Else, line with the correct .gro  format is returned.
 
         """
         elements = [
