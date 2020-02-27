@@ -369,7 +369,7 @@ class SystemGro(object):
         Counter of str: int : For each resname (key), how many molecules
             there are (value).
         """
-        composition = Counter()
+        composition: Mapping[str, int] = Counter()
         for index, ammount in self._pk_ammount_ordered_gen():
             composition[self.different_molecules[index].resname] += ammount
         return composition

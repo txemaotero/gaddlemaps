@@ -2,7 +2,7 @@
 Molecular Simulation Components
 ===============================
 
-This module contains useful objects to workaround with components from
+This submodule contains useful objects to workaround with components from
 molecular dynamics simulations (molecules, atoms...). You can load the
 information of these components just from the coordinates files (.gro) or add
 information  about atom types or how they  are bonded loading the topologies

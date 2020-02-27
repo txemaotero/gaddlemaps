@@ -1,31 +1,45 @@
 '''
-This module contains the GroFile class and dump_lattice_gro and
-extract_lattice_gro functions to avoind cyclic imports.
+Simulation Files Parsers
+========================
+
+This submodule contains some useful functionalities to read and extract
+information from files coming from molecular simulation programs. Up to now,
+only files in the format used by GROMACS are contemplated (.gro and .itp
+formats).
 
 '''
 
 import warnings
 import numpy
 
+from typing import Tuple, List, Union, Dict, Optional
+
 from ._itp_parse import (ItpFile, ItpLine, ItpLineAtom, ItpLineBonds,
                          ItpLineMoleculetype, ItpSection)
 
 class GroFile(object):
     """
-    Implements a file object created for openning and writting grofiles
+    Implements a file object for opening and writing .gro files
 
     Grofile verifies the gromacs format, and autodetects the correct
     way to read the file. It modifies the methods read and write of a
-    common file with methods that take as input lists wth all the info
+    common file with methods that take as input lists with all the info
     of an atom. The readlines and writelines are modified to take
     (return) lists with the info of an atom in lists (as returned by
     the read function).
 
-    This class can also be initiated with an alreadye opened file.
+    This class can also be initiated with an already opened file.
 
     Note
     ----
     The "+" modifier for the open mode is not allowed right now
+
+    Parameters
+    ----------
+    path: str
+        The path to the file to be opened. 
+    mode: str
+        "r" to open the file in read mode and "w" to open it in write mode.
 
     Raises
     ------
@@ -39,7 +53,7 @@ class GroFile(object):
     COORD_START = 20
     NUMBER_FIGURES = 7
 
-    def __init__(self, path, mode="r"):
+    def __init__(self, path: str, mode: str = "r"):
 
         super(GroFile, self).__init__()
         
@@ -66,28 +80,28 @@ class GroFile(object):
             self._load_and_verify()
 
     @property
-    def name(self):
+    def name(self) -> str:
         """
-        The filename of the open file
+        str: The filename of the open file
         """
         return self._file.name
 
     @property
-    def natoms(self):
+    def natoms(self) -> int:
         """
         integer: The number of atoms in the system.
         """
         return self._natoms
 
     @natoms.setter
-    def natoms(self, value):
+    def natoms(self, value: int):
         if "w" in self._file.mode:
             self._natoms = value
         else:
             raise AttributeError("Can't set atributte in read mode")
 
     @property
-    def comment(self):
+    def comment(self) -> str:
         """
         string: The comment of the .gro file.
         """
@@ -96,7 +110,7 @@ class GroFile(object):
         return self._comment
 
     @comment.setter
-    def comment(self, value):
+    def comment(self, value: str):
         if "w" in self._file.mode:
             if value[-1] == '\n':
                 value = value[:-1]
@@ -105,31 +119,31 @@ class GroFile(object):
             raise AttributeError("Can't set atributte in read mode")
 
     @property
-    def position_format(self):
+    def position_format(self) -> Tuple[int, int]:
         """
-        tuple : the number of total figures and decimal places for the
-        positions
+        tuple of int : the number of total figures and decimal places for the
+            positions.
         """
         if self._format["position"] is None:
             return self.DEFAULT_POSTION_FORMAT
         return self._format["position"]
 
     @position_format.setter
-    def position_format(self, value):
+    def position_format(self, value: Tuple[int, int]):
         if "w" in self._file.mode:
             self._format["position"] = value
         else:
             raise AttributeError("Can't set atributte in read mode")
 
     @property
-    def box_matrix(self):
+    def box_matrix(self) -> numpy.ndarray:
         """
-        :obj:`numpy.ndarray` (3,3) : the 3 lattice vectors of the box.
+        numpy.ndarray(3,3): the 3 lattice vectors of the box.
         """
         return self._box_matrix
 
     @box_matrix.setter
-    def box_matrix(self, value):
+    def box_matrix(self, value: numpy.ndarray):
         if "r" in self._file.mode:
             raise AttributeError("Can't set atributte in read mode")
         value = numpy.array(value)
@@ -191,13 +205,13 @@ class GroFile(object):
                           "simulation box line has the wrong fomat")
             raise IOError(error_text)
 
-    def seek_atom(self, index):
+    def seek_atom(self, index: int):
         """
-        Displaces the postion of the 'cursor' to an atom line
+        Displaces the position of the 'cursor' to an atom line
 
-        Displaces the postion of the 'cursor' to the begining of the
+        Displaces the position of the 'cursor' to the beginning of the
         line of the 'index' atom, where the first atom index is 0. If
-        the index is equal to the number of atoms the begining of the
+        the index is equal to the number of atoms the beginning of the
         box lattice line is found.
 
         Parameters
@@ -214,46 +228,45 @@ class GroFile(object):
 
         self._file.seek(self._init_position + index * self._atomline_bytesize)
 
-
     def _readline(self):
         return self._file.readline()
 
-    def writelines(self, list_atomlist):
+    def writelines(self, list_atomlist: List[List[Union[str, int,  float]]]):
         """
         Writes several lines of atoms
 
-        If there was no content writen in the file it creates the
+        If there was no content written in the file it creates the
         header and the number of atoms. If the number of atoms was not
-        provided it will kept empty and the number will be writen just
-        before closing the file. This posibility is only compatible
+        provided it will kept empty and the number will be written just
+        before closing the file. This possibility is only compatible
         with a number of atoms smaller than 1000000.
 
         Parameters
         ----------
-        atomline : list (list)
+        list_atomlist : list of list of str or int or float
             A list of lists with all the info of the atom, just like
-            the one returned by realine
+            the one returned by readline
 
         """
 
         for line in list_atomlist:
             self.writeline(line)
 
-    def writeline(self, atomlist):
+    def writeline(self, atomlist: List[Union[str, int,  float]]):
         """
-        Writes a line of atoms
+        Writes a line of atom information
 
-        If there was no content writen in the file it creates the
+        If there was no content written in the file it creates the
         header and the number of atoms. If the number of atoms was not
-        provided it will kept empty and the number will be writen just
-        before closing the file. This posibility is only compatible
+        provided it will kept empty and the number will be written just
+        before closing the file. This possibility is only compatible
         with a number of atoms smaller than 1000000.
 
         Parameters
         ----------
         atomlist : list or string
             A list with all the info of the atom, just like the one returned by
-            realine. If it is a string, it will be writen directly without
+            readline. If it is a string, it will be written directly without
             parsing.
 
         """
@@ -292,7 +305,7 @@ class GroFile(object):
         self.writeline(atomlist)
         self._atomline_bytesize = self._file.tell() - self._init_position
 
-    def readline(self, parsed=True):
+    def readline(self, parsed: bool=True) -> Union[str, List[Union[str, int, float]]]:
         """
         Returns the next line of the gro file.
 
@@ -321,7 +334,7 @@ class GroFile(object):
         self._current_atom += 1
         return self.parse_atomline(info, self._format)
 
-    def readlines(self):
+    def readlines(self) -> List[List[Union[str, int, float]]]:
         """
         Returns all the lines of a grofile parsed in lists.
 
@@ -356,23 +369,24 @@ class GroFile(object):
         return mode
 
     @classmethod
-    def parse_atomlist(cls, atomlist, format_dict=None):
+    def parse_atomlist(cls, atomlist: List[Union[str, int, float]],
+                       format_dict: Dict = None) -> str:
         """
-        Parses an atom line and returns its content in a list.
+        Convert a list of atom info to string with the appropriate format
 
-        Parses an atom line and returns its content in a list. In its
-        default behaivour the input line is analyzed and the number of
-        decimals are guessed. It is also possible to insert the format
-        in a format dictionry. This is a dictionary with 2 keys,
-        "position" and "velocities". The position key leads to a tuple
-        with 2 ints. The first in is the number of characters in the
-        float format (C) and the second is the number of decimal
-        places in the float (D), i.e. corresponds to the '%C.Df'
-        format.
+        Parses a list with the atom information and returns its content in a
+        string with the correct format to write in a .gro file. In its default
+        behaviour the input line is analyzed and the number of decimals are
+        guessed. It is also possible to insert the format in a format
+        dictionary. This is a dictionary with 2 keys, "position" and
+        "velocities". The position key leads to a tuple with 2 ints. The
+        first is the number of characters in the float format (C) and the
+        second is the number of decimal places in the float (D), i.e.
+        corresponds to the '%C.Df' format.
 
         Parameters
         ----------
-        info : list
+        atomlist: list
             A list with the following information:
                 + mol_index(integer)
                 + resname (string)
@@ -381,7 +395,7 @@ class GroFile(object):
                 + x, y, z (floats)
                 + vx, vy ,vz (floats) [optional]]
 
-        format_dict : dict_format (optional)
+        format_dict: dict (optional)
             None or dictionary with 2 keys, "position" and "velocities". The
             position key leads to a tuple with 2 ints. THe first in is
             the number of characters in the float format (C) and the
@@ -393,7 +407,7 @@ class GroFile(object):
         Returns
         -------
         atomline : str
-            An string with a line from a grofile
+            An string with a line from a .gro file
         """
 
         if format_dict is None:
@@ -456,19 +470,19 @@ class GroFile(object):
         return out
 
     @classmethod
-    def parse_atomline(cls, atomline, format_dict=None):
+    def parse_atomline(cls, atomline: str, 
+                       format_dict: Optional[Dict] = None) -> List:
         """
         Parses an atom line and returns its content in a list.
 
-        Parses an atom line and returns its content in a list. In its
-        default behaivour the input line is analyzed and the number of
-        decimals are guessed. It is also possible to insert the format
-        in a format dictionry. This is a dictionary with 2 keys,
-        "position" and "velocities". The position key leads to a tuple
-        with 2 ints. The first in is the number of characters in the
-        float format (C) and the second is the number of decimal
-        places in the float (D), i.e. corresponds to the '%C.Df'
-        format.
+        Parses an atom line and returns its content in a list. In its default
+        behaviour the input line is analyzed and the number of decimals are
+        guessed. It is also possible to insert the format in a format
+        dictionary. This is a dictionary with 2 keys, "position" and
+        "velocities". The position key leads to a tuple with 2 ints. The
+        first in is the number of characters in the float format (C) and the
+        second is the number of decimal places in the float (D), i.e.
+        corresponds to the '%C.Df' format.
 
         Parameters
         ----------
@@ -548,7 +562,8 @@ class GroFile(object):
         """
         Closes the file
 
-        If the filw is in write mode it will write al the remaining information.
+        If the file is in write mode it will write al the remaining
+        information.
         """
         if "w" in self._file.mode:
             self._write_closing_info()
@@ -588,15 +603,15 @@ class GroFile(object):
         self.close()
 
     @classmethod
-    def determine_format(cls, atomline):
+    def determine_format(cls, atomline: str) -> Dict:
         """
-        Returns the format of the postion coordinates and wheter or
-        not the grofile has velocities
+        Returns the format of the postion coordinates and whether or
+        not the .gro file has velocities
 
         Parameters
         ----------
         atomline : str
-            An atom line from the grofile
+            An atom line from the .gro file
 
         Returns
         -------
@@ -646,9 +661,9 @@ class GroFile(object):
         return form
 
     @staticmethod
-    def validate_string(string):
+    def validate_string(string: str) -> str:
         """
-        Validates a string to be valid as resname or a as atomname.
+        Validates a string to be valid as resname or as atomname.
 
         If the input name has more than 5 characters, new name is returned
         cutting the input one.
@@ -674,7 +689,7 @@ class GroFile(object):
         return string
 
 
-def _validate_res_atom_numbers(line):
+def _validate_res_atom_numbers(line: str) -> Tuple[int, int]:
     """
     Validates the residue and number atom in a gro atom_line.
     """
@@ -692,10 +707,9 @@ def _validate_res_atom_numbers(line):
     return res_num, atom_num
 
 
-def extract_lattice_gro(line):
+def extract_lattice_gro(line: str) -> numpy.ndarray:
     """
-    This function extracts the lattice vectors for pbc from the final
-    line of a .gro file.
+    Extracts the lattice vectors for pbc from the final line of a .gro file.
 
     Parameters
     ----------
@@ -717,10 +731,9 @@ def extract_lattice_gro(line):
     return vectors.reshape((3, 3))
 
 
-def dump_lattice_gro(vectors):
+def dump_lattice_gro(vectors: numpy.ndarray) -> str:
     """
-    This function extracts final line of a .gro file from the lattice vectors
-    for pbc.
+    Extracts final line of a .gro file from the lattice vectors for pbc.
 
     Parameters
     ----------
@@ -745,4 +758,3 @@ def dump_lattice_gro(vectors):
     else:
         lim = 3
     return ' '.join(['{:9.5f}'.format(i) for i in new_vector[:lim]])
-

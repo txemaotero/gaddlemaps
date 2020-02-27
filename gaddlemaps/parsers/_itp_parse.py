@@ -11,6 +11,8 @@ import re
 from warnings import warn
 from collections import OrderedDict
 
+from typing import Tuple, List, Union, Dict, Optional
+
 
 class ItpFile(OrderedDict):
     """
@@ -26,7 +28,7 @@ class ItpFile(OrderedDict):
         The itp file to handle.
 
     """
-    def __init__(self, fitp):
+    def __init__(self, fitp: str):
         super(ItpFile, self).__init__()
         self.fitp = fitp
 
@@ -60,9 +62,9 @@ class ItpFile(OrderedDict):
     def __repr__(self):
         return '"{}" itp file.\n'.format(self.fitp)
 
-    def copy(self):
+    def copy(self) -> 'ItpFile':
         """
-        Returns a copy of the object that is not of self.
+        Returns a copy of the object that is not self.
 
         Returns
         -------
@@ -71,7 +73,7 @@ class ItpFile(OrderedDict):
         """
         return ItpFile(self.fitp)
 
-    def write(self, fout):
+    def write(self, fout: str):
         """
         Writes the itp content in fout.
 
@@ -110,15 +112,15 @@ class ItpSection(list):
         If one of the input lines corresponds to a section header.
 
     """
-    def __init__(self, section_name, lines):
+    def __init__(self, section_name: str, lines: List[str]):
         super(ItpSection, self).__init__()
         self._section_name = section_name
-        self._lines = []
+        self._lines: List['ItpLine'] = []
         for line in lines:
             self.append(line)
 
     @staticmethod
-    def parse_line(line, sec_name):
+    def parse_line(line: str, sec_name: str) -> 'ItpLine':
         """
         Returns the corresponding ItpLine object depending on the section name.
 
@@ -149,7 +151,7 @@ class ItpSection(list):
 
         return ItpLine(line)
 
-    def append(self, new_line):
+    def append(self, new_line: str):
         parse = self.parse_line(new_line, self._section_name)
         if parse.content:
             super(ItpSection, self).append(parse)
@@ -164,23 +166,25 @@ class ItpSection(list):
         return 'Itp "{}" section.'.format(self.section_name)
 
     @property
-    def section_name(self):
+    def section_name(self) -> str:
         """
         string : The header of the section
         """
         return self._section_name
 
     @property
-    def lines(self):
+    def lines(self) -> List['ItpLine']:
         """
-        list of AtomLine : A list with every line of the section.
+        list of ItpLine : A list with every line of the section.
         """
         return self._lines[:]
 
 
 class ItpLine(object):
     """
-    A class to parse content line from .itp file.
+    A class to parse content of lines from .itp file.
+
+    This class is used as parent for more specific types of lines.
 
     Parameters
     ----------
@@ -192,7 +196,8 @@ class ItpLine(object):
     content : string
         The important information of the line, i.e. atom info.
     comment : string
-        The comment in the line. If there is no comment it is set to empty str.
+        The comment in the line. If there is no comment it is set to empty
+        str.
 
     Raises
     ------
@@ -200,7 +205,7 @@ class ItpLine(object):
         If the input line corresponds to a section header.
 
     """
-    def __init__(self, line):
+    def __init__(self, line: str):
         super(ItpLine, self).__init__()
 
         self._content, self._comment = self.parse_itp_line(line)
@@ -211,9 +216,9 @@ class ItpLine(object):
     __repr__ = __str__
 
     @property
-    def line(self):
+    def line(self) -> str:
         """
-        string : the itp line.
+        string : the complete content of the itp line.
         """
         if self.comment:
             if self.comment.startswith('#'):
@@ -222,31 +227,31 @@ class ItpLine(object):
         return self._content
 
     @property
-    def content(self):
+    def content(self) -> str:
         """
-        string : The relevant information of the line.
+        string : The relevant information of the line (no comments).
         """
         return self._content.strip()
 
     @content.setter
-    def content(self, new_content):
-        warn(('Changing the content of an itp line can lead to compilation'
+    def content(self, new_content: str):
+        warn(('Changing the content of an itp line can lead to compilation '
               'errors'))
         self._content = new_content
 
     @property
-    def comment(self):
+    def comment(self) -> str:
         """
         string : The comment of the line.
         """
         return self._comment.strip()
 
     @comment.setter
-    def comment(self, new_comment):
+    def comment(self, new_comment: str):
         self._comment = new_comment
 
     @classmethod
-    def parse_itp_line(cls, line):
+    def parse_itp_line(cls, line: str) -> Tuple[str, str]:
         """
         Extract the content and the comment from an .itp line.
 
@@ -305,7 +310,7 @@ class ItpLineAtom(ItpLine):
         The itp line to parse.
 
     """
-    def __init__(self, line):
+    def __init__(self, line: str):
         super(ItpLineAtom, self).__init__(line)
         self._fields = {}
         if self.content:
@@ -332,60 +337,60 @@ class ItpLineAtom(ItpLine):
                 self._fields['extra{}'.format(i)] = field
 
     @property
-    def number(self):
+    def number(self) -> int:
         """
         int : The atom number in the itp.
         """
         return self._fields['nr']
 
     @property
-    def type(self):
+    def type(self) -> str:
         """
         string : The atom type in the itp.
         """
         return self._fields['type']
 
     @property
-    def resnr(self):
+    def resnr(self) -> int:
         """
-        int : The atom resnumber in the itp.
+        int : The atom residue number in the itp.
         """
         return self._fields['resnr']
 
     @property
-    def resname(self):
+    def resname(self) -> str:
         """
-        string : The atom resname in the itp.
+        string : The atom residue name in the itp.
         """
         return self._fields['resname']
 
     @property
-    def atomname(self):
+    def atomname(self) -> str:
         """
-        string : The atom atomname in the itp.
+        string : The atom name in the itp.
         """
         return self._fields['atomname']
 
     @property
-    def cgnr(self):
+    def cgnr(self) -> int:
         """
         int : The atom charge group number in the itp.
         """
         return self._fields['cgnr']
 
     @property
-    def charge(self):
+    def charge(self) -> float:
         """
         float : The atom charge in the itp.
         """
         return self._fields['charge']
 
     @charge.setter
-    def charge(self, val):
+    def charge(self, val: float):
         self._fields["charge"] = val
 
     @property
-    def mass(self):
+    def mass(self) -> float:
         """
         float : The atom mass in the itp.
         """
@@ -395,7 +400,7 @@ class ItpLineAtom(ItpLine):
         return self._fields['mass']
 
     @mass.setter
-    def mass(self, val):
+    def mass(self, val: float):
         self._fields["mass"] = val
 
     @property
@@ -414,7 +419,7 @@ class ItpLineAtom(ItpLine):
         self._fields["pair_interaction"] = val
 
     @property
-    def aux_name(self):
+    def aux_name(self) -> str:
         """
         An auxiliar name derived from the forcefield
         """
@@ -425,11 +430,11 @@ class ItpLineAtom(ItpLine):
         return self._fields["aux_name"]
 
     @aux_name.setter
-    def aux_name(self, val):
+    def aux_name(self, val: str):
         self._fields["aux_name"] = val
 
     @property
-    def parsed_line(self):
+    def parsed_line(self) -> List:
         """
         List of int or str: Return a list with the found fields in the atom
             line.
@@ -448,7 +453,7 @@ class ItpLineAtom(ItpLine):
         return lis
 
     @classmethod
-    def read_itp_atom(cls, line):
+    def read_itp_atom(cls, line: str) -> 'ItpLineAtom':
         return cls(line).parsed_line
 
 
@@ -462,7 +467,7 @@ class ItpLineDihedrals(ItpLine):
         The itp line to parse.
 
     """
-    def __init__(self, line):
+    def __init__(self, line: str):
         super(ItpLineDihedrals, self).__init__(line)
         self._fields = {}
         if self.content:
@@ -490,49 +495,49 @@ class ItpLineDihedrals(ItpLine):
             aux.append(cons0)
 
     @property
-    def atom_one(self):
+    def atom_one(self) -> int:
         """
         int : The index of the first bonded atom (ai).
         """
         return self._fields['ai']
 
     @property
-    def atom_two(self):
+    def atom_two(self) -> int:
         """
         int : The index of the second bonded atom (aj).
         """
         return self._fields['aj']
 
     @property
-    def atom_three(self):
+    def atom_three(self) -> int:
         """
         int : The index of the third atom of the angle
         """
         return self._fields["ak"]
 
     @property
-    def atom_four(self):
+    def atom_four(self) -> int:
         """
         int : The index of the third atom of the angle
         """
         return self._fields["al"]
 
     @property
-    def funct(self):
+    def funct(self) -> int:
         """
         int : The function of the bond.
         """
         return self._fields['funct']
 
     @property
-    def consts(self):
+    def consts(self) -> List[float]:
         """
         All the constants for the dihedrals
         """
         return self._fields["const"][:]
 
     @consts.setter
-    def consts(self, val):
+    def consts(self, val: List[float]):
         self._fields["consts"] = val
 
     def __getattr__(self, const):
@@ -558,7 +563,7 @@ class ItpLineAngles(ItpLine):
         The itp line to parse.
 
     """
-    def __init__(self, line):
+    def __init__(self, line: str):
         super(ItpLineAngles, self).__init__(line)
         self._fields = {}
         if self.content:
@@ -585,28 +590,28 @@ class ItpLineAngles(ItpLine):
             aux.append(cons0)
 
     @property
-    def atom_one(self):
+    def atom_one(self) -> int:
         """
         int : The index of the first bonded atom (ai).
         """
         return self._fields['ai']
 
     @property
-    def atom_two(self):
+    def atom_two(self) -> int:
         """
         int : The index of the second bonded atom (aj).
         """
         return self._fields['aj']
 
     @property
-    def atom_three(self):
+    def atom_three(self) -> int:
         """
         int : The index of the third atom of the angle
         """
         return self._fields["ak"]
 
     @property
-    def funct(self):
+    def funct(self) -> int:
         """
         int : The function of the bond.
         """
@@ -635,7 +640,7 @@ class ItpLineBonds(ItpLine):
         The itp line to parse.
 
     """
-    def __init__(self, line):
+    def __init__(self, line: str):
         super(ItpLineBonds, self).__init__(line)
         self._fields = {}
         if self.content:
@@ -661,21 +666,21 @@ class ItpLineBonds(ItpLine):
             aux.append(cons0)
 
     @property
-    def atom_from(self):
+    def atom_from(self) -> int:
         """
         int : The index of the first bonded atom (ai).
         """
         return self._fields['ai']
 
     @property
-    def atom_to(self):
+    def atom_to(self) -> int:
         """
         int : The index of the second bonded atom (aj).
         """
         return self._fields['aj']
 
     @property
-    def funct(self):
+    def funct(self) -> int:
         """
         int : The function of the bond.
         """
@@ -704,7 +709,7 @@ class ItpLineMoleculetype(ItpLine):
         The itp line to parse.
 
     """
-    def __init__(self, line):
+    def __init__(self, line: str):
         super(ItpLineMoleculetype, self).__init__(line)
         if self.content:
             parse = line.split()
@@ -715,14 +720,14 @@ class ItpLineMoleculetype(ItpLine):
             self._nrexcl = None
 
     @property
-    def name(self):
+    def name(self) -> str:
         """
         string : The molecule name.
         """
         return self._name
 
     @name.setter
-    def name(self, new_name):
+    def name(self, new_name: str):
         if not isinstance(new_name, str):
             raise TypeError('The molecule name has to be a string.')
         if ' ' in new_name:
@@ -730,14 +735,14 @@ class ItpLineMoleculetype(ItpLine):
         self._name = new_name
 
     @property
-    def nrexcl(self):
+    def nrexcl(self) -> int:
         """
         int : The number of neighbour atoms to account for the interactions.
         """
         return self._nrexcl
 
     @nrexcl.setter
-    def nrexcl(self, new_val):
+    def nrexcl(self, new_val: int):
         if not isinstance(new_val, int):
             raise TypeError('nrexcl has to be an integer.')
         if new_val < 1:
