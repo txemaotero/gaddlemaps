@@ -158,7 +158,7 @@ class System(object):
         return composition
 
     @property
-    def info(self) -> Dict[str, Optional[str, List[str]]]:
+    def info(self) -> Dict[str, Union[str, List[str]]]:
         """
         dict : A dictionary with the needed information to restore the
             system.
@@ -190,7 +190,7 @@ class System(object):
         return [os.path.abspath(mol.fitp) for mol in self.different_molecules]
 
     @classmethod
-    def from_info(cls, info_dict: Dict[str, Optional[str, List[str]]]) -> 'System':
+    def from_info(cls, info_dict: Dict[str, Union[str, List[str]]]) -> 'System':
         """
         Builds the system from the information returned by info property.
 

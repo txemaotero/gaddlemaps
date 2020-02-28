@@ -1,7 +1,14 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 '''
-This module contains features related with the gaddle_maps tool.
+gaddlemaps --- Change molecules in simulations with python
+==========================================================
+
+This python package provides an implementation of the GADDLE-Maps (General
+Algorithm for Discrete Object Deformations Based on Local Exchange Maps) that
+allows to change molecules in a molecular dynamics simulations. For example,
+this tool is very handy to back-map a coarse grained simulation to atomistic
+forcefields and also in the other way around. 
+
 '''
 
 

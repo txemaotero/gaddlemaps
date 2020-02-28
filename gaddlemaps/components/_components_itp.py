@@ -37,7 +37,7 @@ class MoleculeItp(GeneralMolecule):
             raise IOError('The input itp has to have "moleculetype" section.')
         if 'atoms' not in self._itp_file:
             raise IOError('The input itp has to have "atoms" section.')
-        self._name = ''
+        self._name = None
         self._atoms_itp: List['AtomItp'] = []
         self._number_to_index: Dict[int, int] = {}
         self._init_name()
@@ -158,7 +158,7 @@ class MoleculeItp(GeneralMolecule):
         tot_resnames = ('{:5}{}'.format(atom.resname, atom.resnr)
                         for atom in self)
         res_len = []
-        old_resname: List[Union[str, int]] = ['', 0]
+        old_resname: List = []
         for resname in tot_resnames:
             if not old_resname:
                 old_resname = [resname, 1]
