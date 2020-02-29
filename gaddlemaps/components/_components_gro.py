@@ -80,19 +80,19 @@ class MoleculeGro(GeneralMolecule):
     def __len__(self) -> int:
         return len(self._atoms_gro)
 
-    def __str__(self) ->  str:
+    def __str__(self) -> str:
         string = 'Molecule of {} with resid {}.'.format(self.resname,
                                                         self.resid)
         return string
 
     __repr__ = __str__
 
-    def __eq__(self, element: Any) ->  bool:
+    def __eq__(self, element: Any) -> bool:
         if isinstance(element, MoleculeGro):
             return super(MoleculeGro, self).__eq__(element)
         return False
 
-    def __ne__(self, element: Any) ->  bool:
+    def __ne__(self, element: Any) -> bool:
         return not self == element
 
     @property
@@ -126,7 +126,7 @@ class MoleculeGro(GeneralMolecule):
         if new_velocities is None:
             for atom in self:
                 atom.velocity = None
-            return 
+            return
         for atom, vel in zip(self, new_velocities):
             atom.velocity = vel
 
@@ -609,7 +609,7 @@ class AtomGro(GeneralAtom):
 
     __repr__ = __str__
 
-    def gro_line(self, parsed: bool = True) -> List[Union[str, int,  float]]: 
+    def gro_line(self, parsed: bool = True) -> List[Union[str, int,  float]]:
         """
         Returns the gro line corresponding to the atom.
 

@@ -1,21 +1,26 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
-
 '''
-This moldule contains functions that change the molecules conformation.
+This module contains functions that change the molecules conformation.
 '''
 
 
+from typing import Dict, List, Tuple, Optional
 from collections import deque
 
 import numpy as np
 
 
-def move_mol_atom(atoms_pos, bonds_info, atom_index=None, displ=None,
-                  sigma_scale=0.5):
+def move_mol_atom(atoms_pos: np.ndarray,
+                  bonds_info: Dict[int, List[Tuple[int, float]]],
+                  atom_index: Optional[int] = None,
+                  displ: Optional[np.ndarray] = None,
+                  sigma_scale: float = 0.5) -> np.ndarray:
     """
-    This function moves an atom of a molecule respecting almost all bond
-    distances.
+    Moves an atom of a molecule respecting almost all bond distances.
+
+    By default, a random atom is picked from atom_pos and moved randomly in a
+    certain direction (see the published article for a better description of
+    this step).
 
     Parameters
     ----------
@@ -24,8 +29,8 @@ def move_mol_atom(atoms_pos, bonds_info, atom_index=None, displ=None,
     bonds_info : dictionary
         A dict with the information of the bonds. Example:
             bonds_info = {0:[(1, 5.4), (2, 6.4)], 1:[(0, 5.4), ], ...}
-        The keys refers to atom index and values are lists with tupples. Each
-        tupple contains the bonded atom index and the bond length.
+        The keys refers to atom index and values are lists with tuples. Each
+        tuple contains the bonded atom index and the bond length.
     atom_index : integer (Optional)
         The index of the atom to move (respecting the index of atoms_pos). If
         None is given a random one is taken.
@@ -39,54 +44,51 @@ def move_mol_atom(atoms_pos, bonds_info, atom_index=None, displ=None,
     Returns
     -------
     modified_atoms_pos : numpy.ndarray
-        An array with the modified positions of the molecule atoms in rows.
+        An array with the modified positions of the atoms in rows.
 
     """
 
-    # Se crea una copia de las posiciones
     atoms_pos = np.copy(atoms_pos)
-    # Se mira si hay que coger in random
     n_atoms = len(atoms_pos)
     if atom_index is None:
         atom_index = np.random.randint(n_atoms)
-    # Se encuentra el desplazamiento aleatorio de ser necesario
+
     if displ is None:
         displ = find_atom_random_displ(atoms_pos, bonds_info, atom_index,
                                        sigma_scale=sigma_scale)
-    # Comienza el movimiento de la molécula Se crea una lista de espera con los
-    # índices de los átomos que aún no se han movido
-    espera = deque(range(n_atoms))
-    # Se mueve el primero y se elimina de la lista
+    # Create a queue with the atoms to move to restore the bonds
+    wait_queue = deque(range(n_atoms))
+    # Remove an atom index if it was already moved
     atoms_pos[atom_index] += displ
-    espera.remove(atom_index)
-    # Se inicia la cola que contendrá los índices de los átomos que se van a
-    # mover y en qué orden
-    cola = deque()
-    # Se recorren los átomos enlazados al primero y se añaden a la cola y se
-    # eliminan de espera
+    wait_queue.remove(atom_index)
+
+    queue = deque()
     for i in bonds_info[atom_index]:
-        cola.append((atom_index, i[0], i[1]))
-        espera.remove(i[0])
-    # Se van moviendo todos
-    while cola:
-        # Se calcula la nueva posición de átomo que le toque
-        ind1, ind2, bond = cola.pop()
+        queue.append((atom_index, i[0], i[1]))
+        wait_queue.remove(i[0])
+
+    while queue:
+        ind1, ind2, bond = queue.pop()
         diferencia = atoms_pos[ind1] - atoms_pos[ind2]
         modulo = np.linalg.norm(diferencia)
         unit = diferencia/modulo
         atoms_pos[ind2] = atoms_pos[ind2] + (modulo - bond) * unit
-        # Se añaden a la cola los átomos enlazados que no se han considerado
         for bonds in bonds_info[ind2]:
-            if bonds[0] in espera:
-                cola.append((ind2, bonds[0], bonds[1]))
-                espera.remove(bonds[0])
+            if bonds[0] in wait_queue:
+                queue.append((ind2, bonds[0], bonds[1]))
+                wait_queue.remove(bonds[0])
     return atoms_pos
 
 
-def find_atom_random_displ(atoms_pos, bonds_info, atom_index, sigma_scale=0.5):
+def find_atom_random_displ(atoms_pos: np.ndarray,
+                           bonds_info: Dict[int, List[Tuple[int, float]]],
+                           atom_index: int,
+                           sigma_scale: float = 0.5) -> np.ndarray:
     """
-    This function finds a random displacement of the atom with the given index
-    in a perpendicular direction according to its bonded atom.
+    Finds a random displacement for the atom with a given index.
+
+    This displacement is chosen in a perpendicular direction according to the
+    number of bonded atoms.
 
     Parameters
     ----------
@@ -95,8 +97,8 @@ def find_atom_random_displ(atoms_pos, bonds_info, atom_index, sigma_scale=0.5):
     bonds_info : dictionary
         A dict with the information of the bonds. Example:
             bonds_info = {0:[(1, 5.4), (2, 6.4)], 1:[(0, 5.4), ], ...}
-        The keys refers to atom index and values are lists with tupples. Each
-        tupple contains the bonded atom index and the bond length.
+        The keys refers to atom index and values are lists with tuples. Each
+        tuple contains the bonded atom index and the bond length.
     atom_index : integer (Optional)
         The index of the atom to move (respecting the index of atoms_pos). If
         None is given a random one is taken.
@@ -110,11 +112,10 @@ def find_atom_random_displ(atoms_pos, bonds_info, atom_index, sigma_scale=0.5):
         The displacement vector to sum to the position of the interest atom.
 
     """
-
     n_bonded_ref = len(bonds_info[atom_index])
-    # Se lee la anchura de la distr de desplazamientos
+    # Calc the width of the displacements distribution
     sigma = bonds_info[atom_index][0][1] * sigma_scale
-    # Se analizan los casos posibles
+
     if n_bonded_ref == 1:
         direction = np.cross(np.random.rand(3),
                              atoms_pos[bonds_info[atom_index][0][0]] -

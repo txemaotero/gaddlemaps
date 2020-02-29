@@ -1,10 +1,16 @@
+"""
+This submodule contains some useful functions that are used in other parts of
+the package.
+"""
+
+from typing import List, Tuple
+
 import numpy as np
 
 
-def rotation_matrix(axis, theta):
+def rotation_matrix(axis: np.ndarray, theta: float) -> np.ndarray:
     """
-    Returns the rotation matrix associated to an angle with cos, sin
-    values of the cosine and sine.
+    Returns the rotation matrix associated to an angle and an axis.
 
     Parameters
     ----------
@@ -25,17 +31,18 @@ def rotation_matrix(axis, theta):
     return mtx
 
 
-def calcule_base(pos):
+def calcule_base(pos: List[np.ndarray]) -> Tuple[Tuple[np.ndarray, ...],
+                                                 np.ndarray]:
     """
     Calculates a orthonormal base from a list of 3 atoms.
 
     Given a list of three vectors with the position of three atoms, this
     function returns a vector basis and the application point. The first
-    vector goes from the application point to the last specified atom. The
-    second one is normal to the plane which contains the three atoms and
-    perpendicular to the first vector. The last is perpendicular to the
-    others. All are unitary forming an ortonormal basis. In case of colinear
-    points, the second vector is set to ([vec1[1], -vec1[0], 0]).
+    vector goes from the application point to the last atom. The second one
+    is normal to the plane which contains the three atoms and perpendicular
+    to the first vector. The last is perpendicular to the others. All are
+    unitary forming an orthonormal basis. In case of collinear points, the
+    second vector is set to ([vec1[1], -vec1[0], 0]).
 
     Parameters:
     -----------

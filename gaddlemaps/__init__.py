@@ -9,6 +9,7 @@ allows to change molecules in a molecular dynamics simulations. For example,
 this tool is very handy to back-map a coarse grained simulation to atomistic
 forcefields and also in the other way around. 
 
+TODO: Complete this description
 '''
 
 
