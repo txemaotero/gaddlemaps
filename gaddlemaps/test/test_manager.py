@@ -11,7 +11,7 @@ import json
 import pytest
 import numpy as np
 
-from gaddlemaps import (GaddleMapsManager, Alignment)
+from gaddlemaps import (Manager, Alignment)
 from gaddlemaps.components import (System, Molecule,
                                    SystemGro, MoleculeItp)
 
@@ -29,7 +29,7 @@ def system():
 
 @pytest.fixture
 def manager(system):
-    return GaddleMapsManager(system)
+    return Manager(system)
 
 
 @pytest.fixture
@@ -79,9 +79,9 @@ def molecule_popc_AA():
     return Molecule(popcgro, popcitp)
 
 
-class TestGaddleMapsManager(object):
+class TestManager(object):
     """
-    Test for GaddleMapsManager class.
+    Test for Manager class.
 
     """
 
@@ -89,7 +89,7 @@ class TestGaddleMapsManager(object):
         fgro = os.path.join(ACTUAL_PATH, '../data/sistema_CG.gro')
         fitpDNA = os.path.join(ACTUAL_PATH, '../data/DNA_CG.itp')
         fitpVTE = os.path.join(ACTUAL_PATH, '../data/vitamin_E_CG.itp')
-        man = GaddleMapsManager.from_files(fgro, fitpVTE, fitpDNA)
+        man = Manager.from_files(fgro, fitpVTE, fitpDNA)
         assert isinstance(man.system, System)
         assert len(man.molecule_correspondence) == 2
         assert 'DNA' in man.molecule_correspondence
@@ -127,12 +127,12 @@ class TestGaddleMapsManager(object):
         rest_comp = {
             'DNA': None,
             'VTE': None,
-            }
+        }
         rest = manager.parse_restrictions(None)
         assert rest == rest_comp
         # Wrong name
         with pytest.raises(KeyError):
-            rest = manager.parse_restrictions({'test': [(1, 2),]})
+            rest = manager.parse_restrictions({'test': [(1, 2), ]})
         # Wrong format
         with pytest.raises(ValueError):
             rest = manager.parse_restrictions({'DNA': (1, 2)})
@@ -142,21 +142,21 @@ class TestGaddleMapsManager(object):
         rest_comp = {
             'DNA': [(0, 1), ],
             'VTE': [(0, 1), ],
-            }
+        }
         rest = {
             'DNA': [(1, 2), ],
             'VTE': [(1, 2), ],
-            }
+        }
         rest = manager.parse_restrictions(rest)
         assert rest == rest_comp
         # Complete
         rest_comp = {
             'DNA': [(0, 1), ],
             'VTE': None,
-            }
+        }
         rest = {
             'DNA': [(1, 2), ],
-            }
+        }
         rest = manager.parse_restrictions(rest)
         assert rest == rest_comp
         # Protein
@@ -170,7 +170,7 @@ class TestGaddleMapsManager(object):
         def_comp = {
             'DNA': None,
             'VTE': None,
-            }
+        }
         defo = manager._parse_deformations(None)
         assert defo == def_comp
         # Wrong name
@@ -185,17 +185,17 @@ class TestGaddleMapsManager(object):
         def_comp = {
             'DNA': (1, 2),
             'VTE': (1, 2),
-            }
+        }
         defo = manager._parse_deformations(def_comp)
         assert defo == def_comp
         # Complete
         def_comp = {
             'DNA': (1, 2),
             'VTE': None,
-            }
+        }
         defo = {
             'DNA': (1, 2),
-            }
+        }
         defo = manager._parse_deformations(defo)
         assert defo == def_comp
 
@@ -205,7 +205,7 @@ class TestGaddleMapsManager(object):
         ign_comp = {
             'DNA': True,
             'VTE': True,
-            }
+        }
         ign = manager._parse_ignore_hydrogens(None)
         assert ign == ign_comp
         with pytest.raises(KeyError):
@@ -217,10 +217,10 @@ class TestGaddleMapsManager(object):
         ign_comp = {
             'DNA': False,
             'VTE': True,
-            }
+        }
         ign = {
             'DNA': False,
-            }
+        }
         ign = manager._parse_ignore_hydrogens(ign)
         assert ign == ign_comp
 
@@ -235,9 +235,10 @@ class TestGaddleMapsManager(object):
             'molecule_correspondence': mol_corr_info,
         }
         assert info_test == info
-        new_man = GaddleMapsManager.from_info(info)
+        new_man = Manager.from_info(info)
         assert len(new_man.system) == len(manager_added.system)
-        assert new_man.molecule_correspondence.keys() == manager_added.molecule_correspondence.keys()
+        assert new_man.molecule_correspondence.keys(
+        ) == manager_added.molecule_correspondence.keys()
         for (n1, ali1), (n2, ali2) in zip(new_man.molecule_correspondence.items(),
                                           manager_added.molecule_correspondence.items()):
             assert n1 == n2
@@ -247,9 +248,10 @@ class TestGaddleMapsManager(object):
         # json test
         text = json.dumps(info, indent=2)
         parse_text = json.loads(text)
-        new_man = GaddleMapsManager.from_info(parse_text)
+        new_man = Manager.from_info(parse_text)
         assert len(new_man.system) == len(manager_added.system)
-        assert sorted(new_man.molecule_correspondence.keys()) == sorted(manager_added.molecule_correspondence.keys())
+        assert sorted(new_man.molecule_correspondence.keys()) == sorted(
+            manager_added.molecule_correspondence.keys())
         for (n1, ali1), (n2, ali2) in zip(sorted(new_man.molecule_correspondence.items()),
                                           sorted(manager_added.molecule_correspondence.items())):
             assert n1 == n2
@@ -258,7 +260,8 @@ class TestGaddleMapsManager(object):
 
     def test_extrapolate(self, manager, molecule_DNA_map, molecule_VTE_map,
                          system, molecule_VTE_AA, molecule_DNA_AA):
-        fname = os.path.join(ACTUAL_PATH, '../data/sistema_CG_mapeado_test.gro')
+        fname = os.path.join(
+            ACTUAL_PATH, '../data/sistema_CG_mapeado_test.gro')
         with pytest.raises(SystemError):
             _ = manager.extrapolate_system(fname)
 

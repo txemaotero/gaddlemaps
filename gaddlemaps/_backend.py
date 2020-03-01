@@ -1,25 +1,26 @@
 # -*- coding: utf-8 -*-
-#!/usr/bin/python
-
 """
 This module implements a pure python version of the minimization
 algorithm to use if the c++ one is not available.
 """
 
-
-from __future__ import division
-
-
 import sys
+from typing import Tuple, List, Dict, Optional
 import numpy as np
 from scipy.spatial.distance import cdist
 from . import move_mol_atom
 from ._auxilliary import rotation_matrix
 
 
-def minimize_molecules(mol1_positions, mol2_positions, mol2_com, sigma_scale,
-                       n_steps, restriction, mol2_bonds_info, anchura,
-                       sim_type):
+def minimize_molecules(mol1_positions: np.ndarray,
+                       mol2_positions: np.ndarray,
+                       mol2_com: np.ndarray,
+                       sigma_scale: float,
+                       n_steps: int,
+                       restriction: List[Tuple[int, int]],
+                       mol2_bonds_info: Dict[int, List[Tuple[int, float]]],
+                       displacement_module: float,
+                       sim_type: Tuple[int, ...]):
     """
     Minimizes the distance between two molecules.
 
@@ -64,21 +65,19 @@ def minimize_molecules(mol1_positions, mol2_positions, mol2_com, sigma_scale,
              1 : Rotation
              2 : Individual atom move
         If it is a list, all specified methods are combined.
-    not_repeat_calculus : bool
-        Unused input.
 
     """
     try:
         from cython_backend._backend import py_minimize_molecules
         positions = py_minimize_molecules(mol1_positions, mol2_positions,
                                           mol2_com, sigma_scale, n_steps,
-                                          restriction, mol2_bonds_info, anchura,
+                                          restriction, mol2_bonds_info, displacement_module,
                                           sim_type)
         return np.array(positions)
     except ImportError:
         pass
 
-    # Performance stufs
+    # Performance stuffs
     _chi2_molecules = Chi2Calculator(mol1_positions, mol2_positions,
                                      restriction)
     _move_mol_atom = move_mol_atom
@@ -96,43 +95,41 @@ def minimize_molecules(mol1_positions, mol2_positions, mol2_com, sigma_scale,
     counter = 0
 
     while counter < n_steps:
-        # Se le escoge que se le hace a la molecula
-        cambio = _choice(sim_type)
+        change = _choice(sim_type)
 
         # Translations
-        if cambio == 0:
-            desplazamiento = _rand_norm(0, anchura, 3)
+        if change == 0:
+            desplazamiento = _rand_norm(0, displacement_module, 3)
             test = mol2_positions + desplazamiento
             chi2_new = _chi2_molecules(test)
 
-        # Rotations: Estas son aleatorias con ángulos entre 0 y pi
-        elif cambio == 1:
-            # Se calcula el centro geometrico
+        # Rotations: random with angles between 0 y pi
+        elif change == 1:
+            # geometric center
             mol2_com = _mean(mol2_positions, axis=0)
             axis = _rand_unif(-1, 1, 3)
             theta = _rand_norm(0, np.pi/4.)
-            # Se obtiene la matriz de rotación
-            matriz_rot = _rotation_matrix(axis, theta)
-            # Se rota
-            test = _dot(mol2_positions-mol2_com, matriz_rot) + mol2_com
+            rot_matrix = _rotation_matrix(axis, theta)
+            # test configuration
+            test = _dot(mol2_positions-mol2_com, rot_matrix) + mol2_com
             chi2_new = _chi2_molecules(test)
 
         # Single atom displacement
-        elif cambio == 2:
+        elif change == 2:
             test = _move_mol_atom(mol2_positions, mol2_bonds_info,
                                   sigma_scale=sigma_scale)
             chi2_new = _chi2_molecules(test)
 
-        # Se mira si se acepta la conf.
+        # Check if the new config has to be accepted
         if _accept_metropolis(chi2, chi2_new):
             mol2_positions = test
             chi2 = chi2_new
 
-            # Se mira si hay que reiniciar el counter
+            # Check if the counter has to be restarted
             if chi2 < chi2_min:
                 chi2_min = chi2
                 sys.stdout.write('\r')
-                sys.stdout.write('\tChi2 = %10.9f'%(chi2_min))
+                sys.stdout.write('\tChi2 = %10.9f' % (chi2_min))
                 sys.stdout.flush()
                 counter = 0
                 continue
@@ -142,10 +139,15 @@ def minimize_molecules(mol1_positions, mol2_positions, mol2_com, sigma_scale,
     return mol2_positions
 
 
-def accept_metropolis(energy_0, energy_1, acceptance=0.01):
+def accept_metropolis(energy_0: float, energy_1: float,
+                      acceptance: float = 0.01):
     """
-    Evaluates the metropolis algorithm to check if one configuration is
-    accepted or not.
+    Evaluates if the new configuration with energy_1 is accepted or not.
+
+    This function returns True if the configuration with energy_1 is accepted
+    and False otherwise. If energy_1 <= energy_0 the configuration is accepted.
+    Else, it will be also accepted if a random number between 0 and 1 is
+    smaller than acceptance*energy_0/energy_1.
 
     Parameters
     ----------
@@ -174,11 +176,23 @@ class Chi2Calculator(object):
     """
     Functor that calculates the chi2 between 2 positions arrays.
 
-    This class is intitialized with the restrictions that must be taken into
-    account. This avoid repeating array accessing.
+    This class is initialized with the restrictions that must be taken into
+    account. This avoid repeating array accessing. Once the object is
+    initialized it can be called with new atomic positions  to calculate the new
+    chi2 value associated with the distance between set of points. This distance
+    is calculated quite differently depending on the given restrictions. In case
+    of no restrictions see "chi2_molecules" method. If some restrictions are
+    given the distances between atoms is calculated between of pairs of atoms
+    specified in the restrictions instead of between closest atoms.
 
     Parameters
     ----------
+    mol1 : numpy.ndarray((N, 3))
+        Array with the atomic positions of the molecule that will be still.
+        These positions will remain constant in  future object call.
+    mol2 : numpy.ndarray((N, 3))
+        Array with the atomic positions of the molecule that will be changing
+        during the optimum overlap finding process.
     restriction : numpy.ndarray((N, 2)) or array convertible, optional
         A list of tuples with pairs of atom numbers corresponding to mol1
         and mol2 atoms molecules. The align will be performed privileging
@@ -190,7 +204,9 @@ class Chi2Calculator(object):
         IMPORTANT: INDEX ARE REFERENCED TO THE ATOM INDEX IN THE MOLECULE
 
     """
-    def __init__(self, mol1, mol2, restrictions=None):
+
+    def __init__(self, mol1: np.ndarray, mol2: np.ndarray,
+                 restrictions: Optional[np.ndarray] = None):
         self._mol1_positions = mol1
         if restrictions is None or len(restrictions) == 0:
             self._meth_to_call = self.chi2_molecules
@@ -215,21 +231,21 @@ class Chi2Calculator(object):
                 self.n_cg_far_fact = 1.1**(self.len_mol2
                                            - len(self.set_restriction2))
 
-    def __call__(self, mol2):
+    def __call__(self, mol2: np.ndarray) -> float:
         return self._meth_to_call(mol2)
 
-    def _chi2_molecules_restrains_contrib(self, mol2):
+    def _chi2_molecules_restrains_contrib(self, mol2: np.ndarray) -> float:
         """
         Calculates the contribution to Chi2 of the restrains.
         """
         mol2_restrictions = mol2[self.restriction2]
         return np.sum((self._mol1_restriction - mol2_restrictions)**2)
 
-    def _chi2_molecules_only_restrains(self, mol2):
+    def _chi2_molecules_only_restrains(self, mol2: np.ndarray) -> float:
         chi2 = self._chi2_molecules_restrains_contrib(mol2)
         return chi2 * self.n_cg_far_fact
 
-    def _chi2_molecules_with_restrains(self, mol2):
+    def _chi2_molecules_with_restrains(self, mol2: np.ndarray) -> float:
         """
         Computes the chi2 by calculating the distance between molecules.
 
@@ -239,19 +255,8 @@ class Chi2Calculator(object):
 
         Parameters
         ----------
-        mol1 : numpy.ndarray((N,3))
-            Position of the first molecule atoms.
         mol2 : numpy.ndarray((N,3))
             Position of the second molecule atoms.
-        restriction : numpy.ndarray((N, 2)), optional
-            A list of tuples with pairs of atom numbers corresponding to mol1
-            and mol2 atoms molecules. The align will be performed privileging
-            configurations where those atoms are close. By default is set to [].
-
-            Example:
-            >>> restrictions = [(1, 3), (4, 5)]
-
-            IMPORTANT: INDEX ARE REFERENCED TO THE ATOM INDEX IN THE MOLECULE
 
         Returns
         -------
@@ -260,22 +265,20 @@ class Chi2Calculator(object):
 
         """
 
+        # Easy distance calculation
         chi2 = self._chi2_molecules_restrains_contrib(mol2)
-
-        # Se calculan las distancias entre pares de átomos
+        # Distance  between all the atoms that are not in restrictions
         distances = cdist(self._mol1_not_restriction, mol2, 'sqeuclidean')
-
-        # hay que sumar la distancia mínima de cada fila
         chi2 += np.sum(distances.min(axis=1))
 
-        # Se sube su valor si hay un CG que no está cerca de ninguno
+        # Penalize the value if some atom is not close to any other atom
         n_cg_far = (self.len_mol2 -
                     len(self.set_restriction2.union(distances.argmin(axis=1))))
         if n_cg_far:
             chi2 *= 1.1**n_cg_far
         return chi2
 
-    def chi2_molecules(self, mol2):
+    def chi2_molecules(self, mol2: np.ndarray) -> float:
         """
         Computes the chi2 by calculating the distance between molecules.
 
@@ -285,8 +288,6 @@ class Chi2Calculator(object):
 
         Parameters
         ----------
-        mol1 : numpy.ndarray((N,3))
-            Position of the first molecule atoms.
         mol2 : numpy.ndarray((N,3))
             Position of the second molecule atoms.
 
@@ -297,11 +298,8 @@ class Chi2Calculator(object):
 
         """
 
-        # Se calculan las distancias entre pares de átomos
         distances = cdist(self._mol1_positions, mol2, 'sqeuclidean')
-        # hay que sumar la distancia mínima de cada fila
         chi2 = np.sum(distances.min(axis=1))
-        # Se sube su valor si hay un CG que no está cerca de ninguno
         n_cg_far = len(mol2) - len(set(distances.argmin(axis=1)))
         if n_cg_far:
             chi2 *= 1.1**n_cg_far

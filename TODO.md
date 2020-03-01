@@ -1,5 +1,6 @@
-Archivos que faltan para revisión:
-- todos los test
-- _backend
-- _exchange_map
-- _manager
+1. Archivos que faltan para revisión:
+    - todos los test
+
+2. Run test
+2. Check License in all headers
+3. Check errors due to mypy 

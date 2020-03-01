@@ -7,7 +7,7 @@ check the results visually.
 import os
 import time
 
-from gaddlemaps import GaddleMapsManager
+from gaddlemaps import Manager
 from gaddlemaps import Alignment
 from gaddlemaps.components import System
 
@@ -29,7 +29,7 @@ bmimbf4_sys = os.path.join(ACTUAL_PATH, '../data/system_bmimbf4_cg.gro')
 sys = System(bmimbf4_sys, bmim_cg_itp, bf4_cg_itp)
 bmim = System(bmim_aa_gro, bmim_aa_itp)[0]
 bf4 = System(bf4_aa_gro, bf4_aa_itp)[0]
-man = GaddleMapsManager(sys)
+man = Manager(sys)
 man.add_end_molecule(bmim)
 man.add_end_molecule(bf4)
 man.align_molecules()
@@ -46,4 +46,3 @@ except:
     except FileNotFoundError:
         pass
     raise
-

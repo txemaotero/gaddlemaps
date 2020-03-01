@@ -1,54 +1,66 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 '''
 This module provides the functor that perform the molecule transformation
-in gaddle maps.
+in GADDLE MAPS.
 '''
 
 from collections import defaultdict
+from typing import Dict, Tuple, DefaultDict, List
 import numpy as np
 
 from scipy.spatial.distance import euclidean
-from .components import Molecule
+from .components import Molecule, Atom
 from ._auxilliary import calcule_base
 
 
 class ExchangeMap(object):
     """
-    ExchangeMap defines a functor. It has to be initializated
-    with a reference molecule and the target molecule.
+    Functor to extrapolate atomic resolution to other configurations.
 
-    ExchangeMap(refmolecule, targetmolecule)
+    When this class is initialized, a functor is created. It has to be
+    initialized with the molecules in the initial and final resolution
+    overlapped. Then you can call this method with new molecules in the
+    initial resolution to obtain its representation in the final one. The new
+    coordinates of the extrapolated molecules are scaled by the "scale_factor".
+    This factor should be smaller than one if you want to extrapolate a complete
+    system for future simulations. This avoids molecular overlapping and
+    prevents the simulations to crash.
 
-    Returns
-    -------
-        A functor that can be called with new configurations of the
-        refmolecule and returns the corresponding configuration of
-        the target molecule.
+    Parameters
+    ----------
+    refmolecule : Molecule
+        Molecule in the initial resolution.
+    targetmolecule : Molecule
+        Molecule in the final resolution.
+    scale_factor : float, Optional
+        The factor that modulates the scale of the atoms positions in the new
+        resolution respect it closest atom in the initial resolution.
 
     Examples
     --------
-       >>> BmimCG_ref = Molecule(gro,itp)
-       >>> BmimAA_target = Molecule(groAA,itpAA)
+       >>> BmimCG_ref = Molecule(fgro, fitp)
+       >>> BmimAA_target = Molecule(groAA, itpAA)
 
        >>> transformation = ExchangeMap(BmimCG_ref, BmimAA_target)
 
-       >>> BmimCG_new = Molecule(gro2, itp)
+       >>> BmimCG_new = Molecule(fgro2, fitp)
        >>> BmimAA_new = transformation(BmimCG_new)
 
     """
 
-    def __init__(self, refmolecule, targetmolecule, scale_factor=0.5):
+    def __init__(self, refmolecule: Molecule, targetmolecule: Molecule,
+                 scale_factor: float = 0.5):
         self._refmolecule = refmolecule
         self._targetmolecule = targetmolecule
         self.scale_factor = scale_factor
-        self._refsystems = {}
-        self._equivalences = {}
-        self._target_coordinates = {}
+        self._refsystems: Dict[int, Tuple[Tuple[np.ndarray, ...],
+                                          np.ndarray]] = {}
+        self._equivalences: Dict[int, int] = {}
+        self._target_coordinates: Dict[int, np.ndarray] = {}
         self._calculate_refsystems(self._refmolecule)
         self._make_map()
 
-    def _calculate_refsystems(self, molecule):
+    def _calculate_refsystems(self, molecule: Molecule):
         """
         Calculate the referencce system of all the atoms that will
         be used as reference points for the coordiante
@@ -66,7 +78,7 @@ class ExchangeMap(object):
         else:
             self._calculate_refsystems_general(molecule)
 
-    def _calculate_refsystems_general(self, molecule):
+    def _calculate_refsystems_general(self, molecule: Molecule):
         """
         Version of _calculate_refsystems for molecules of 3 or more atoms.
 
@@ -98,34 +110,34 @@ class ExchangeMap(object):
             self._equivalences[hash(atom)] = name
             self._target_coordinates[hash(atom)] = proyection
 
-    def _find_closest_ref(self, targetatom):
+    def _find_closest_ref(self, targetatom: Atom) -> int:
         """
         Returns the name of the closest reference system to the atom
 
         """
-        ref_pos = lambda index: self._refmolecule.hash2atom(index).position
+        def ref_pos(index): return self._refmolecule.hash2atom(index).position
         distances = [(euclidean(targetatom.position, ref_pos(index)), index)
                      for index in self._refsystems]
         return sorted(distances)[0][1]
 
-    def _restore_point(self, atomref, proyection):
+    def _restore_point(self, atomref: int,
+                       proyection: np.ndarray) -> np.ndarray:
         """
-        Given an atomref and a proyection restores the coordinates of the
-        proyected point.
+        Given an atomref and a projection restores the coordinates of the
+        projected point.
 
         """
         center = self._refsystems[atomref][1]
         vectores = np.array(self._refsystems[atomref][0])
         return center + np.dot(proyection, vectores)
 
-    def _proyect_point(self, atomref, atomtarget):
+    def _proyect_point(self, atomref: int, atomtarget: Atom) -> np.ndarray:
         origen = self._refsystems[atomref][1]
         proyect = atomtarget.position - origen
         proyect = np.dot(self._refsystems[atomref][0], proyect)
-        # Se devuelve el array escalado para evitar problemas en la minim
         return proyect * self.scale_factor
 
-    def _restore_molecule(self):
+    def _restore_molecule(self) -> Molecule:
         new_mol = self._targetmolecule.copy()
         for atom in new_mol:
             refname = self._equivalences[hash(atom)]
@@ -133,10 +145,10 @@ class ExchangeMap(object):
             atom.position = self._restore_point(refname, proyection)
         return new_mol
 
-    def __call__(self, refmolecule):
+    def __call__(self, refmolecule: Molecule) -> Molecule:
         """
-        This function takes as argument a molecule like the refmolecule, but in
-        ther position and returns its targetmolecule equivalent as a new
+        This function takes as argument a molecule like the refmolecule, but
+        in other position and returns its targetmolecule equivalent as a new
         molecule with the same res_number than the input.
 
         """
@@ -153,11 +165,11 @@ class ExchangeMap(object):
         return new_mol
 
     @property
-    def equivalences(self):
+    def equivalences(self) -> DefaultDict[int, List[int]]:
         """
         dict of int to list of int : {r1_atom_index: [closest_r2_atoms_indexs]}
         """
-        rev = defaultdict(list)
+        rev:  DefaultDict[int, List[int]] = defaultdict(list)
         for ind_r1, ind_r2 in self._equivalences.items():
             rev[ind_r2].append(ind_r1)
         return dict(rev)

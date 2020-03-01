@@ -1,22 +1,51 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
-
 '''
 This module contains the class that is used to manage the inputs in the
-mapping process, starts the alignment and extrapolate the maps.
+mapping process, starts the alignment and extrapolate the system.
 '''
+
+from typing import List, Dict, Any, Tuple, Optional
 
 from .components import System, Molecule
 from .parsers import GroFile
 from . import Alignment, guess_protein_restrains
 
 
-class GaddleMapsManager(object):
+class Manager(object):
     """
-    Class to manage a simulation system mapping process.
+    Class to manage the mapping process of a simulation system.
 
-    The class has to be init with a system object but is can also be
-    initialized with the simulation files through self.from_files method.
+    This class has methods to allow you to change the resolution of a
+    simulation from the .gro file of the system, the .itps of the molecules you
+    want to map (avoid the mapping of solvent molecules as you can resolvate the
+    system once it is mapped), and one .gro and one .itp for the molecules to
+    map in the final resolution. 
+
+    This class has to be initialized with a System object but it can also be
+    initialized with the simulation files through self.from_files method. Then
+    you should specified the molecules in the final resolution using the
+    "add_end_molecules" method. This method will attach the molecules in the
+    final resolution with the corresponding one in the initial resolution
+    looking to pair of molecules that have the same name. If your molecules have
+    different names you can attach them manually by accessing the
+    molecule_correspondence attribute and setting the end attribute of the
+    Alignemnt object associated to the molecule you want to map. For example,
+    say you started a Manager with a system with POPC molecules and you want to
+    replace them with other molecules (VTE):
+
+        Example:
+        >>> vet_molecule = Molecule(vte_gro, vte_itp)
+        >>> manager = Manager(System)
+        >>> manager.molecule_correspondence['POPC'].end = vte_molecule
+
+    Once you have set the molecules in the final resolution you can call the
+    "align_molecules" method toe find the optimum overlap between molecules in
+    both resolution. Then you have to calculate the exchange maps that will be
+    used to extrapolate the found overlap to the rest of molecular configuration
+    in the system. This can be done calling the "calculate_exchange_maps"
+    method. Finally, you can call the "extrapolate_system" method to write a
+    .gro file with the system but now with the molecules in the desired final
+    resolution.
 
     Parameters
     ----------
@@ -31,15 +60,16 @@ class GaddleMapsManager(object):
         Alignment objects as value.
 
     """
-    def __init__(self, system):
+
+    def __init__(self, system: System):
         self.system = system
-        self.molecule_correspondence = {
+        self.molecule_correspondence: Dict[str, Alignment] = {
             mol.name: Alignment(start=mol)
             for mol in self.system.different_molecules
         }
 
     @classmethod
-    def from_files(cls, f_system_gro, *fitps):
+    def from_files(cls, f_system_gro: str, *fitps: str) -> 'Manager':
         """
         Build the object using the system .gro file and molecules .itp.
 
@@ -52,19 +82,16 @@ class GaddleMapsManager(object):
 
         Returns
         -------
-        manager : GaddleMapsManager
+        manager : Manager
             The built mapping manager.
 
         """
         sys = System(f_system_gro, *fitps)
-        return GaddleMapsManager(sys)
+        return Manager(sys)
 
-    def extrapolate_system(self, fgro_out):
+    def extrapolate_system(self, fgro_out: str):
         """
         Loops over the molecules in self.system and applies the exchange map.
-
-        The mapped molecules are written in fgro_out file instead of crating
-        new system.
 
         Parameters
         ----------
@@ -104,7 +131,7 @@ class GaddleMapsManager(object):
                     fgro.writeline(line)
 
     @property
-    def info(self):
+    def info(self) -> Dict[str, Any]:
         """
         dict : A dictionary with the needed information to restore the
             manager.
@@ -117,11 +144,9 @@ class GaddleMapsManager(object):
         }
 
         return info
-        raise AttributeError(('GaddleMapsManager object has not '
-                              'info property.'))
 
     @classmethod
-    def from_info(cls, info_dict):
+    def from_info(cls, info_dict: Dict[str, Any]) -> 'Manager':
         """
         Builds the manager from the information returned by info property.
 
@@ -132,17 +157,17 @@ class GaddleMapsManager(object):
 
         Returns
         -------
-        manager : GaddleMapsManager
+        manager : Manager
             The loaded system.
         """
-        man = GaddleMapsManager(System.from_info(info_dict['system']))
+        man = Manager(System.from_info(info_dict['system']))
         mol_corr = {n: Alignment.from_info(ali)
                     for n, ali in info_dict['molecule_correspondence'].items()}
         man.molecule_correspondence = mol_corr
         return man
 
     @property
-    def complete_correspondence(self):
+    def complete_correspondence(self) -> Dict[str, Alignemnt]:
         """
         dict of str: Alignment
             A dictionary with the name of the loaded molecules as keys and
@@ -152,7 +177,7 @@ class GaddleMapsManager(object):
         return {n: ali for n, ali in self.molecule_correspondence.items()
                 if (ali.end is not None) and (ali.start is not None)}
 
-    def add_end_molecule(self, molecule):
+    def add_end_molecule(self, molecule: Molecule):
         """
         Add a new molecule in the end resolution to the correct Alignment.
 
@@ -180,7 +205,7 @@ class GaddleMapsManager(object):
                             ''.format(name)))
         self.molecule_correspondence[name].end = molecule
 
-    def add_end_molecules(self, *molecules):
+    def add_end_molecules(self, *molecules: Molecule):
         """
         Add multiple molecules at once.
 
@@ -202,11 +227,12 @@ class GaddleMapsManager(object):
         for mol in molecules:
             self.add_end_molecule(mol)
 
-    def align_molecules(self, restrictions=None, deformation_types=None,
-                        ignore_hydrogens=None, parallel=False,
-                        parse_restrictions=True):
+    def align_molecules(self, restrictions: Optional[List[Tuple[int, int]]] = None,
+                        deformation_types: Optional[Tuple[int, ...]] = None,
+                        ignore_hydrogens: bool = True,
+                        parse_restrictions: bool = True):
         """
-        Starts the alignment engine to find the optimal overlap between molecs.
+        Starts the alignment engine to find the optimal overlap between molecules
 
         Parameters
         ----------
@@ -243,16 +269,9 @@ class GaddleMapsManager(object):
             Not implemented. In the future will run the alignment for each
             molecule in parallel.
 
-        Raises
-        ------
-        NotImplementedError
-            If parallel is set to True.
-
         """
 
-        if parallel:
-            raise NotImplementedError('The parallelization is not implemented.')
-        if parse_restrictions:
+        if parse_restrictions or restrictions is None:
             restrictions = self.parse_restrictions(restrictions)
         deformation_types = self._parse_deformations(deformation_types)
         ignore_hydrogens = self._parse_ignore_hydrogens(ignore_hydrogens)
@@ -264,7 +283,8 @@ class GaddleMapsManager(object):
             print('Aligning {}:\n'.format(name))
             mols_corr[name].align_molecules(restr, defor, ignor)
 
-    def parse_restrictions(self, restrictions, guess_proteins=False):
+    def parse_restrictions(self, restrictions: Optional[List[Tuple[int, int]]],
+                           guess_proteins: bool = False):
         """
         Checks the format and validates of the restrictions for the alignment.
 
@@ -304,7 +324,7 @@ class GaddleMapsManager(object):
 
         """
         if restrictions is None:
-            new_restrictions = {}
+            new_restrictions: Dict[str, Optional[List[Tuple[int, int]]]] = {}
             for name in self.complete_correspondence:
                 new_restrictions[name] = None
                 if guess_proteins:
@@ -343,7 +363,8 @@ class GaddleMapsManager(object):
                 new_restrictions[name] = None
         return new_restrictions
 
-    def _validate_index(self, restriction, name):
+    def _validate_index(self, restriction: List[Tuple[int, int]],
+                        name: str) -> List[Tuple[int, int]]:
         """Validates the input restrictions and change from atomid to index.
         """
         mol_start = self.molecule_correspondence[name].start
@@ -375,7 +396,7 @@ class GaddleMapsManager(object):
             list_res.append((ind1, ind2))
         return list_res
 
-    def _parse_deformations(self, deformations):
+    def _parse_deformations(self, deformations: Optional[Dict[str, Any]]) -> Dict[str, Any]:
         if deformations is None:
             return {name: None for name in self.complete_correspondence}
         complete_correspondence = self.complete_correspondence
@@ -403,7 +424,7 @@ class GaddleMapsManager(object):
                 new_def[name] = None
         return new_def
 
-    def _parse_ignore_hydrogens(self, ignore_hydrogens):
+    def _parse_ignore_hydrogens(self, ignore_hydrogens: Optional[Dict[str, bool]]) -> Dict[str, bool]:
         if ignore_hydrogens is None:
             return {name: True for name in self.complete_correspondence}
         complete_correspondence = self.complete_correspondence
@@ -425,7 +446,7 @@ class GaddleMapsManager(object):
                 new_ign[name] = val
         return new_ign
 
-    def calculate_exchange_maps(self, scale_factor=0.5):
+    def calculate_exchange_maps(self, scale_factor: float = 0.5):
         """
         Runs the alignment engine and calculate the exchange maps.
 

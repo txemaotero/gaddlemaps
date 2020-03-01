@@ -82,7 +82,8 @@ class Atom(GeneralAtom):
         elif hasattr(self._atom_itp, attr):
             return getattr(self._atom_itp, attr)
         else:
-            raise AttributeError('Atom object has no attribute {}'.format(attr))
+            raise AttributeError(
+                'Atom object has no attribute {}'.format(attr))
 
     def __setattr__(self, attr: str, value: Any):
         if attr in ['_atom_itp', '_atom_gro']:
@@ -168,6 +169,7 @@ class Molecule(GeneralMolecule):
         If molecule_gro and molecule_itp represent different molecules.
 
     """
+
     def __init__(self, molecule_gro: MoleculeGro, molecule_itp: MoleculeItp):
         self._molecule_itp: MoleculeItp = None
         self._molecule_gro: MoleculeGro = None
@@ -197,7 +199,7 @@ class Molecule(GeneralMolecule):
         self._molecule_itp = new_molecule
 
     @property
-    def molecule_gro(self) ->  MoleculeGro:
+    def molecule_gro(self) -> MoleculeGro:
         """
         MoleculeGro : The object with the .gro information of the molecule.
         """

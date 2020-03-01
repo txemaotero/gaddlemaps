@@ -19,11 +19,11 @@ from ._transform_molecule import find_atom_random_displ, move_mol_atom
 from ._backend import minimize_molecules, Chi2Calculator, accept_metropolis
 from ._alignment import (Alignment, remove_hydrogens, guess_molecule_restrains,
                          guess_protein_restrains)
-from ._manager import GaddleMapsManager
+from ._manager import Manager
 
 
 __all__ = ["rotation_matrix", "calcule_base", "ExchangeMap",
            "find_atom_random_displ", "move_mol_atom", "Chi2Calculator",
            "accept_metropolis", "minimize_molecules", "Alignment",
-           "GaddleMapsManager", "remove_hydrogens",
+           "Manager", "remove_hydrogens",
            "guess_molecule_restrains", "guess_protein_restrains"]

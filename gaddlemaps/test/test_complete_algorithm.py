@@ -11,7 +11,7 @@ import os
 import pytest
 import numpy as np
 
-from gaddlemaps import GaddleMapsManager
+from gaddlemaps import Manager
 from gaddlemaps.components import System
 
 
@@ -47,12 +47,12 @@ def test_map_bmimbf4():
     sys = System(bmimbf4_sys, bmim_cg_itp, bf4_cg_itp)
     bmim = System(bmim_aa_gro, bmim_aa_itp)[0]
     bf4 = System(bf4_aa_gro, bf4_aa_itp)[0]
-    man = GaddleMapsManager(sys)
+    man = Manager(sys)
     man.add_end_molecule(bmim)
     man.add_end_molecule(bf4)
     man.align_molecules()
     man.calculate_exchange_maps()
-    
+
     fname = os.path.join(ACTUAL_PATH, '../data/sistema_CG_mapeado_test.gro')
     try:
         man.extrapolate_system(fname)
@@ -81,6 +81,7 @@ def test_map_bmimbf4():
         geom2 = mol2.geometric_center
         assert np.allclose(geom1, geom2, rtol=tol, atol=tol)
 
+
 @pytest.mark.longrun
 def test_map_system():
     """
@@ -89,7 +90,7 @@ def test_map_system():
 
     sys = System(sys_cg_gro, vte_cg_itp, dna_cg_itp)
 
-    man = GaddleMapsManager(sys)
+    man = Manager(sys)
 
     svte = System(vte_aa_gro, vte_aa_itp)[0]
     sdna = System(dna_aa_gro, dna_aa_itp)[0]
@@ -112,7 +113,8 @@ def test_map_system():
 
         man.calculate_exchange_maps()
 
-        fname = os.path.join(ACTUAL_PATH, '../data/sistema_CG_mapeado_test.gro')
+        fname = os.path.join(
+            ACTUAL_PATH, '../data/sistema_CG_mapeado_test.gro')
         try:
             man.extrapolate_system(fname)
         except:
