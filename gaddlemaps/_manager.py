@@ -167,7 +167,7 @@ class Manager(object):
         return man
 
     @property
-    def complete_correspondence(self) -> Dict[str, Alignemnt]:
+    def complete_correspondence(self) -> Dict[str, Alignment]:
         """
         dict of str: Alignment
             A dictionary with the name of the loaded molecules as keys and
@@ -229,7 +229,7 @@ class Manager(object):
 
     def align_molecules(self, restrictions: Optional[List[Tuple[int, int]]] = None,
                         deformation_types: Optional[Tuple[int, ...]] = None,
-                        ignore_hydrogens: bool = True,
+                        ignore_hydrogens: Optional[Dict[str, bool]] = None,
                         parse_restrictions: bool = True):
         """
         Starts the alignment engine to find the optimal overlap between molecules
