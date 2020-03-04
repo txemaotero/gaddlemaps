@@ -37,8 +37,8 @@ class Atom(GeneralAtom):
 
     def __init__(self, atom_gro: AtomGro, atom_itp: AtomItp):
         super(Atom, self).__init__()
-        self._atom_gro: AtomGro = None
-        self._atom_itp: AtomItp = None
+        self._atom_gro: Optional[AtomGro] = None
+        self._atom_itp: Optional[AtomItp] = None
         self.atom_gro = atom_gro
         self.atom_itp = atom_itp
 
