@@ -59,14 +59,14 @@ class Alignment(object):
     def __init__(self, start: Optional[Molecule] = None,
                  end: Optional[Molecule] = None):
         super(Alignment, self).__init__()
-        self._start = None
-        self._end = None
+        self._start: Optional[Molecule] = None
+        self._end: Optional[Molecule] = None
         self.start = start
         self.end = end
         self.exchange_map: Optional[ExchangeMap] = None
 
     @property
-    def start(self):
+    def start(self) -> Optional[Molecule]:
         """
         Molecule : The molecule in the initial resolution.
 
@@ -98,7 +98,7 @@ class Alignment(object):
                                   ' are the same.'))
 
     @property
-    def end(self):
+    def end(self) -> Optional[Molecule]:
         """
         Molecule : The molecule in the final resolution.
 
@@ -191,6 +191,9 @@ class Alignment(object):
             to set "auto_guess_protein_restrictions" parameter to False.
 
         """
+        
+        if self.start is None or self.end is None:
+            raise ValueError("Start and End molecules must be set before the aligment")
 
         if restrictions is None:
             # Check for multiple residues
@@ -254,6 +257,8 @@ class Alignment(object):
             ExchangeMap class documentation for more information).
 
         """
+        if self.start is None or self.end is None:
+            raise ValueError("Start and End molecules must be set before the exchange map")
         self.exchange_map = ExchangeMap(self.start, self.end, scale_factor)
 
     def write_comparative_gro(self, fname: Optional[str] = None):
@@ -270,6 +275,10 @@ class Alignment(object):
             {name}_compare.gro, where name is the name of the molecule.
 
         """
+        
+        if self.start is None or self.end is None:
+            raise ValueError("Start and End molecules must be set before writng the comparative")
+        
         if fname is None:
             fname = '{}_compare.gro'.format(self.start.name)
         start = self.start.molecule_gro.copy()
@@ -281,9 +290,9 @@ class Alignment(object):
         start.atoms_velocities = None
         end.atoms_velocities = None
         with GroFile(fname, 'w') as fgro:
-            for atom in start:
+            for atom in start:  # type: ignore
                 fgro.writeline(atom.gro_line())
-            for atom in end:
+            for atom in end:  # type: ignore
                 fgro.writeline(atom.gro_line())
 
     @property
