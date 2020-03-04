@@ -7,10 +7,14 @@ import warnings
 import collections
 import re
 import numpy as np
-from typing import Tuple, Union, List, Optional, Any
+from typing import Tuple, Union, List, Optional, Any, TYPE_CHECKING
 
-from ..parsers import GroFile
+from ..parsers import GroFile, GroLine
 from . import GeneralAtom, GeneralMolecule
+from ._components_itp import MoleculeItp
+
+if TYPE_CHECKING:
+    import MDAnalysis
 
 
 class MoleculeGro(GeneralMolecule):
@@ -66,7 +70,7 @@ class MoleculeGro(GeneralMolecule):
             raise TypeError(('It is not possible to add a MoleculeGro and a {}'
                              '').format(type(other)))
 
-    def __radd__(self, other: Union['MacromoleculeGro',
+    def __radd__(self, other: Union['MacromoleculeGro',  # type: ignore
                                     'AtomGro',
                                     'MoleculeGro']) -> Union['MacromoleculeGro',
                                                              'MoleculeGro']:
@@ -107,11 +111,11 @@ class MoleculeGro(GeneralMolecule):
         """
         numpy.ndarray : An array with the atoms positions.
         """
-        return np.array([a.position for a in self])
+        return np.array([a.position for a in self])  # type: ignore
 
     @atoms_positions.setter
     def atoms_positions(self, new_positions: np.ndarray):
-        for atom, pos in zip(self, new_positions):
+        for atom, pos in zip(self, new_positions):  # type: ignore
             atom.position = pos
 
     @property
@@ -119,15 +123,15 @@ class MoleculeGro(GeneralMolecule):
         """
         numpy.ndarray : An array with the atoms velocities.
         """
-        return np.array([a.velocity for a in self])
+        return np.array([a.velocity for a in self])  # type: ignore
 
     @atoms_velocities.setter
     def atoms_velocities(self, new_velocities: np.ndarray):
         if new_velocities is None:
-            for atom in self:
+            for atom in self:  # type: ignore
                 atom.velocity = None
             return
-        for atom, vel in zip(self, new_velocities):
+        for atom, vel in zip(self, new_velocities):  # type: ignore
             atom.velocity = vel
 
     @property
@@ -135,13 +139,13 @@ class MoleculeGro(GeneralMolecule):
         """
         list of int: A list with the ids of the atoms of the molecule.
         """
-        return [at.atomid for at in self]
+        return [at.atomid for at in self]  # type: ignore
 
     @atoms_ids.setter
     def atoms_ids(self, new_ids: List[int]):
         if len(self) != len(new_ids):
             raise IndexError('The new ids must have the same length as self.')
-        for atom, _id in zip(self, new_ids):
+        for atom, _id in zip(self, new_ids):  # type: ignore
             atom.atomid = _id
 
     @property
@@ -189,7 +193,7 @@ class MoleculeGro(GeneralMolecule):
                              ', this is modified to be {}.').format(old_resname,
                                                                     new_resname)
                 warnings.warn(warn_text, UserWarning)
-            for atom in self:
+            for atom in self:  # type: ignore
                 atom.resname = new_resname
         else:
             raise TypeError('Resname must be a string.')
@@ -207,7 +211,7 @@ class MoleculeGro(GeneralMolecule):
 
     @resid.setter
     def resid(self, value: int):
-        for atom in self:
+        for atom in self:  # type: ignore
             atom.resid = value
 
     @property
@@ -296,7 +300,7 @@ class MoleculeGro(GeneralMolecule):
 
         """
         with GroFile(fout, 'w') as fgro:
-            for atom in self:
+            for atom in self:  # type: ignore
                 fgro.writeline(atom.gro_line())
 
     def update_from_molecule_itp(self, mitp: 'MoleculeItp'):
@@ -322,7 +326,7 @@ class MoleculeGro(GeneralMolecule):
             raise ValueError(('There gro molecule with resname {} in '
                               'are different from that in the itp.'
                               '').format(self.resname))
-        for at_gro, at_itp in zip(self, mitp):
+        for at_gro, at_itp in zip(self, mitp):  # type: ignore
             at_gro.atomname = at_itp.atomname
 
     def distance_to(self, mol: Union['MoleculeGro', np.ndarray],
@@ -383,7 +387,7 @@ class MoleculeGro(GeneralMolecule):
         sel_pos, sel_names = zip(*[(atom.position, atom.name)
                                    for atom in atom_sel])
         mol_pos = [atom.position for name in sel_names
-                   for atom in self if atom.atomname == name]
+                   for atom in self if atom.atomname == name]  # type:ignore
 
         sel_base, sel_app = calcule_base(sel_pos)
         mol_base, mol_app = calcule_base(mol_pos)
@@ -433,21 +437,22 @@ class MacromoleculeGro(MoleculeGro):
             raise IOError(('The input molecules have the same resname and resid'
                            ', try to generate a MoleculeGro instance.'))
 
-        self._resnames_list = resnames_list = []
-        self._molecules = []
-        atoms = []
+        self._resnames_list: List[str] = []
+        resnames_list = self._resnames_list
+        self._molecules: List[MoleculeGro] = []
+        atoms: List[AtomGro] = []
         for mol in molecules_gro:
             if not isinstance(mol, MoleculeGro):
                 raise TypeError(('The input molecules should be instance of '
                                  'MoleculeGro not {}.').format(type(mol)))
             resnames_list.append(mol.resname)
             self._molecules.append(mol.copy())
-            for atom in mol:
+            for atom in mol:  # type: ignore
                 atoms.append(atom)
 
         super(MacromoleculeGro, self).__init__(atoms)
 
-    def __add__(self, other: Union['MoleculeGro', 'MacromoleculeGro']) -> 'MacromoleculeGro':
+    def __add__(self, other: Union['MoleculeGro', 'MacromoleculeGro']) -> 'MacromoleculeGro':  # type: ignore
         if isinstance(other, MacromoleculeGro):
             if other.residname[-1] != self.residname[0]:
                 molecules = self.molecules + other.molecules
@@ -474,19 +479,12 @@ class MacromoleculeGro(MoleculeGro):
             raise TypeError(('It is not possible to sum a MacromoleculeGro and'
                              ' a {}').format(type(other)))
 
-    @property
-    def resname(self) -> List[str]:
+    @property  # type: ignore
+    def resname(self) -> List[str]:  # type: ignore
         """
         list: List with all the resnames of the molecule.
         """
         return self._resnames_list
-
-    @property
-    def resnames(self) -> List[str]:
-        """
-        list: same as resname.
-        """
-        return self.resname
 
     @resname.setter
     def resname(self, new_resname: List[str]):
@@ -504,13 +502,20 @@ class MacromoleculeGro(MoleculeGro):
                 mol.resnmae = res
         else:
             raise TypeError('Wrong resname value for MacromoleculeGro.')
-
+        
     @property
-    def resid(self) -> List[int]:
+    def resnames(self) -> List[str]:
+        """
+        list: same as resname.
+        """
+        return self.resname
+
+    @property  # type: ignore
+    def resid(self) -> List[int]:  # type: ignore
         """
         list of int: List with all the resids of the molecule.
         """
-        return [mol.resid for mol in self._molecules]
+        return [mol.resid for mol in self._molecules]  # type: ignore
 
     @resid.setter
     def resid(self, value: List[int]):
@@ -524,7 +529,7 @@ class MacromoleculeGro(MoleculeGro):
             raise TypeError('Wrong resid value for MacromoleculeGro.')
 
     @property
-    def residname(self) -> List[str]:
+    def residname(self) -> List[str]:  # type: ignore
         """
         list of string: A list with the idtentiers of the molecule (resid+name)
         """
@@ -569,7 +574,7 @@ class AtomGro(GeneralAtom):
 
     """
 
-    def __init__(self, parsed_gro_line: List[Union[str, int, float]]):
+    def __init__(self, parsed_gro_line: GroLine):
         super(AtomGro, self).__init__()
         (self.resid,
          self.resname,
@@ -631,7 +636,7 @@ class AtomGro(GeneralAtom):
             elements += list(self.velocity)
         if parsed:
             return elements
-        return GroFile.parse_atomlist(elements)
+        return GroFile.parse_atomlist(elements)  # type: ignore
 
     def copy(self) -> 'AtomGro':
         """

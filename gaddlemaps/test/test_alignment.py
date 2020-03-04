@@ -176,8 +176,8 @@ class TestAlignment(object):
     def test_info(self, alignment, molecule_aa, molecule_cg):
         info = alignment.info
         info_test = {
-            'start': molecule_cg.info,
-            'end': molecule_aa.info,
+            'start': molecule_cg.info.to_dict(),
+            'end': molecule_aa.info.to_dict(),
             'exchange_map': None,
         }
         assert info == info_test

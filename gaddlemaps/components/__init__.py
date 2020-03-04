@@ -28,10 +28,11 @@ one residue.
 from ._components_parents import GeneralAtom, GeneralMolecule
 from ._components_itp import MoleculeItp, AtomItp
 from ._components_gro import MoleculeGro, AtomGro, MacromoleculeGro
-from ._components import Atom, Molecule
+from ._components import Atom, Molecule, InfoDict
 from ._system import System, SystemGro
+from ..parsers import GroLine
 
 
 __all__ = ["GeneralAtom", "GeneralMolecule", "MoleculeItp", "AtomItp",
            "MoleculeGro", "AtomGro", "MacromoleculeGro", "Atom", "Molecule",
-           "System", "SystemGro"]
+           "System", "SystemGro", "GroLine", "InfoDict"]

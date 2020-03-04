@@ -130,11 +130,11 @@ class MoleculeItp(GeneralMolecule):
         """
         string : The molecule name.
         """
-        return self._name
+        return self._name  # type: ignore
 
     @name.setter
     def name(self, new_name: str):
-        self._name = new_name
+        self._name = new_name  # type: ignore
         for line in self._itp_file['moleculetype']:
             if line.content:
                 line.name = new_name
@@ -145,7 +145,7 @@ class MoleculeItp(GeneralMolecule):
         list of str: Resnames of the atoms without consecutive repetitions.
         """
         tot_resnames = ('{:5}{}'.format(atom.resname, atom.resnr)
-                        for atom in self)
+                        for atom in self)  # type: ignore
         return [x[0][:5].strip() for x in groupby(tot_resnames)]
 
     @property
@@ -156,7 +156,7 @@ class MoleculeItp(GeneralMolecule):
             (resname_2, number_of_atoms_with_resname_2), ...]
         """
         tot_resnames = ('{:5}{}'.format(atom.resname, atom.resnr)
-                        for atom in self)
+                        for atom in self)  # type: ignore
         res_len = []
         old_resname: List = []
         for resname in tot_resnames:
@@ -263,7 +263,7 @@ class AtomItp(GeneralAtom):
     def __hash__(self) -> int:
         return self.number
 
-    def __eq__(self, atom: 'AtomItp') -> bool:
+    def __eq__(self, atom: 'AtomItp') -> bool:  # type: ignore
         cond = super(AtomItp, self).__eq__(atom)
         if cond:
             return self.number == atom.number
@@ -282,7 +282,7 @@ class AtomItp(GeneralAtom):
         self.bonds.add(hash(atom))
         atom.bonds.add(hash(self))
 
-    def closest_atoms(self, natoms: int = 2) -> List['AtomItp']:
+    def closest_atoms(self, natoms: int = 2) -> List[int]:
         """
         Returns a list natoms bonded atoms to self.
 

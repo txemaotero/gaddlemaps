@@ -7,10 +7,42 @@ both gro and itp files.
 import warnings
 import os
 from collections import defaultdict
-from typing import Optional, Any, List, Dict, Tuple, Union
+from typing import Optional, Any, List, Dict, Tuple, Union, Iterator
 from scipy.spatial.distance import euclidean
 from . import (AtomGro, AtomItp, GeneralAtom, GeneralMolecule, MoleculeItp,
                MoleculeGro, MacromoleculeGro)
+from ..parsers import GroLine
+
+class InfoDict():
+    def __init__(self):
+        self.molecule_itp: str = ""
+        self.molecule_gro: List[Groline] = []
+    
+    def to_dict(self) -> Dict[str, Any]:
+        return {"molecule_itp": self.molecule_itp,
+                "molecule_gro": self.molecule_gro}
+        
+    def __dict__(self):
+        return self.to_dict()
+    
+    @classmethod
+    def from_dict(cls, value: Dict[str, Any]) -> 'InfoDict':
+        out = InfoDict()
+        
+        molecule_itp = value["molecule_itp"]
+        if not isinstance(molecule_itp, str):
+            raise ValueError("The value molecule_itp must be a string")
+        
+        out.molecule_itp = molecule_itp
+        
+        out.molecule_gro = value["molecule_gro"]  # type: ignore
+        return out
+    
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, InfoDict):
+            return False
+        return self.to_dict() == other.to_dict()
+        
 
 
 class Atom(GeneralAtom):
@@ -47,6 +79,8 @@ class Atom(GeneralAtom):
         """
         AtomGro : The input AtomGro object
         """
+        if self._atom_gro is None:
+            raise ValueError("atom_gro cannot be None")
         return self._atom_gro
 
     @atom_gro.setter
@@ -64,6 +98,8 @@ class Atom(GeneralAtom):
         """
         AtomItp : The input AtomItp object
         """
+        if self._atom_itp is None:
+            raise ValueError("atom_itp cannot be None")
         return self._atom_itp
 
     @atom_itp.setter
@@ -134,7 +170,7 @@ class Atom(GeneralAtom):
 
         """
         at = self.__new__(self.__class__)
-        at._atom_gro = self._atom_gro.copy()
+        at._atom_gro = self.atom_gro.copy()
         at._atom_itp = self._atom_itp
         return at
 
@@ -171,12 +207,12 @@ class Molecule(GeneralMolecule):
     """
 
     def __init__(self, molecule_gro: MoleculeGro, molecule_itp: MoleculeItp):
-        self._molecule_itp: MoleculeItp = None
-        self._molecule_gro: MoleculeGro = None
+        self._molecule_itp: Optional[MoleculeItp] = None
+        self._molecule_gro: Optional[MoleculeGro] = None
         self.molecule_itp = molecule_itp
         self.molecule_gro = molecule_gro
         self._atoms = [Atom(at_gro, at_itp)
-                       for at_gro, at_itp in zip(self._molecule_gro,
+                       for at_gro, at_itp in zip(self._molecule_gro,  # type: ignore
                                                  self._molecule_itp)]
 
     @property
@@ -184,6 +220,8 @@ class Molecule(GeneralMolecule):
         """
         MoleculeItp : The object with the .itp information of the molecule.
         """
+        if self._molecule_itp is None:
+            raise ValueError("molecule_itp cannot be None")
         return self._molecule_itp
 
     @molecule_itp.setter
@@ -203,6 +241,8 @@ class Molecule(GeneralMolecule):
         """
         MoleculeGro : The object with the .gro information of the molecule.
         """
+        if self._molecule_gro is None:
+            raise ValueError("molecule_gro cannot be None")
         return self._molecule_gro
 
     @molecule_gro.setter
@@ -217,13 +257,13 @@ class Molecule(GeneralMolecule):
             raise TypeError(msg)
         self._molecule_gro = new_molecule.copy()
 
-    def __getitem__(self, index: int) -> 'Molecule':
+    def __getitem__(self, index: int) -> 'Atom':
         return self._atoms[index]
 
     def __len__(self) -> int:
         return len(self._atoms)
 
-    def __iter__(self) -> 'Atom':
+    def __iter__(self) -> Iterator['Atom']:
         for atom in self._atoms:
             yield atom
 
@@ -321,16 +361,16 @@ class Molecule(GeneralMolecule):
         mol = self.__new__(self.__class__)
         mol._molecule_itp = self._molecule_itp
         if new_molecule_gro is None:
-            mol._molecule_gro = self._molecule_gro.copy()
+            mol._molecule_gro = self.molecule_gro.copy()
         else:
-            if GeneralMolecule.are_the_same_molecule(self._molecule_gro,
+            if GeneralMolecule.are_the_same_molecule(self.molecule_gro,
                                                      new_molecule_gro):
                 mol._molecule_gro = new_molecule_gro.copy()
             else:
                 raise IOError(('The input molecule_gro can not replace the old'
                                ' one, please try to create a new instance.'))
         mol._atoms = [Atom(at_gro, at_itp)
-                      for at_gro, at_itp in zip(mol._molecule_gro,
+                      for at_gro, at_itp in zip(mol._molecule_gro,  # type: ignore
                                                 mol._molecule_itp)]
         # mol._init_atoms_bonds()
         return mol
@@ -382,7 +422,7 @@ class Molecule(GeneralMolecule):
             the bond. This property is used in the alignment process in gaddle
             maps.
         """
-        bond_info = defaultdict(list)
+        bond_info: Dict[int, List[Tuple[int, float]]] = defaultdict(list)
         for index, atom in enumerate(self):
             for hash_to in atom.bonds:
                 index_to = self.hash2index(hash_to)
@@ -392,20 +432,19 @@ class Molecule(GeneralMolecule):
         return dict(bond_info)
 
     @property
-    def info(self) -> Dict[str, Union[str, List[Union[str, int, float]]]]:
+    def info(self) -> InfoDict:
         """
         dict : A dictionary with the needed information to restore the
             Molecule.
         """
-        gro_info = [at.gro_line() for at in self.molecule_gro]
-        info = {
-            'molecule_itp': os.path.abspath(self.molecule_itp.fitp),
-            'molecule_gro': gro_info,
-        }
+        gro_info = [at.gro_line() for at in self.molecule_gro]  # type: ignore
+        info = InfoDict()
+        info.molecule_itp = os.path.abspath(self.molecule_itp.fitp)
+        info.molecule_gro = gro_info
         return info
 
     @classmethod
-    def from_info(cls, info_dict: Dict[str, Union[str, List[Union[str, int, float]]]]) -> 'Molecule':
+    def from_info(cls, info_dict: InfoDict) -> 'Molecule':
         """
         Loads a molecule from the info porperty.
 
@@ -419,15 +458,16 @@ class Molecule(GeneralMolecule):
         molecule: Molecule
             The loaded object.
         """
-        mol_itp = MoleculeItp(info_dict['molecule_itp'])
+        
+        mol_itp = MoleculeItp(info_dict.molecule_itp)
         if len(mol_itp.resnames) == 1:
             mol_gro = MoleculeGro([AtomGro(line)
-                                   for line in info_dict['molecule_gro']])
+                                   for line in info_dict.molecule_gro])
         else:
-            atom_lines = []
+            atom_lines: List[AtomGro] = []
             molecules = []
             resname = ''
-            for line in info_dict['molecule_gro']:
+            for line in info_dict.molecule_gro:
                 if line[1] != resname:
                     if atom_lines:
                         molecules.append(MoleculeGro(atom_lines))

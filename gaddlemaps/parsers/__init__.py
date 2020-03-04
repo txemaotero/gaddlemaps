@@ -17,6 +17,11 @@ from typing import Tuple, List, Union, Dict, Optional
 from ._itp_parse import (ItpFile, ItpLine, ItpLineAtom, ItpLineBonds,
                          ItpLineMoleculetype, ItpSection)
 
+
+GroLine = Union[Tuple[int, str, str, int, float, float, float],
+                Tuple[int, str, str, int, float, float, float, float, float, float]]
+
+
 class GroFile(object):
     """
     Implements a file object for opening and writing .gro files
@@ -57,19 +62,14 @@ class GroFile(object):
 
         super(GroFile, self).__init__()
         
-        if hasattr(path, 'read'):
-            if path.mode != self._correct_mode(mode):
-                raise IOError('Unable to manage an opened file in "{}" mode.'.format(mode))
-            mode = path.mode
-            self._file = path
-        else:
-            mode = self._correct_mode(mode)
-            self._file = open(path, mode)
-        self._comment = None
-        self._natoms = None
-        self._init_position = None
-        self._atomline_bytesize = None
-        self._format = {
+
+        mode = self._correct_mode(mode)
+        self._file = open(path, mode)
+        self._comment: Optional[str] = None
+        self._natoms: Optional[int] = None
+        self._init_position: Optional[int] = None
+        self._atomline_bytesize: Optional[int] = None
+        self._format: Dict[str, Optional[Tuple[int, int]]] = {
             "position": None,
             "velocities": None,
         }
@@ -91,6 +91,8 @@ class GroFile(object):
         """
         integer: The number of atoms in the system.
         """
+        if self._natoms is None:
+            raise ValueError("The system was not fully initialized")
         return self._natoms
 
     @natoms.setter
@@ -221,17 +223,20 @@ class GroFile(object):
 
         """
         self._current_atom = index
-        if index > self._natoms:
+        if index > self.natoms:
             error_text = ("Index {} is greater than the number of atoms in the "
                           "grofile").format(index)
             raise IndexError(error_text)
+        
+        if self._init_position is None or self._atomline_bytesize is None:
+            raise ValueError("Error in initalizaiton")
 
         self._file.seek(self._init_position + index * self._atomline_bytesize)
 
     def _readline(self):
         return self._file.readline()
 
-    def writelines(self, list_atomlist: List[List[Union[str, int,  float]]]):
+    def writelines(self, list_atomlist: List[GroLine]):
         """
         Writes several lines of atoms
 
@@ -252,7 +257,7 @@ class GroFile(object):
         for line in list_atomlist:
             self.writeline(line)
 
-    def writeline(self, atomlist: List[Union[str, int,  float]]):
+    def writeline(self, atomlist: GroLine):
         """
         Writes a line of atom information
 
@@ -329,7 +334,7 @@ class GroFile(object):
         info = self._readline()
         if not parsed:
             return info
-        if self._current_atom >= self._natoms:
+        if self._current_atom >= self.natoms:
             raise StopIteration
         self._current_atom += 1
         return self.parse_atomline(info, self._format)
@@ -369,7 +374,7 @@ class GroFile(object):
         return mode
 
     @classmethod
-    def parse_atomlist(cls, atomlist: List[Union[str, int, float]],
+    def parse_atomlist(cls, atomlist: GroLine,
                        format_dict: Dict = None) -> str:
         """
         Convert a list of atom info to string with the appropriate format
@@ -449,13 +454,14 @@ class GroFile(object):
                         " to write.").format(atomlist)
                 raise IOError(text)
 
+        atominfo = list(atomlist)
         # Wrap the numbers if greater than 99999
-        atomlist[0] = atomlist[0] % 99999 + int(atomlist[0] > 99999)
-        atomlist[3] = atomlist[3] % 99999 + int(atomlist[3] > 99999)
+        atominfo[0] = atomlist[0] % 99999 + int(atomlist[0] > 99999)
+        atominfo[3] = atomlist[3] % 99999 + int(atomlist[3] > 99999)
 
         # Validate the atomname and resname
-        atomlist[1] = cls.validate_string(atomlist[1])
-        atomlist[2] = cls.validate_string(atomlist[2])
+        atominfo[1] = cls.validate_string(atomlist[1])
+        atominfo[2] = cls.validate_string(atomlist[2])
 
         format_list = [
             "{:5d}",
@@ -694,16 +700,16 @@ def _validate_res_atom_numbers(line: str) -> Tuple[int, int]:
     Validates the residue and number atom in a gro atom_line.
     """
     num_err = "Invalid {} number ({}), check the file format."
-    res_num = line[:5]
-    atom_num = line[15:20]
+    res_num_str = line[:5]
+    atom_num_str = line[15:20]
     try:
-        res_num = int(res_num)
+        res_num = int(res_num_str)
     except ValueError:
-        raise IOError(num_err.format('residue', res_num))
+        raise IOError(num_err.format('residue', res_num_str))
     try:
-        atom_num = int(atom_num)
+        atom_num = int(atom_num_str)
     except ValueError:
-        raise IOError(num_err.format('atom', atom_num))
+        raise IOError(num_err.format('atom', atom_num_str))
     return res_num, atom_num
 
 

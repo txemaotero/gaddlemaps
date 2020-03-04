@@ -7,7 +7,7 @@ import numpy as np
 
 from typing import Tuple, Union, List, Optional, Any, Dict
 
-from .components import Molecule
+from .components import Molecule, InfoDict
 from .parsers import GroFile
 from . import ExchangeMap, minimize_molecules
 
@@ -304,7 +304,7 @@ class Alignment(object):
         ex_map = (None if self.exchange_map is None
                   else self.exchange_map.scale_factor)
 
-        def mol_dic(mol): return mol if mol is None else mol.info
+        def mol_dic(mol): return mol if mol is None else mol.info.to_dict()
         info = {
             'start': mol_dic(self.start),
             'end': mol_dic(self.end),
@@ -327,8 +327,10 @@ class Alignment(object):
         align : Alignment
             The loaded object.
         """
-        ali = Alignment(start=Molecule.from_info(info_dict['start']),
-                        end=Molecule.from_info(info_dict['end']))
+        start = InfoDict.from_dict(info_dict['start'])
+        end = InfoDict.from_dict(info_dict['end'])
+        ali = Alignment(start=Molecule.from_info(start),
+                        end=Molecule.from_info(end))
         if info_dict['exchange_map'] is not None:
             ali.init_exchange_map(info_dict['exchange_map'])
         return ali
