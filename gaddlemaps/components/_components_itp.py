@@ -9,11 +9,11 @@ from itertools import groupby
 
 from typing import List, Dict, Any, Union, Tuple, Set
 
-from ..parsers import ItpLineAtom, ItpFile
+from ..parsers import ItpLineAtom, ItpFile, ItpLineBonds
 from . import GeneralAtom, GeneralMolecule
 
 
-class MoleculeItp(GeneralMolecule):
+class MoleculeItp:
     """
     Loads molecules from .itp topology file.
 
@@ -31,18 +31,21 @@ class MoleculeItp(GeneralMolecule):
 
     """
     def __init__(self, fitp: str):
-        super(MoleculeItp, self).__init__()
-        self._itp_file = ItpFile(fitp)
-        if 'moleculetype' not in self._itp_file:
-            raise IOError('The input itp has to have "moleculetype" section.')
-        if 'atoms' not in self._itp_file:
-            raise IOError('The input itp has to have "atoms" section.')
-        self._name = None
+        self.fitp = fitp
+        itp_file = ItpFile(fitp)
+
+        if 'moleculetype' not in itp_file:
+            raise IOError('The input itp must have "moleculetype" section.')
+        if 'atoms' not in itp_file:
+            raise IOError('The input itp must have "atoms" section.')
+
+        self.name = ''
         self._atoms_itp: List['AtomItp'] = []
         self._number_to_index: Dict[int, int] = {}
-        self._init_name()
-        self._init_atoms()
-        self._init_atoms_bonds()
+
+        self._init_name(itp_file)
+        self._init_atoms(itp_file)
+        self._init_atoms_bonds(itp_file)
 
     def __getitem__(self, index: int) -> 'AtomItp':
         return self._atoms_itp[index]
@@ -52,28 +55,28 @@ class MoleculeItp(GeneralMolecule):
 
     def __eq__(self, element: Any) -> bool:
         if isinstance(element, MoleculeItp):
-            if element.name == self.name:
-                return super(MoleculeItp, self).__eq__(element)
+            if element.name == self.name and len(self) == len(element):
+                return all(at1 == at2 for at1, at2 in zip(self, element)) # type: ignore
         return False
 
     def __ne__(self, element: Any) -> bool:
         return not self == element
 
     def __str__(self) -> str:
-        string = 'Molecule of {} from itp.'.format(self.name)
+        string = f'Molecule of {self.name} from itp.'
         return string
 
     __repr__ = __str__
 
-    def _init_name(self):
-        for line in self._itp_file['moleculetype']:
+    def _init_name(self, itp_file: ItpFile):
+        for line in itp_file['moleculetype']:
             if line.content:
-                self._name = line.name
-        if self._name is None:
+                self.name = line.name
+        if not self.name:
             raise IOError('There is not molecule name in "moleculetype" sec.')
 
-    def _init_atoms(self):
-        atoms_sec = self.itp_file['atoms']
+    def _init_atoms(self, itp_file: ItpFile):
+        atoms_sec = itp_file['atoms']
         index = 0
         for atom_line in atoms_sec:
             if atom_line.content:
@@ -84,10 +87,9 @@ class MoleculeItp(GeneralMolecule):
         if not self._atoms_itp:
             raise IOError('There are not atoms in the atoms section.')
 
-    def _init_atoms_bonds(self):
+    def _init_atoms_bonds(self, itp_file: ItpFile):
         # If there is more than one atom, there has to be bonds.
         atoms = self._atoms_itp
-        itp_file = self._itp_file
         condition_constraints = 'constraints' in itp_file
         condition_bonds = 'bonds' in itp_file
         if len(atoms) > 1:
@@ -98,7 +100,7 @@ class MoleculeItp(GeneralMolecule):
                         ('virtual_sites3' in itp_file) or
                         ('virtual_sites4' in itp_file)):
                     raise IOError('The input file has to provide atoms bonds')
-            bonds = []
+            bonds: List[ItpLineBonds] = []
             if condition_constraints:
                 bonds += list(itp_file['constraints'])
             if condition_bonds:
@@ -110,34 +112,6 @@ class MoleculeItp(GeneralMolecule):
             if condition_bonds or condition_constraints:
                 warnings.warn('{}: There are bonds specifications but the '
                               'molecule has only one atom.'.format(self.name))
-
-    @property
-    def fitp(self) -> str:
-        """
-        string: The .itp file name of the molecule
-        """
-        return self._itp_file.fitp
-
-    @property
-    def itp_file(self) -> ItpFile:
-        """
-        ItpFile : The loaded ItpFile object to handle the molecule.
-        """
-        return self._itp_file
-
-    @property
-    def name(self) -> str:
-        """
-        string : The molecule name.
-        """
-        return self._name  # type: ignore
-
-    @name.setter
-    def name(self, new_name: str):
-        self._name = new_name  # type: ignore
-        for line in self._itp_file['moleculetype']:
-            if line.content:
-                line.name = new_name
 
     @property
     def resnames(self) -> List[str]:
@@ -227,9 +201,12 @@ class MoleculeItp(GeneralMolecule):
         return self._atoms_itp.index(atom)
 
 
-class AtomItp(GeneralAtom):
+class AtomItp:
     """
     Contains the information of a .itp line corresponding to an atom.
+
+    The instances of this class have access to all the information accessible
+    through the ItpLineAtom class.
 
     Parameters
     ----------
@@ -243,7 +220,7 @@ class AtomItp(GeneralAtom):
         A set with the hash of the atoms that are connected to self.
 
     """
-    def __init__(self, itp_line_atom: Union[str, 'ItpLineAtom']):
+    def __init__(self, itp_line_atom: Union[str, ItpLineAtom]):
         if isinstance(itp_line_atom, ItpLineAtom):
             self._itp_line_atom = itp_line_atom
         elif isinstance(itp_line_atom, str):
@@ -254,19 +231,24 @@ class AtomItp(GeneralAtom):
         return getattr(self._itp_line_atom, attr)
 
     def __repr__(self) -> str:
-        msg = 'Itp atom of {} of molecule {}'.format(self.atomname,
-                                                     self.resname)
-        return msg
+        return f'Itp atom of {self.atomname} of molecule {self.resname}'
 
     __str__ = __repr__
 
     def __hash__(self) -> int:
+        """
+        Number in the itp line
+        """
         return self.number
 
     def __eq__(self, atom: 'AtomItp') -> bool:  # type: ignore
-        cond = super(AtomItp, self).__eq__(atom)
-        if cond:
-            return self.number == atom.number
+        if isinstance(atom, AtomItp):
+            condition = (
+                (self.number == atom.number) and
+                (self.resname == atom.resname) and
+                (self.atomname == atom.atomname)
+            ) 
+            return condition
         return False
 
     def connect(self, atom: 'AtomItp'):
