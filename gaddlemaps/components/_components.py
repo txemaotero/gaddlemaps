@@ -10,7 +10,7 @@ from collections import defaultdict
 from typing import Optional, Any, List, Dict, Tuple, Union, Iterator
 from scipy.spatial.distance import euclidean
 from . import (AtomGro, AtomItp, GeneralAtom, GeneralMolecule, MoleculeItp,
-               MoleculeGro, MacromoleculeGro)
+               MoleculeGro, MacromoleculeGro, Residue)
 from ..parsers import GroLine
 
 class InfoDict():
@@ -45,72 +45,57 @@ class InfoDict():
         
 
 
-class Atom(GeneralAtom):
+class Atom:
     """
     An atom class that wraps the AtomItp and AtomGro classes.
 
-    Properties and methods are the same as both AtomItp and AtomGro.
+    You can access to the methods and attributes that both AtomGro and
+    AtomItp have. To create the atom object, both input atoms should have the
+    same resname and atomname attributes. On the other hand, only the attributes
+    from the AtomGro can be changed (e.g. positions, velocities, ...) excluding
+    the resname and atomname. 
 
     Parameters
     ----------
-    atom_gro : AtomGro
-        The AtomGro object.
     atom_itp : AtomItp
         The AtomItp object.
+    atom_gro : AtomGro
+        The AtomGro object.
 
     Raises
     ------
     IOError
         If the atom_gro and atom_itp do not correspond to the same atom.
     TypeError
-        If the inputs are not instance of the corresponding class.
+        If the inputs are not instances of the corresponding classes.
 
     """
 
-    def __init__(self, atom_gro: AtomGro, atom_itp: AtomItp):
+    def __init__(self, atom_itp: AtomItp, atom_gro: AtomGro):
         super(Atom, self).__init__()
-        self._atom_gro: Optional[AtomGro] = None
-        self._atom_itp: Optional[AtomItp] = None
-        self.atom_gro = atom_gro
-        self.atom_itp = atom_itp
+        if not isinstance(atom_gro, AtomGro):
+            raise TypeError('atom_gro input have to be an AtomGro instance.')
+        if not isinstance(atom_itp, AtomItp):
+            raise TypeError('atom_itp input have to be an AtomItp instance.')
+        if atom_gro.residname != atom_itp.residname:
+            raise IOError((f'Input atoms do not match:\n-{atom_gro}'
+                           '\n-{atom_itp}'))
+        self._atom_gro = atom_gro
+        self._atom_itp = atom_itp
 
     @property
     def atom_gro(self) -> AtomGro:
         """
         AtomGro : The input AtomGro object
         """
-        if self._atom_gro is None:
-            raise ValueError("atom_gro cannot be None")
         return self._atom_gro
-
-    @atom_gro.setter
-    def atom_gro(self, new_atom: AtomGro):
-        if not self._atom_itp is None:
-            if not GeneralAtom.are_the_same_atom(new_atom, self._atom_itp):
-                msg = 'The input atoms do not correspond to the same atom.'
-                raise IOError(msg)
-        if not isinstance(new_atom, AtomGro):
-            raise TypeError('atom_gro input have to be an AtomGro instance.')
-        self._atom_gro = new_atom
 
     @property
     def atom_itp(self) -> AtomItp:
         """
         AtomItp : The input AtomItp object
         """
-        if self._atom_itp is None:
-            raise ValueError("atom_itp cannot be None")
         return self._atom_itp
-
-    @atom_itp.setter
-    def atom_itp(self, new_atom: AtomItp):
-        if self._atom_gro is not None:
-            if not GeneralAtom.are_the_same_atom(new_atom, self._atom_gro):
-                msg = 'The input atoms do not correspond to the same atom.'
-                raise IOError(msg)
-        if not isinstance(new_atom, AtomItp):
-            raise TypeError('atom_itp input have to be an AtomItp instance.')
-        self._atom_itp = new_atom
 
     def __getattr__(self, attr: str) -> Any:
         if hasattr(self._atom_gro, attr):
@@ -118,16 +103,14 @@ class Atom(GeneralAtom):
         elif hasattr(self._atom_itp, attr):
             return getattr(self._atom_itp, attr)
         else:
-            raise AttributeError(
-                'Atom object has no attribute {}'.format(attr))
+            raise AttributeError(f'Atom object has no attribute {attr}')
 
     def __setattr__(self, attr: str, value: Any):
         if attr in ['_atom_itp', '_atom_gro']:
             super(Atom, self).__setattr__(attr, value)
         # Special cases that are present in both atoms
-        elif attr == 'resname':
-            setattr(self._atom_itp, attr, value)
-            setattr(self._atom_gro, attr, value)
+        elif attr in ('resname', 'atomname'):
+            raise AttributeError(f'Attribute {attr} can not be changed')
         elif attr in super(Atom, self).__dir__():
             super(Atom, self).__setattr__(attr, value)
         elif hasattr(self._atom_itp, attr):
@@ -138,9 +121,8 @@ class Atom(GeneralAtom):
             super(Atom, self).__setattr__(attr, value)
 
     def __str__(self) -> str:
-        string = 'Atom {} of molecule {} with number {}.'.format(self.atomname,
-                                                                 self.resname,
-                                                                 self.resid)
+        string = (f'Atom {self.atomname} of molecule {self.resname}'
+                  f' with residue number {self.resid}.')
         return string
 
     __repr__ = __str__
@@ -169,93 +151,74 @@ class Atom(GeneralAtom):
             The copied atom.
 
         """
-        at = self.__new__(self.__class__)
-        at._atom_gro = self.atom_gro.copy()
-        at._atom_itp = self._atom_itp
-        return at
+        return Atom(self._atom_gro.copy(), self._atom_itp)
 
     def __eq__(self, atom: Any) -> bool:
-        cond = super(Atom, self).__eq__(atom)
-        if cond:
-            if isinstance(atom, (Atom, AtomItp)):
-                return self.number == atom.number
-            return cond
+        if isinstance(atom, Atom):
+            return self.residname == atom.residname
         return False
 
 
-class Molecule(GeneralMolecule):
+class Molecule:
     """
-    Loads a molecule itp and the .gro information.
+    Loads a molecule combining a MoleculeItp and a list of Residue.
 
-    This class wraps all the features of both MoleculeItp and MoleculeGro
-    objects. Saves a copy of the molecule_gro and the original molecule_itp.
+    This class wraps all the features of both MoleculeItp and Residues which
+    conforms the molecule. When an object is initialized a copy of the input
+    residues is stored (to avoid undesired attribute changes).
 
     Parameters
     ----------
     molecule_itp : MoleculeItp
         The object with the .itp information of the molecule.
-    molecule_gro : MoleculeGro
-        The object with the .gro information of the molecule.
+    residues :  of Residue
+        An iterable (e.g. list or tuple) with the residues that constitute the
+        molecule.
 
     Raises
     ------
     TypeError
         If the input are instances of wrong type.
     IOError
-        If molecule_gro and molecule_itp represent different molecules.
+        If residues do not constitute the molecule_itp.
 
     """
 
-    def __init__(self, molecule_gro: MoleculeGro, molecule_itp: MoleculeItp):
-        self._molecule_itp: Optional[MoleculeItp] = None
-        self._molecule_gro: Optional[MoleculeGro] = None
-        self.molecule_itp = molecule_itp
-        self.molecule_gro = molecule_gro
-        self._atoms = [Atom(at_gro, at_itp)
-                       for at_gro, at_itp in zip(self._molecule_gro,  # type: ignore
-                                                 self._molecule_itp)]
+    def __init__(self, molecule_itp: MoleculeItp, residues: List[Residue]):
+        if not _molecule_itp_and_residues_match(molecule_itp, residues):
+            raise IOError(('The molecule can not be initialized. '
+                           'The input residues have not the same atoms that '
+                           'molecule_itp has.'))
+
+        self._molecule_itp = molecule_itp
+        self._residues: List[Residue] = []
+        self._atoms: List[Atom] = []
+        # Save the residue number of each atom
+        self._each_atom_resid: List[int] = []
+
+        # Initialize attributes
+        index = 0
+        for res_index, res in enumerate(residues):
+            self._residues.append(res.copy())
+            self._each_atom_resid.append(res_index)
+            for atom in res:  # type: ignore
+                self._atoms.append(Atom(molecule_itp[index], atom))
+                index += 1
 
     @property
     def molecule_itp(self) -> MoleculeItp:
         """
         MoleculeItp : The object with the .itp information of the molecule.
         """
-        if self._molecule_itp is None:
-            raise ValueError("molecule_itp cannot be None")
         return self._molecule_itp
 
-    @molecule_itp.setter
-    def molecule_itp(self, new_molecule: MoleculeItp):
-        if not self._molecule_gro is None:
-            if not self.are_the_same_molecule(self.molecule_gro, new_molecule):
-                raise IOError(('The input molecule_itp does not match with the'
-                               'loaded molecule_gro.'))
-        if not isinstance(new_molecule, MoleculeItp):
-            msg = ('The first input should be an instance of MoleculeItp not'
-                   ' {}').format(type(new_molecule))
-            raise TypeError(msg)
-        self._molecule_itp = new_molecule
-
     @property
-    def molecule_gro(self) -> MoleculeGro:
+    def residues(self) -> List[Residue]:
         """
-        MoleculeGro : The object with the .gro information of the molecule.
+        List of Residue : a list with the Residue objects that constitute the
+        molecule.
         """
-        if self._molecule_gro is None:
-            raise ValueError("molecule_gro cannot be None")
-        return self._molecule_gro
-
-    @molecule_gro.setter
-    def molecule_gro(self, new_molecule: MoleculeGro):
-        if not self._molecule_itp is None:
-            if not self.are_the_same_molecule(self.molecule_itp, new_molecule):
-                raise IOError(('The input molecule_gro does not match with the'
-                               'loaded molecule_itp.'))
-        if not isinstance(new_molecule, MoleculeGro):
-            msg = ('molecule_gro should be an instance of MoleculeGro not'
-                   ' {}').format(type(new_molecule))
-            raise TypeError(msg)
-        self._molecule_gro = new_molecule.copy()
+        return self._residues
 
     def __getitem__(self, index: int) -> 'Atom':
         return self._atoms[index]
@@ -270,33 +233,32 @@ class Molecule(GeneralMolecule):
     def __getattr__(self, attr: str) -> Any:
         if hasattr(self._molecule_itp, attr):
             return getattr(self._molecule_itp, attr)
-        elif hasattr(self._molecule_gro, attr):
-            return getattr(self._molecule_gro, attr)
-        else:
-            raise AttributeError(('Molecule object has no attribute {}'
-                                  '').format(attr))
+        raise AttributeError(f'Molecule object has no attribute {attr}')
 
     def __setattr__(self, attr: str, value: Any):
-        if attr in ['_molecule_itp', '_molecule_gro']:
+        if attr in ['_molecule_itp', '_residues']:
             super(Molecule, self).__setattr__(attr, value)
         elif attr in super(Molecule, self).__dir__():
             super(Molecule, self).__setattr__(attr, value)
         elif hasattr(self._molecule_itp, attr):
             setattr(self._molecule_itp, attr, value)
-        elif hasattr(self._molecule_gro, attr):
-            setattr(self._molecule_gro, attr, value)
         else:
             super(Molecule, self).__setattr__(attr, value)
 
     def __str__(self) -> str:
-        string = 'Molecule of {}.'.format(self.name)
-        return string
+        return f'Molecule of {self.name}.'
 
     __repr__ = __str__
 
     def __eq__(self, molecule: Any) -> bool:
-        if isinstance(molecule, Molecule):
-            return super(Molecule, self).__eq__(molecule)
+        if (isinstance(molecule, Molecule) and
+            molecule.name == self.name and
+            len(molecule) == len(self)):
+
+            for at1, at2 in zip(self, molecule):
+                if at1 != at2:
+                    return False
+            return True
         return False
 
     def __ne__(self, molecule: Any) -> bool:
@@ -307,7 +269,6 @@ class Molecule(GeneralMolecule):
         For Ipython autocompletion.
         """
         _dir = set(super(Molecule, self).__dir__())
-        _dir.update(dir(self._molecule_gro))
         _dir.update(dir(self._molecule_itp))
         return list(_dir)
 
@@ -319,27 +280,28 @@ class Molecule(GeneralMolecule):
         return [atom.copy() for atom in self._atoms]
 
     @property
-    def resname(self) -> str:
+    def resnames(self) -> List[str]:
         """
-        string: Resname of the molecule.
+        List of string: A list with the names of the residues constituting the
+            molecule.
         """
-        return self[0].resname
+        return [res.resname for res in self._residues]
 
     @resname.setter
-    def resname(self, new_resname: str):
-        if isinstance(new_resname, str):
-            if len(new_resname) > 5:
-                old_resname = new_resname
-                new_resname = new_resname[:5]
-                warn_text = ('The input resname has more than 5 character ({})'
-                             ', this is modified to be {}.').format(old_resname,
-                                                                    new_resname)
-                warnings.warn(warn_text, UserWarning)
-            for atom in self:
-                atom.resname = new_resname
+    def resnames(self, new_resnames: List[str]):
+        if isinstance(new_resnames, list) and isinstance(new_resnames, str):
+            if len(new_resnames) != len(self.resnames):
+                raise ValueError(('You should provide a list with'
+                                  f' {len(self.resnames)} residues instead of'
+                                  f' {len(new_resnames)}.'))
+
+            for atom, res_index in zip(self, self._each_atom_resid):
+                atom.resname = new_resnames[res_index]
+            for res, resname in zip(self._residues, new_resnames):
+                res.resname = resname
         else:
             raise TypeError('Resname must be a string.')
-
+    # TODO: Aquí me quedo
     def copy(self, new_molecule_gro: Optional[MoleculeGro] = None) -> 'Molecule':
         """
         Returns a copy of the molecule.
@@ -502,3 +464,16 @@ class Molecule(GeneralMolecule):
         if len(syst) == 1:
             return syst[0]
         raise IOError('The input gro file has more than one molecule.')
+
+
+def _molecule_itp_and_residues_match(molecule_itp: MoleculeItp,
+                                     residues: List[Residue]) -> bool:
+    if len(molecule_itp) != sum(len(res) for res in residues):
+        return False
+    index = 0
+    for res in residues:
+        for atom in res:  # type: ignore
+            if atom.residname != molecule_itp[index]:
+                return False
+            index += 1
+    return True

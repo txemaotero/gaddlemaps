@@ -27,7 +27,8 @@ one residue.
 
 from ._components_parents import GeneralAtom, GeneralMolecule
 from ._components_itp import MoleculeItp, AtomItp
-from ._components_gro import MoleculeGro, AtomGro, MacromoleculeGro
+# from ._components_gro import MoleculeGro, AtomGro, MacromoleculeGro
+from ._residue import Residue, AtomGro
 from ._components import Atom, Molecule, InfoDict
 from ._system import System, SystemGro
 from ..parsers import GroLine

@@ -118,6 +118,11 @@ class MoleculeItp:
         """
         list of str: Resnames of the atoms without consecutive repetitions.
         """
+        # TODO: Ver si se puede usar este property para que devuelva una lista
+        # con todos los nombres de residues (aunque sea repetido) y luego que
+        # al seter le puedas pasar un str (todos con el mismo) o una lista con
+        # todos los residuos aunque sea repetidos. Pensar cual sería la mejor
+        # forma.
         tot_resnames = ('{:5}{}'.format(atom.resname, atom.resnr)
                         for atom in self)  # type: ignore
         return [x[0][:5].strip() for x in groupby(tot_resnames)]
@@ -226,6 +231,9 @@ class AtomItp:
         elif isinstance(itp_line_atom, str):
             self._itp_line_atom = ItpLineAtom(itp_line_atom)
         self.bonds: Set[int] = set()
+        # Overwrite mutable attributes
+        self.resname = self._itp_line_atom.resname
+        self.atomname = self._itp_line_atom.atomname
 
     def __getattr__(self, attr: str) -> Any:
         return getattr(self._itp_line_atom, attr)
@@ -250,6 +258,13 @@ class AtomItp:
             ) 
             return condition
         return False
+
+    @property
+    def residname(self) -> str:
+        """
+        string: An identifier of the residue (resid+name)
+        """
+        return '{}{}'.format(self.resid, self.resname)
 
     def connect(self, atom: 'AtomItp'):
         """
