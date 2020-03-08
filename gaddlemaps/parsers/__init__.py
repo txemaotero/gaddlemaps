@@ -16,6 +16,7 @@ from typing import Tuple, List, Union, Dict, Optional
 
 from ._itp_parse import (ItpFile, ItpLine, ItpLineAtom, ItpLineBonds,
                          ItpLineMoleculetype, ItpSection)
+from ._top_parsers import itp_top
 
 
 GroLine = Union[Tuple[int, str, str, int, float, float, float],
