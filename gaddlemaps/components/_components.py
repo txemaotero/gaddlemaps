@@ -380,7 +380,7 @@ class Molecule:
         fgro : str
             The file name with the gro.
         ftop : str
-            The file name with the itp.
+            The file name with the top.
 
         Returns
         -------
