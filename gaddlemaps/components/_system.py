@@ -10,7 +10,7 @@ from typing import List, Tuple, Union, Generator, Set, Mapping, Dict
 
 import numpy as np
 
-from . import MoleculeGro, AtomGro, MacromoleculeGro, MoleculeItp, Molecule
+from . import Residue, AtomGro, MoleculeItp, Molecule
 from ..parsers import GroFile
 
 
@@ -218,8 +218,10 @@ class SystemGro(object):
     """
     Class to work with the information in gro files.
 
-    Only one molecule of each resname is loaded. The position in the file of
-    the rest of the molecules are storage and they are generated when requested.
+    Basically this class acts as a list of Residue objects. Only one Residue
+    instance of each type is loaded to afford memory for large systems. The
+    positions of the rest of the residues are storage and they are generated
+    when requested.
 
     Parameters
     ----------
@@ -230,7 +232,7 @@ class SystemGro(object):
     def __init__(self, fgro: str):
         self.fgro = fgro
         self._open_fgro = GroFile(fgro)
-        self.different_molecules: List[MoleculeGro] = []
+        self.different_molecules: List[Residue] = []
         self._molecules_pk: Dict[Tuple[str, int], int] = {}   # Dictionary with {(resname, len(mol)): index}
         self._molecules_ordered: List[int] = []
         self._parse_gro()
@@ -243,56 +245,53 @@ class SystemGro(object):
 
     __repr__ = __str__
 
-    def __iter__(self) -> Generator[MoleculeGro, None, None]:
+    def __iter__(self) -> Generator[Residue, None, None]:
         for _, start, len_mol in self._molecules_ordered_all_gen():
             self._open_fgro.seek_atom(start)
-            yield MoleculeGro([AtomGro(next(self._open_fgro))
-                               for _ in range(len_mol)])
+            yield Residue([AtomGro(next(self._open_fgro))
+                           for _ in range(len_mol)])
 
     def __del__(self):
         self._open_fgro.close()
 
-    def __getitem__(self, index: int) -> Union[MoleculeGro, List[MoleculeGro]]:
+    def __getitem__(self, index: int) -> Union[Residue, List[Residue]]:
         if isinstance(index, slice):
             molecules = []
             for _, start, len_mol in islice(self._molecules_ordered_all_gen(),
                                             index.start, index.stop,
                                             index.step):
                 self._open_fgro.seek_atom(start)
-                molecules.append(MoleculeGro([AtomGro(next(self._open_fgro))
-                                              for _ in range(len_mol)]))
+                molecules.append(Residue([AtomGro(next(self._open_fgro))
+                                          for _ in range(len_mol)]))
             return molecules
         for i, info in enumerate(self._molecules_ordered_all_gen()):
             if i == index:
                 _, start, len_mol = info
                 self._open_fgro.seek_atom(start)
-                return MoleculeGro([AtomGro(next(self._open_fgro))
-                                    for _ in range(len_mol)])
-        raise IndexError('Molecule index out of range')
+                return Residue([AtomGro(next(self._open_fgro))
+                                for _ in range(len_mol)])
+        raise IndexError('Residue index out of range')
 
     def __len__(self) -> int:
         return sum(elem[1] for elem in self._pk_ammount_ordered_gen())
 
     def _parse_gro(self):
-        current_molecule = []
+        current_residue = [AtomGro(next(self._open_fgro))]
+        prev_atom_residname = current_residue[0].residname
         for line in self._open_fgro:
-            if not current_molecule:
-                current_molecule.append(AtomGro(line))
-                continue
             atom = AtomGro(line)
-            prev_atom = current_molecule[0]
-            if atom.parent_residname == prev_atom.parent_residname:
-                current_molecule.append(atom)
+            if atom.residname == prev_atom_residname:
+                current_residue.append(atom)
             else:
-                molecule = MoleculeGro(current_molecule)
-                self._add_molecule_init(molecule)
-                current_molecule = [atom]
-        self._add_molecule_init(MoleculeGro(current_molecule))
+                self._add_residue_init(Residue(current_residue))
+                current_residue = [atom]
+                prev_atom_residname = current_residue[0].residname
+        self._add_residue_init(Residue(current_residue))
 
-    def _add_molecule_init(self, molecule: MoleculeGro):
-        key = (molecule.resname, len(molecule))
-        if molecule not in self.different_molecules:
-            self.different_molecules.append(molecule)
+    def _add_residue_init(self, residue: Residue):
+        key = (residue.resname, len(residue))
+        if residue not in self.different_molecules:
+            self.different_molecules.append(residue)
             index = len(self.different_molecules) - 1
             self._molecules_pk[key] = index
         index = self._molecules_pk[key]
@@ -329,7 +328,7 @@ class SystemGro(object):
         return self._open_fgro.box_matrix
 
     @box_matrix.setter
-    def box_matrix(self, new_matrix) -> np.ndarray:
+    def box_matrix(self, new_matrix: np.ndarray):
         self._open_fgro.box_matrix = new_matrix
 
     @property
@@ -340,14 +339,14 @@ class SystemGro(object):
         return self._open_fgro.comment
 
     @comment_line.setter
-    def comment_line(self, new_comment):
+    def comment_line(self, new_comment: str):
         self._open_fgro.comment = new_comment
 
     @property
     def molecules_info_ordered_all(self) -> Generator[int, None, None]:
         """
         generator of int: Returns the index of the molecules in the
-            different_molecules attribute in order of appearence.
+            different_molecules attribute in order of appearance.
         """
         for index, ammount in self._pk_ammount_ordered_gen():
             for _ in range(ammount):
@@ -356,10 +355,10 @@ class SystemGro(object):
     @property
     def molecules_resname_len_index(self) -> Dict[Tuple[str, int], int]:
         """
-        dict of tuple (string, int): int: The keys of the dictionary are tuples
-            with the resname and the number of atoms of the different molecules
-            in the system and the values are its index in the list of different
-            molecules.
+        dict of tuple (string, int) to int: The keys of the dictionary are
+            tuples with the residue name and the number of atoms of the
+            different residues in the system and the values are its index in
+            the list of different molecules.
         """
         return self._molecules_pk
 
@@ -371,5 +370,5 @@ class SystemGro(object):
         """
         composition: Mapping[str, int] = Counter()
         for index, ammount in self._pk_ammount_ordered_gen():
-            composition[self.different_molecules[index].resname] += ammount
+            composition[self.different_molecules[index].resname] += ammount  # type: ignore
         return composition
