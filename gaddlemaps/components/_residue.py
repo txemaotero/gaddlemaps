@@ -4,12 +4,14 @@ This submodule defines a Residue class that will constitute molecules.
 
 import re
 import warnings
-from typing import List, Union, Any
+from typing import TYPE_CHECKING, Any, List, Union
 
 import numpy as np
 
-from . import MoleculeItp
-from ..parsers import GroLine, GroFile
+from ..parsers import GroFile, GroLine
+
+if TYPE_CHECKING:
+    from . import MoleculeTop
 
 
 class Residue:
@@ -292,30 +294,30 @@ class Residue:
             for atom in self:  # type: ignore
                 fgro.writeline(atom.gro_line())
 
-    def update_from_molecule_itp(self, mitp: MoleculeItp):
+    def update_from_molecule_itp(self, mtop: "MoleculeTop"):
         """
-        Modifies the Residue atoms name to match the itp.
+        Modifies the Residue atoms name to match the mtop.
 
-        This method is very useful when you have a miss-match between the atom
-        names in the itp and gro files. This will modify the Residue atoms
-        names to match the names in the itp. Make sure that all the atoms in the
-        .itp are in the Residue.
+        This method is very useful when you have a miss-match between the
+        atom names in the topology and gro files. This will modify the Residue
+        atoms names to match the names in the topology. Make sure that all the
+        atoms in the topology are in the Residue.
 
         Parameters
         ----------
-        mtip : MoleculeItp
+        mtop : MoleculeTop
             The molecule to match.
 
         Raises
         ------
         ValueError
-            If number of atoms in self and in mitp does not match.
+            If number of atoms in self and in mtop does not match.
 
         """
-        if len(mitp) != len(self):
+        if len(mtop) != len(self):
             raise ValueError((f'The Residue with name {self.resname} '
-                              f'missmatch the itp molecule {mitp.name}.'))
-        for at_gro, at_itp in zip(self, mitp):  # type: ignore
+                              f'missmatch the itp molecule {mtop.name}.'))
+        for at_gro, at_itp in zip(self, mtop):  # type: ignore
             at_gro.atomname = at_itp.atomname
 
     def distance_to(self, residue: Union['Residue', np.ndarray],

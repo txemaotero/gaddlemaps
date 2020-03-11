@@ -1,19 +1,13 @@
-# -*- coding: utf-8 -*-
 """
 This module contains MoleculeTop and AtomTop objects which allows to load
 atom and molecule information relative to the bonds between atoms.
 """
 
-import warnings
 import os
 from itertools import groupby
+from typing import Any, List, Set, Tuple
 
-from typing import List, Dict, Any, Union, Tuple, Set
-
-from ..parsers import ItpLineAtom, ItpFile, ItpLineBonds
 from ..parsers import itp_top
-from . import GeneralAtom, GeneralMolecule
-
 
 
 class MoleculeTop:

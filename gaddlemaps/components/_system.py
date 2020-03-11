@@ -1,19 +1,16 @@
-# -*- coding: utf-8 -*-
 """
 This module defines the System and SystemGro classes.
 """
 
-import os
-from itertools import groupby, product, islice
-from collections import Counter
 import typing
-from typing import (List, Tuple, Union, Generator, Set, Mapping, Dict,
-                    overload)
+from collections import Counter
+from itertools import islice
+from typing import Dict, Generator, List, Mapping, Tuple, overload
 
 import numpy as np
 
-from . import Residue, AtomGro, MoleculeTop, Molecule
 from ..parsers import GroFile
+from . import AtomGro, Molecule, MoleculeTop, Residue
 
 
 class System(object):

@@ -1,48 +1,14 @@
-# -*- coding: utf-8 -*-
 '''
 This module contains Atom and Molecule objects which connect information from
 both gro and itp files.
 '''
 
-import warnings
-import os
 from collections import defaultdict
-from typing import Optional, Any, List, Dict, Tuple, Union, Iterator
+from typing import Any, Dict, Iterator, List, Tuple, DefaultDict
+
 from scipy.spatial.distance import euclidean
 
-from . import AtomTop, MoleculeTop, Residue, AtomGro
-from ..parsers import GroLine
-
-
-class InfoDict():
-    def __init__(self):
-        self.molecule_itp: str = ""
-        self.molecule_gro: List[Groline] = []
-    
-    def to_dict(self) -> Dict[str, Any]:
-        return {"molecule_itp": self.molecule_itp,
-                "molecule_gro": self.molecule_gro}
-        
-    def __dict__(self):
-        return self.to_dict()
-    
-    @classmethod
-    def from_dict(cls, value: Dict[str, Any]) -> 'InfoDict':
-        out = InfoDict()
-        
-        molecule_itp = value["molecule_itp"]
-        if not isinstance(molecule_itp, str):
-            raise ValueError("The value molecule_itp must be a string")
-        
-        out.molecule_itp = molecule_itp
-        
-        out.molecule_gro = value["molecule_gro"]  # type: ignore
-        return out
-    
-    def __eq__(self, other) -> bool:
-        if not isinstance(other, InfoDict):
-            return False
-        return self.to_dict() == other.to_dict()
+from . import AtomGro, AtomTop, MoleculeTop, Residue
 
 
 class Atom:
@@ -362,7 +328,7 @@ class Molecule:
             the bond. This property is used in the alignment process in gaddle
             maps.
         """
-        bond_info: Dict[int, List[Tuple[int, float]]] = defaultdict(list)
+        bond_info: DefaultDict[int, List[Tuple[int, float]]] = defaultdict(list)
         for index, atom in enumerate(self):
             for index_to in atom.bonds:
                 atom_to = self[index_to]
