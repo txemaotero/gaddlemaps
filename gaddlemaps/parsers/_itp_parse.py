@@ -11,7 +11,7 @@ import re
 from warnings import warn
 from collections import OrderedDict
 
-from typing import Tuple, List, Union, Dict, Optional
+from typing import Tuple, List, Union, Dict, Optional, Any
 
 
 class ItpFile(OrderedDict):
@@ -312,7 +312,7 @@ class ItpLineAtom(ItpLine):
     """
     def __init__(self, line: str):
         super(ItpLineAtom, self).__init__(line)
-        self._fields = {}
+        self._fields: Dict[str, Any] = {}
         if self.content:
             self._init_fields()
 
@@ -320,7 +320,7 @@ class ItpLineAtom(ItpLine):
         parsed_content = self.content.split()
         self._fields['nr'] = int(parsed_content[0])
         self._fields['type'] = parsed_content[1]
-        self._fields['resnr'] = int(parsed_content[2])
+        self._fields['resid'] = int(parsed_content[2])
         self._fields['resname'] = parsed_content[3]
         self._fields['atomname'] = parsed_content[4]
         self._fields['cgnr'] = int(parsed_content[5])
@@ -351,11 +351,11 @@ class ItpLineAtom(ItpLine):
         return self._fields['type']
 
     @property
-    def resnr(self) -> int:
+    def resid(self) -> int:
         """
         int : The atom residue number in the itp.
         """
-        return self._fields['resnr']
+        return self._fields['resid']
 
     @property
     def resname(self) -> str:
@@ -442,7 +442,7 @@ class ItpLineAtom(ItpLine):
         lis = [
             self._fields['nr'],
             self._fields['type'],
-            self._fields['resnr'],
+            self._fields['resid'],
             self._fields['resname'],
             self._fields['atomname'],
             self._fields['cgnr'],
@@ -453,7 +453,7 @@ class ItpLineAtom(ItpLine):
         return lis
 
     @classmethod
-    def read_itp_atom(cls, line: str) -> 'ItpLineAtom':
+    def read_itp_atom(cls, line: str) -> List[Any]:
         return cls(line).parsed_line
 
 
@@ -469,7 +469,7 @@ class ItpLineDihedrals(ItpLine):
     """
     def __init__(self, line: str):
         super(ItpLineDihedrals, self).__init__(line)
-        self._fields = {}
+        self._fields: Dict[str, Any] = {}
         if self.content:
             self._init_fields()
 
@@ -565,7 +565,7 @@ class ItpLineAngles(ItpLine):
     """
     def __init__(self, line: str):
         super(ItpLineAngles, self).__init__(line)
-        self._fields = {}
+        self._fields: Dict[str, Any] = {}
         if self.content:
             self._init_fields()
 
@@ -642,7 +642,7 @@ class ItpLineBonds(ItpLine):
     """
     def __init__(self, line: str):
         super(ItpLineBonds, self).__init__(line)
-        self._fields = {}
+        self._fields: Dict[str, Any] = {}
         if self.content:
             self._init_fields()
 
@@ -716,11 +716,11 @@ class ItpLineMoleculetype(ItpLine):
             self.name = parse[0]
             self.nrexcl = int(parse[1])
         else:
-            self._name = None
-            self._nrexcl = None
+            self._name: Optional[str] = None
+            self._nrexcl: Optional[int] = None
 
     @property
-    def name(self) -> str:
+    def name(self) -> Optional[str]:
         """
         string : The molecule name.
         """
@@ -735,7 +735,7 @@ class ItpLineMoleculetype(ItpLine):
         self._name = new_name
 
     @property
-    def nrexcl(self) -> int:
+    def nrexcl(self) -> Optional[int]:
         """
         int : The number of neighbour atoms to account for the interactions.
         """
