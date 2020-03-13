@@ -1,17 +1,46 @@
 '''
-Tests for the GroFile class.
+Tests for the GroFile class and functions defined in the init of the
+submodule.
 '''
 
 
 import os
+import pytest
 import numpy as np
-from gaddlemaps.parsers import GroFile
+from gaddlemaps.parsers import (GroFile, _validate_res_atom_numbers,
+                                extract_lattice_gro, dump_lattice_gro)
 
 
 ACTUAL_PATH = os.path.split(os.path.join(os.path.abspath(__file__)))[0]
 
 
-def test_str_gro_file():
+def test_validate_res_atom_numbers():
+    """
+    Test for _validate_res_atom_numbers function.
+    """
+    line_test = '    1BMIM    C2    2   1.706   1.984   0.708'
+    assert _validate_res_atom_numbers(line_test) == (1, 2)
+    line_test = '    ABMIM    C2    2   1.706   1.984   0.708'
+    with pytest.raises(IOError, match=r".* residue .*"):
+        _validate_res_atom_numbers(line_test)
+    line_test = '    1BMIM    C2    A   1.706   1.984   0.708'
+    with pytest.raises(IOError, match=r".* atom .*"):
+        _validate_res_atom_numbers(line_test)
+
+
+def test_lattice_gro():
+    line_test = '   0.99000   0.40000   0.17800'
+    box = extract_lattice_gro(line_test)
+    box_test = np.array([
+        [0.99, 0, 0],
+        [0, 0.4, 0],
+        [0, 0, 0.178]
+    ])
+    assert np.isclose(box, box_test).all()
+    assert line_test.strip() == dump_lattice_gro(box).strip()
+
+
+def test_gro_file():
     """
     Test for opening a gro from string
     """
