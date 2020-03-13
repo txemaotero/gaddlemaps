@@ -167,7 +167,7 @@ class System:
         return self.system_gro.fgro
 
 
-class SystemGro(object):
+class SystemGro:
     """
     Class to work with the information in gro files.
 

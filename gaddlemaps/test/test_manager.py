@@ -74,7 +74,7 @@ def molecule_popc_AA():
     return Molecule(popcitp, [popcgro])
 
 
-class TestManager(object):
+class TestManager:
     """
     Test for Manager class.
 

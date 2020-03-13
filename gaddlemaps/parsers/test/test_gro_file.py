@@ -16,20 +16,7 @@ def test_str_gro_file():
     Test for opening a gro from string
     """
     fname = os.path.join(ACTUAL_PATH, '../../data/BMIM_AA.gro')
-    gro_file = GroFile(fname, 'r')
-    _aux_test_bmim_aa(gro_file)
-
-
-def test_buffer_gro_file():
-    """
-    Test for opening a gro from an open buffer.
-    """
-    fname = os.path.join(ACTUAL_PATH, '../../data/BMIM_AA.gro')
-    gro_file = GroFile(open(fname))
-    _aux_test_bmim_aa(gro_file)
-
-
-def _aux_test_bmim_aa(open_fgro: GroFile):
+    open_fgro = GroFile(fname, 'r')
     assert open_fgro.natoms == 25
     box = open_fgro.box_matrix
     assert isinstance(box, np.ndarray)

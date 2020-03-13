@@ -14,7 +14,7 @@ from ._auxilliary import calcule_base
 from .components import Atom, Molecule
 
 
-class ExchangeMap(object):
+class ExchangeMap:
     """
     Functor to extrapolate atomic resolution to other configurations.
 

@@ -174,7 +174,7 @@ def accept_metropolis(energy_0: float, energy_1: float,
     return np.random.rand() <= acceptance*factor
 
 
-class Chi2Calculator(object):
+class Chi2Calculator:
     """
     Functor that calculates the chi2 between 2 positions arrays.
 

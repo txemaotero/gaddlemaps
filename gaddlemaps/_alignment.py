@@ -12,7 +12,7 @@ from .components import Molecule
 from .parsers import GroFile
 
 
-class Alignment(object):
+class Alignment:
     """
     Class to manage the molecules alignment.
 

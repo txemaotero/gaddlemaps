@@ -23,7 +23,7 @@ GroLine = Union[Tuple[int, str, str, int, float, float, float],
                 Tuple[int, str, str, int, float, float, float, float, float, float]]
 
 
-class GroFile(object):
+class GroFile:
     """
     Implements a file object for opening and writing .gro files
 
@@ -60,9 +60,7 @@ class GroFile(object):
     NUMBER_FIGURES = 7
 
     def __init__(self, path: str, mode: str = "r"):
-
         super(GroFile, self).__init__()
-        
 
         mode = self._correct_mode(mode)
         self._file = open(path, mode)

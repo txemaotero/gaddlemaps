@@ -180,7 +180,7 @@ class ItpSection(list):
         return self._lines[:]
 
 
-class ItpLine(object):
+class ItpLine:
     """
     A class to parse content of lines from .itp file.
 

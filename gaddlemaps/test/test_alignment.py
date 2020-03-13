@@ -94,7 +94,7 @@ def test_remove_hydrogens(vte_aa):
     assert restr_test == restr
 
 
-class TestAlignment(object):
+class TestAlignment:
     """
     Test for the Alignment class
 

@@ -14,7 +14,7 @@ from .parsers import GroFile
 Deformations = Dict[str, Optional[Tuple[int, ...]]]
 Restrictions = Dict[str, Optional[List[Tuple[int, int]]]]
 
-class Manager(object):
+class Manager:
     """
     Class to manage the mapping process of a simulation system.
 
