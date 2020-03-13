@@ -394,7 +394,7 @@ class GroFile:
             A list with the following information:
                 + mol_index(integer)
                 + resname (string)
-                + atomname (string)
+                + name (string)
                 + global_index (integer)
                 + x, y, z (floats)
                 + vx, vy ,vz (floats) [optional]]
@@ -458,7 +458,7 @@ class GroFile:
         atominfo[0] = atomlist[0] % 99999 + int(atomlist[0] > 99999)
         atominfo[3] = atomlist[3] % 99999 + int(atomlist[3] > 99999)
 
-        # Validate the atomname and resname
+        # Validate the name and resname
         atominfo[1] = cls.validate_string(atomlist[1])
         atominfo[2] = cls.validate_string(atomlist[2])
 
@@ -508,7 +508,7 @@ class GroFile:
             A list with the following information:
                 + mol_index(integer)
                 + resname (string)
-                + atomname (string)
+                + name (string)
                 + global_index (integer)
                 + x, y, z (floats)
                 + vx, vy ,vz (floats) [optional]
@@ -668,7 +668,7 @@ class GroFile:
     @staticmethod
     def validate_string(string: str) -> str:
         """
-        Validates a string to be valid as resname or as atomname.
+        Validates a string to be valid as resname or as name.
 
         If the input name has more than 5 characters, new name is returned
         cutting the input one.

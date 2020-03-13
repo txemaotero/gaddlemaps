@@ -318,7 +318,7 @@ class Residue:
             raise ValueError((f'The Residue with name {self.resname} '
                               f'missmatch the itp molecule {mtop.name}.'))
         for at_gro, at_itp in zip(self, mtop):  # type: ignore
-            at_gro.atomname = at_itp.atomname
+            at_gro.name = at_itp.name
 
     def distance_to(self, residue: Union['Residue', np.ndarray],
                     box_vects: np.ndarray = None,
@@ -385,7 +385,7 @@ class AtomGro:
         Residue number of the atom.
     resname : str
         Residue name of the atom.
-    atomname : str
+    name : str
         Name of the atom.
     atomid : str
         Atom index in the .gro file.
@@ -400,7 +400,7 @@ class AtomGro:
         super(AtomGro, self).__init__()
         (self.resid,
          self.resname,
-         self.atomname,
+         self.name,
          self.atomid,
          cordx,
          cordy,
@@ -429,7 +429,7 @@ class AtomGro:
             return other + self
 
     def __str__(self) -> str:
-        string = 'Atom {} with residue {} and number {}.'.format(self.atomname,
+        string = 'Atom {} with residue {} and number {}.'.format(self.name,
                                                                  self.resname,
                                                                  self.resid)
         return string
@@ -443,7 +443,7 @@ class AtomGro:
         """
         if isinstance(element, AtomGro):
             return ((self.resname == element.resname) and
-                    (self.atomname == element.atomname))
+                    (self.name == element.name))
         return False
 
     def __ne__(self, element: Any) -> bool:
@@ -469,7 +469,7 @@ class AtomGro:
         elements = [
             self.resid,
             self.resname,
-            self.atomname,
+            self.name,
             self.atomid,
         ]
         elements += list(self.position)
@@ -492,7 +492,7 @@ class AtomGro:
             The copied atom.
 
         """
-        input_list = [self.resid, self.resname, self.atomname, self.atomid]
+        input_list = [self.resid, self.resname, self.name, self.atomid]
         input_list += list(self.position)
         if self.velocity is not None:
             input_list += list(self.velocity)
@@ -512,9 +512,9 @@ class AtomGro:
         string : The element of the atom. It is obtained removing the non
             alphabetic character in the atom name.
         """
-        element = re.findall(r'([A-Za-z]+)', self.atomname)
+        element = re.findall(r'([A-Za-z]+)', self.name)
         if element:
             return element[0]
         else:
-            raise IOError(('Wrong format for atomname ({}). The element can'
-                           ' not be parsed.'.format(self.atomname)))
+            raise IOError(('Wrong format for name ({}). The element can'
+                           ' not be parsed.'.format(self.name)))

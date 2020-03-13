@@ -322,7 +322,7 @@ class ItpLineAtom(ItpLine):
         self._fields['type'] = parsed_content[1]
         self._fields['resid'] = int(parsed_content[2])
         self._fields['resname'] = parsed_content[3]
-        self._fields['atomname'] = parsed_content[4]
+        self._fields['name'] = parsed_content[4]
         self._fields['cgnr'] = int(parsed_content[5])
         try:
             self._fields['charge'] = float(parsed_content[6])
@@ -365,11 +365,11 @@ class ItpLineAtom(ItpLine):
         return self._fields['resname']
 
     @property
-    def atomname(self) -> str:
+    def name(self) -> str:
         """
         string : The atom name in the itp.
         """
-        return self._fields['atomname']
+        return self._fields['name']
 
     @property
     def cgnr(self) -> int:
@@ -444,7 +444,7 @@ class ItpLineAtom(ItpLine):
             self._fields['type'],
             self._fields['resid'],
             self._fields['resname'],
-            self._fields['atomname'],
+            self._fields['name'],
             self._fields['cgnr'],
             self._fields['charge'],
         ]

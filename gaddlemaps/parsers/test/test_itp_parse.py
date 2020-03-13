@@ -69,7 +69,7 @@ def test_itp_line(itp_file: ItpFile):
     assert atom_line.type == 'S'
     assert atom_line.resid == 1
     assert atom_line.resname == 'SDS'
-    assert atom_line.atomname == 'S'
+    assert atom_line.name == 'S'
     assert atom_line.cgnr == 1
     assert atom_line.charge == 1.284
     assert atom_line.mass == 32.06

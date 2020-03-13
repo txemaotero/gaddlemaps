@@ -17,9 +17,9 @@ class Atom:
 
     You can access to the methods and attributes that both AtomGro and
     AtomItp have. To create the atom object, both input atoms should have the
-    same resname and atomname attributes. On the other hand, only the attributes
+    same resname and name attributes. On the other hand, only the attributes
     from the AtomGro can be changed (e.g. positions, velocities, ...) excluding
-    the resname and atomname. 
+    the resname and name. 
 
     Parameters
     ----------
@@ -74,7 +74,7 @@ class Atom:
         if attr in ['_atom_top', '_atom_gro']:
             super(Atom, self).__setattr__(attr, value)
         # Special cases that are present in both atoms
-        elif attr in ('resname', 'atomname'):
+        elif attr in ('resname', 'name'):
             setattr(self._atom_top, attr, value)
             setattr(self._atom_gro, attr, value)
         elif attr in super(Atom, self).__dir__():
@@ -87,7 +87,7 @@ class Atom:
             super(Atom, self).__setattr__(attr, value)
 
     def __str__(self) -> str:
-        string = (f'Atom {self.atomname} of molecule {self.resname}'
+        string = (f'Atom {self.name} of molecule {self.resname}'
                   f' with residue number {self.resid}.')
         return string
 

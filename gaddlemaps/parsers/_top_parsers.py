@@ -63,7 +63,7 @@ def _itp_top_atoms(itp_file: ItpFile) -> Tuple[List[Tuple[str, str, int]],
     atoms_number = {}  # atom number to index
     for atom_line in itp_file['atoms']:
         if atom_line.content:
-            atoms.append((atom_line.atomname, atom_line.resname,
+            atoms.append((atom_line.name, atom_line.resname,
                           atom_line.resid))
             atoms_number[atom_line.number] = index
             index += 1
