@@ -1,9 +1,5 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 '''
-Test for the functions defined in the init of the module.
-
+Test for the functions defined in the _backend submodule.
 '''
 
 import numpy as np

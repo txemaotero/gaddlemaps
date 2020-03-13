@@ -3,13 +3,13 @@
 This module contains features to manage the alignment engine.
 '''
 
+from typing import Any, List, Optional, Tuple
+
 import numpy as np
 
-from typing import Tuple, Union, List, Optional, Any, Dict
-
-from .components import Molecule, InfoDict
-from .parsers import GroFile
 from . import ExchangeMap, minimize_molecules
+from .components import Molecule
+from .parsers import GroFile
 
 
 class Alignment(object):
@@ -56,8 +56,8 @@ class Alignment(object):
     SIGMA_SCALE = 0.5
     STEPS_FACTOR = 5000
 
-    def __init__(self, start: Optional[Molecule] = None,
-                 end: Optional[Molecule] = None):
+    def __init__(self, start: Molecule = None,
+                 end: Molecule = None):
         super(Alignment, self).__init__()
         self._start: Optional[Molecule] = None
         self._end: Optional[Molecule] = None
@@ -129,8 +129,8 @@ class Alignment(object):
                                   ' end one. Pleas check that both molecules'
                                   ' are the same.'))
 
-    def align_molecules(self, restrictions: Optional[List[Tuple[int, int]]] = None,
-                        deformation_types: Optional[Tuple[int, ...]] = None,
+    def align_molecules(self, restrictions: List[Tuple[int, int]] = None,
+                        deformation_types: Tuple[int, ...] = None,
                         ignore_hydrogens: bool = True,
                         auto_guess_protein_restrictions: bool = True):
         """
@@ -261,7 +261,7 @@ class Alignment(object):
             raise ValueError("Start and End molecules must be set before the exchange map")
         self.exchange_map = ExchangeMap(self.start, self.end, scale_factor)
 
-    def write_comparative_gro(self, fname: Optional[str] = None):
+    def write_comparative_gro(self, fname: str = None):
         """
         Writes a .gro file with start and end molecules to check the overlap.
 
@@ -294,46 +294,6 @@ class Alignment(object):
                 fgro.writeline(atom.gro_line())
             for atom in end:  # type: ignore
                 fgro.writeline(atom.gro_line())
-
-    @property
-    def info(self) -> Dict[str, Any]:
-        """
-        dict : A dictionary with the needed information to restore the
-            Alignment object.
-        """
-        ex_map = (None if self.exchange_map is None
-                  else self.exchange_map.scale_factor)
-
-        def mol_dic(mol): return mol if mol is None else mol.info.to_dict()
-        info = {
-            'start': mol_dic(self.start),
-            'end': mol_dic(self.end),
-            'exchange_map': ex_map,
-        }
-        return info
-
-    @classmethod
-    def from_info(cls, info_dict: Dict[str, Any]) -> 'Alignment':
-        """
-        Builds the Alignment from the information returned by info property.
-
-        Parameters
-        ----------
-        info_dict : A dictionary with the needed information to restore the
-            object.
-
-        Returns
-        -------
-        align : Alignment
-            The loaded object.
-        """
-        start = InfoDict.from_dict(info_dict['start'])
-        end = InfoDict.from_dict(info_dict['end'])
-        ali = Alignment(start=Molecule.from_info(start),
-                        end=Molecule.from_info(end))
-        if info_dict['exchange_map'] is not None:
-            ali.init_exchange_map(info_dict['exchange_map'])
-        return ali
 
 
 def remove_hydrogens(molecule: Molecule,

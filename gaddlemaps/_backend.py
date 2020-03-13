@@ -5,9 +5,11 @@ algorithm to use if the c++ one is not available.
 """
 
 import sys
-from typing import Tuple, List, Dict, Optional
+from typing import Dict, List, Optional, Tuple
+
 import numpy as np
 from scipy.spatial.distance import cdist
+
 from . import move_mol_atom
 from ._auxilliary import rotation_matrix
 

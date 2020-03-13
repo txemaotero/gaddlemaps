@@ -1,19 +1,16 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 '''
-This module tests the whole Gaddle maps, since the creation of the system to
-map to the writing of the final .gro.
-
+This module tests the whole Gaddle maps, starting with the creation of a system
+to then calculate the alignment and finally map the system and write the final
+.gro file.
 '''
 
 import os
-import pytest
+
 import numpy as np
+import pytest
 
 from gaddlemaps import Manager
 from gaddlemaps.components import System
-
 
 ACTUAL_PATH = os.path.split(os.path.join(os.path.abspath(__file__)))[0]
 

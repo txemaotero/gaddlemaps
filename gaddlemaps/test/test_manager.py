@@ -1,20 +1,15 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 '''
 This module contains test for _manager module.
-
 '''
 
-import os
 import json
-import pytest
+import os
+
 import numpy as np
+import pytest
 
-from gaddlemaps import (Manager, Alignment)
-from gaddlemaps.components import (System, Molecule,
-                                   SystemGro, MoleculeItp)
-
+from gaddlemaps import Alignment, Manager
+from gaddlemaps.components import Molecule, MoleculeTop, System, SystemGro
 
 ACTUAL_PATH = os.path.split(os.path.join(os.path.abspath(__file__)))[0]
 
@@ -43,8 +38,8 @@ def molecule_VTE_AA():
     fitpVTE = os.path.join(ACTUAL_PATH, '../data/VTE_AA.itp')
     fgroVTE = os.path.join(ACTUAL_PATH, '../data/VTE_AA.gro')
     VTEgro = SystemGro(fgroVTE)[0]
-    VTEitp = MoleculeItp(fitpVTE)
-    return Molecule(VTEgro, VTEitp)
+    VTEitp = MoleculeTop(fitpVTE)
+    return Molecule(VTEitp, [VTEgro])
 
 
 @pytest.fixture
@@ -59,8 +54,8 @@ def molecule_VTE_map():
     fitpVTE = os.path.join(ACTUAL_PATH, '../data/vitamin_E_CG.itp')
     fgroVTE = os.path.join(ACTUAL_PATH, '../data/VTE_map.gro')
     VTEgro = SystemGro(fgroVTE)[0]
-    VTEitp = MoleculeItp(fitpVTE)
-    return Molecule(VTEgro, VTEitp)
+    VTEitp = MoleculeTop(fitpVTE)
+    return Molecule(VTEitp, [VTEgro])
 
 
 @pytest.fixture
@@ -75,8 +70,8 @@ def molecule_popc_AA():
     fitppopc = os.path.join(ACTUAL_PATH, '../data/popc-AA.itp')
     fgropopc = os.path.join(ACTUAL_PATH, '../data/popc-AA.gro')
     popcgro = SystemGro(fgropopc)[0]
-    popcitp = MoleculeItp(fitppopc)
-    return Molecule(popcgro, popcitp)
+    popcitp = MoleculeTop(fitppopc)
+    return Molecule(popcitp, [popcgro])
 
 
 class TestManager(object):

@@ -257,7 +257,7 @@ class Molecule:
         """
         return [res.resname for res in self._residues]
 
-    @resname.setter
+    @resnames.setter
     def resnames(self, new_resnames: List[str]):
         if isinstance(new_resnames, list) and isinstance(new_resnames[0], str):
             if len(new_resnames) != len(self.resnames):

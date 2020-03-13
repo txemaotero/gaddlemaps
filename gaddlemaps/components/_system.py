@@ -13,7 +13,7 @@ from ..parsers import GroFile
 from . import AtomGro, Molecule, MoleculeTop, Residue
 
 
-class System(object):
+class System:
     """
     Class to manage simulation systems.
 

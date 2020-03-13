@@ -4,16 +4,16 @@ This module contains functions that change the molecules conformation.
 '''
 
 
-from typing import Dict, List, Tuple, Optional
 from collections import deque
+from typing import Dict, List, Optional, Tuple, Deque
 
 import numpy as np
 
 
 def move_mol_atom(atoms_pos: np.ndarray,
                   bonds_info: Dict[int, List[Tuple[int, float]]],
-                  atom_index: Optional[int] = None,
-                  displ: Optional[np.ndarray] = None,
+                  atom_index: int = None,
+                  displ: np.ndarray = None,
                   sigma_scale: float = 0.5) -> np.ndarray:
     """
     Moves an atom of a molecule respecting almost all bond distances.
@@ -62,9 +62,9 @@ def move_mol_atom(atoms_pos: np.ndarray,
     atoms_pos[atom_index] += displ
     wait_queue.remove(atom_index)
 
-    queue = deque()
+    queue: Deque[Tuple[int, int, int]] = deque()
     for i in bonds_info[atom_index]:
-        queue.append((atom_index, i[0], i[1]))
+        queue.append((atom_index, i[0], i[1]))  # type: ignore
         wait_queue.remove(i[0])
 
     while queue:
@@ -75,7 +75,7 @@ def move_mol_atom(atoms_pos: np.ndarray,
         atoms_pos[ind2] = atoms_pos[ind2] + (modulo - bond) * unit
         for bonds in bonds_info[ind2]:
             if bonds[0] in wait_queue:
-                queue.append((ind2, bonds[0], bonds[1]))
+                queue.append((ind2, bonds[0], bonds[1]))  # type: ignore
                 wait_queue.remove(bonds[0])
     return atoms_pos
 

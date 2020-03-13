@@ -1,20 +1,16 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 '''
-Test for exchange map module.
-
+Test for _exchange_map submodule.
 '''
 
-
-import pytest
 import os
-import numpy as np
-from gaddlemaps.components import (Molecule, MoleculeGro, MoleculeItp,
-                                   AtomGro, System)
-from gaddlemaps.parsers import GroFile
-from gaddlemaps import ExchangeMap
 
+import numpy as np
+import pytest
+
+from gaddlemaps import ExchangeMap
+from gaddlemaps.components import (AtomGro, Molecule, MoleculeTop, Residue,
+                                   System)
+from gaddlemaps.parsers import GroFile
 
 ACTUAL_PATH = os.path.split(os.path.join(os.path.abspath(__file__)))[0]
 
@@ -24,10 +20,10 @@ def molecule_aa():
     fgro = os.path.join(ACTUAL_PATH, '../data/CUR_AA.gro')
     with GroFile(fgro) as _file:
         atoms = [AtomGro(line) for line in _file]
-    mgro = MoleculeGro(atoms)
+    mgro = Residue(atoms)
     fitp = os.path.join(ACTUAL_PATH, '../data/CUR_AA.itp')
-    mitp = MoleculeItp(fitp)
-    return Molecule(mgro, mitp)
+    mitp = MoleculeTop(fitp)
+    return Molecule(mitp, [mgro])
 
 
 @pytest.fixture
@@ -35,10 +31,10 @@ def molecule_cg():
     fgro = os.path.join(ACTUAL_PATH, '../data/CUR_map.gro')
     with GroFile(fgro) as _file:
         atoms = [AtomGro(line) for line in _file]
-    mgro = MoleculeGro(atoms)
+    mgro = Residue(atoms)
     fitp = os.path.join(ACTUAL_PATH, '../data/CUR_CG.itp')
-    mitp = MoleculeItp(fitp)
-    return Molecule(mgro, mitp)
+    mitp = MoleculeTop(fitp)
+    return Molecule(mitp, [mgro])
 
 
 @pytest.fixture
@@ -60,10 +56,10 @@ def vte_aa():
     fgro = os.path.join(ACTUAL_PATH, '../data/VTE_AA.gro')
     with GroFile(fgro) as _file:
         atoms = [AtomGro(line) for line in _file]
-    mgro = MoleculeGro(atoms)
+    mgro = Residue(atoms)
     fitp = os.path.join(ACTUAL_PATH, '../data/VTE_AA.itp')
-    mitp = MoleculeItp(fitp)
-    return Molecule(mgro, mitp)
+    mitp = MoleculeTop(fitp)
+    return Molecule(mitp, [mgro])
 
 
 @pytest.fixture
@@ -78,10 +74,10 @@ def vte_map_cg():
     fgro = os.path.join(ACTUAL_PATH, '../data/VTE_map.gro')
     with GroFile(fgro) as _file:
         atoms = [AtomGro(line) for line in _file]
-    mgro = MoleculeGro(atoms)
+    mgro = Residue(atoms)
     fitp = os.path.join(ACTUAL_PATH, '../data/vitamin_E_CG.itp')
-    mitp = MoleculeItp(fitp)
-    return Molecule(mgro, mitp)
+    mitp = MoleculeTop(fitp)
+    return Molecule(mitp, [mgro])
 
 
 def test_exchange_map(molecule_cg, molecule_aa):
@@ -138,7 +134,7 @@ def test_bf4_map(bf4_cg, bf4_aa):
 
 def test_vte_map(vte_aa, vte_cg, vte_map_cg):
     emap = ExchangeMap(vte_map_cg, vte_aa, scale_factor=1)
-    # Check the copy of refmolecule
+    # Check the copy of ref-molecule
     start_positions = vte_aa.atoms_positions
     new = emap(vte_cg)
     end_positions = vte_aa.atoms_positions

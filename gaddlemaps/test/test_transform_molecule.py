@@ -1,9 +1,5 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 '''
-Test for the features from _transform_molecule file.
-
+Test for the features from _transform_molecule submodule.
 '''
 
 import pytest

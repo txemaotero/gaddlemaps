@@ -5,12 +5,13 @@ in GADDLE MAPS.
 '''
 
 from collections import defaultdict
-from typing import Dict, Tuple, DefaultDict, List
-import numpy as np
+from typing import DefaultDict, Dict, List, Tuple
 
+import numpy as np
 from scipy.spatial.distance import euclidean
-from .components import Molecule, Atom
+
 from ._auxilliary import calcule_base
+from .components import Atom, Molecule
 
 
 class ExchangeMap(object):
@@ -165,7 +166,7 @@ class ExchangeMap(object):
         return new_mol
 
     @property
-    def equivalences(self) -> DefaultDict[int, List[int]]:
+    def equivalences(self) -> Dict[int, List[int]]:
         """
         dict of int to list of int : {r1_atom_index: [closest_r2_atoms_indexs]}
         """

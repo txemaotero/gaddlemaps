@@ -4,12 +4,15 @@ This module contains the class that is used to manage the inputs in the
 mapping process, starts the alignment and extrapolate the system.
 '''
 
-from typing import List, Dict, Any, Tuple, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
-from .components import System, Molecule
-from .parsers import GroFile
 from . import Alignment, guess_protein_restrains
+from .components import Molecule, System
+from .parsers import GroFile
 
+
+Deformations = Dict[str, Optional[Tuple[int, ...]]]
+Restrictions = Dict[str, Optional[List[Tuple[int, int]]]]
 
 class Manager(object):
     """
@@ -123,48 +126,12 @@ class Manager(object):
                 name = mol.name
                 if name not in complete_correspondence:
                     continue
-                new_mol = complete_correspondence[name].exchange_map(mol)
+                new_mol = complete_correspondence[name].exchange_map(mol)  # type: ignore
                 for atom in new_mol:
                     line = atom.gro_line()
                     line[3] = atom_index
                     atom_index += 1
                     fgro.writeline(line)
-
-    @property
-    def info(self) -> Dict[str, Any]:
-        """
-        dict : A dictionary with the needed information to restore the
-            manager.
-        """
-        mol_corr_info = {n: ali.info
-                         for n, ali in self.molecule_correspondence.items()}
-        info = {
-            'system': self.system.info,
-            'molecule_correspondence': mol_corr_info,
-        }
-
-        return info
-
-    @classmethod
-    def from_info(cls, info_dict: Dict[str, Any]) -> 'Manager':
-        """
-        Builds the manager from the information returned by info property.
-
-        Parameters
-        ----------
-        info_dict : A dictionary with the needed information to restore the
-            manager.
-
-        Returns
-        -------
-        manager : Manager
-            The loaded system.
-        """
-        man = Manager(System.from_info(info_dict['system']))
-        mol_corr = {n: Alignment.from_info(ali)
-                    for n, ali in info_dict['molecule_correspondence'].items()}
-        man.molecule_correspondence = mol_corr
-        return man
 
     @property
     def complete_correspondence(self) -> Dict[str, Alignment]:
@@ -227,9 +194,9 @@ class Manager(object):
         for mol in molecules:
             self.add_end_molecule(mol)
 
-    def align_molecules(self, restrictions: Optional[List[Tuple[int, int]]] = None,
-                        deformation_types: Optional[Tuple[int, ...]] = None,
-                        ignore_hydrogens: Optional[Dict[str, bool]] = None,
+    def align_molecules(self, restrictions: Restrictions = None,
+                        deformation_types: Deformations = None,
+                        ignore_hydrogens: Dict[str, bool] = None,
                         parse_restrictions: bool = True):
         """
         Starts the alignment engine to find the optimal overlap between molecules
@@ -273,6 +240,7 @@ class Manager(object):
 
         if parse_restrictions or restrictions is None:
             restrictions = self.parse_restrictions(restrictions)
+        assert isinstance(restrictions, dict)  # for typing
         deformation_types = self._parse_deformations(deformation_types)
         ignore_hydrogens = self._parse_ignore_hydrogens(ignore_hydrogens)
         mols_corr = self.complete_correspondence
@@ -283,7 +251,7 @@ class Manager(object):
             print('Aligning {}:\n'.format(name))
             mols_corr[name].align_molecules(restr, defor, ignor)
 
-    def parse_restrictions(self, restrictions: Optional[List[Tuple[int, int]]],
+    def parse_restrictions(self, restrictions: Restrictions = None,
                            guess_proteins: bool = False):
         """
         Checks the format and validates of the restrictions for the alignment.
@@ -329,26 +297,30 @@ class Manager(object):
                 new_restrictions[name] = None
                 if guess_proteins:
                     start = self.molecule_correspondence[name].start
+                    assert isinstance(start, Molecule)
                     resnames = start.resnames
                     if len(resnames) > 3:
                         end = self.molecule_correspondence[name].end
+                        assert isinstance(end , Molecule)
                         restr = guess_protein_restrains(start, end)
                         new_restrictions[name] = restr
                         continue
             return new_restrictions
         complete_correspondence = self.complete_correspondence
-        for name in restrictions:
-            if name not in complete_correspondence:
+        for name_comp in restrictions:
+            if name_comp not in complete_correspondence:
                 raise KeyError('There are no molecules in the system with name'
-                               ': {}'.format(name))
+                               ': {}'.format(name_comp))
 
         new_restrictions = {}
         for name in complete_correspondence:
             if guess_proteins:
                 start = self.molecule_correspondence[name].start
+                assert isinstance(start, Molecule)
                 resnames = start.resnames
                 if len(resnames) > 3:
                     end = self.molecule_correspondence[name].end
+                    assert isinstance(end, Molecule)
                     restr = guess_protein_restrains(start, end)
                     new_restrictions[name] = restr
                     continue
@@ -368,7 +340,9 @@ class Manager(object):
         """Validates the input restrictions and change from atomid to index.
         """
         mol_start = self.molecule_correspondence[name].start
+        assert isinstance(mol_start, Molecule)
         mol_end = self.molecule_correspondence[name].end
+        assert isinstance(mol_end, Molecule)
 
         msg_format = ('{}: The input restriction has wrong format. See '
                       'documentation of align_molecules method.')
@@ -396,7 +370,7 @@ class Manager(object):
             list_res.append((ind1, ind2))
         return list_res
 
-    def _parse_deformations(self, deformations: Optional[Dict[str, Any]]) -> Dict[str, Any]:
+    def _parse_deformations(self, deformations: Deformations = None) -> Dict[str, Any]:
         if deformations is None:
             return {name: None for name in self.complete_correspondence}
         complete_correspondence = self.complete_correspondence
@@ -404,7 +378,7 @@ class Manager(object):
             if name not in complete_correspondence:
                 raise KeyError('There are no molecules with names {} in the '
                                'system.'.format(', '.join(deformations.keys())))
-        new_def = {}
+        new_def: Deformations = {}
         for name in complete_correspondence:
             if name in deformations:
                 deformation = deformations[name]
@@ -424,7 +398,7 @@ class Manager(object):
                 new_def[name] = None
         return new_def
 
-    def _parse_ignore_hydrogens(self, ignore_hydrogens: Optional[Dict[str, bool]]) -> Dict[str, bool]:
+    def _parse_ignore_hydrogens(self, ignore_hydrogens: Dict[str, bool] = None) -> Dict[str, bool]:
         if ignore_hydrogens is None:
             return {name: True for name in self.complete_correspondence}
         complete_correspondence = self.complete_correspondence

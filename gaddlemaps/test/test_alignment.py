@@ -1,22 +1,18 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 '''
-Test for the _alignment module.
-
+Test for the _alignment submodule.
 '''
 
-
-import os
 import json
-import pytest
-import numpy as np
-from gaddlemaps.components import (Molecule, MoleculeGro, MoleculeItp,
-                                   AtomGro, SystemGro, System)
-from gaddlemaps.parsers import GroFile
-from gaddlemaps import (Alignment, ExchangeMap, remove_hydrogens,
-                        guess_molecule_restrains, guess_protein_restrains)
+import os
 
+import numpy as np
+import pytest
+
+from gaddlemaps import (Alignment, ExchangeMap, guess_molecule_restrains,
+                        guess_protein_restrains, remove_hydrogens)
+from gaddlemaps.components import (AtomGro, Molecule, MoleculeTop, Residue,
+                                   System, SystemGro)
+from gaddlemaps.parsers import GroFile
 
 ACTUAL_PATH = os.path.split(os.path.join(os.path.abspath(__file__)))[0]
 
@@ -26,10 +22,10 @@ def molecule_aa():
     fgro = os.path.join(ACTUAL_PATH, '../data/CUR_AA.gro')
     with GroFile(fgro) as _file:
         atoms = [AtomGro(line) for line in _file]
-    mgro = MoleculeGro(atoms)
+    mgro = Residue(atoms)
     fitp = os.path.join(ACTUAL_PATH, '../data/CUR_AA.itp')
-    mitp = MoleculeItp(fitp)
-    return Molecule(mgro, mitp)
+    mitp = MoleculeTop(fitp)
+    return Molecule(mitp, [mgro])
 
 
 @pytest.fixture
@@ -37,10 +33,10 @@ def molecule_cg():
     fgro = os.path.join(ACTUAL_PATH, '../data/CUR_map.gro')
     with GroFile(fgro) as _file:
         atoms = [AtomGro(line) for line in _file]
-    mgro = MoleculeGro(atoms)
+    mgro = Residue(atoms)
     fitp = os.path.join(ACTUAL_PATH, '../data/CUR_CG.itp')
-    mitp = MoleculeItp(fitp)
-    return Molecule(mgro, mitp)
+    mitp = MoleculeTop(fitp)
+    return Molecule(mitp, [mgro])
 
 
 @pytest.fixture
@@ -62,10 +58,10 @@ def vte_aa():
     fgro = os.path.join(ACTUAL_PATH, '../data/VTE_AA.gro')
     with GroFile(fgro) as _file:
         atoms = [AtomGro(line) for line in _file]
-    mgro = MoleculeGro(atoms)
+    mgro = Residue(atoms)
     fitp = os.path.join(ACTUAL_PATH, '../data/VTE_AA.itp')
-    mitp = MoleculeItp(fitp)
-    return Molecule(mgro, mitp)
+    mitp = MoleculeTop(fitp)
+    return Molecule(mitp, [mgro])
 
 
 @pytest.fixture
@@ -80,10 +76,10 @@ def vte_map_cg():
     fgro = os.path.join(ACTUAL_PATH, '../data/VTE_map.gro')
     with GroFile(fgro) as _file:
         atoms = [AtomGro(line) for line in _file]
-    mgro = MoleculeGro(atoms)
+    mgro = Residue(atoms)
     fitp = os.path.join(ACTUAL_PATH, '../data/vitamin_E_CG.itp')
-    mitp = MoleculeItp(fitp)
-    return Molecule(mgro, mitp)
+    mitp = MoleculeTop(fitp)
+    return Molecule(mitp, [mgro])
 
 
 @pytest.fixture
@@ -220,4 +216,3 @@ def test_gess_protein_restrains(protein_cg, protein_aa):
     assert (0, 0) in restr
     assert (8, 47) in restr
     assert (23, 126) in restr
-
