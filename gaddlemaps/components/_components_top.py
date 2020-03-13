@@ -5,7 +5,7 @@ atom and molecule information relative to the bonds between atoms.
 
 import os
 from itertools import groupby
-from typing import Any, List, Set, Tuple
+from typing import Any, List, Set, Tuple, Generator
 
 from ..parsers import itp_top
 
@@ -72,6 +72,10 @@ class MoleculeTop:
     def __len__(self) -> int:
         return len(self.atoms)
 
+    def __iter__(self) -> Generator['AtomTop', None, None]:
+        for atom in self.atoms:
+            yield atom
+
     def __eq__(self, element: Any) -> bool:
         if isinstance(element, MoleculeTop):
             if element.name == self.name and len(self) == len(element):
@@ -95,12 +99,14 @@ class MoleculeTop:
         To set this property a list with the same length of residues must be
         passed.
         """
-        tot_resnames = ('{:5}{}'.format(atom.resname, atom.resnr)
+        tot_resnames = ('{:5}{}'.format(atom.resname, atom.resid)
                         for atom in self)  # type: ignore
         return [x[0][:5].strip() for x in groupby(tot_resnames)]
     
     @resnames.setter
     def resnames(self, new_resnames: List[str]):
+        if not isinstance(new_resnames, list):
+            raise ValueError('new_resnames must be a list of strings.')
         if len(new_resnames) != len(self.resnames):
             raise ValueError((f'Expected {len(self.resnames)} residue name'
                               f' while {len(new_resnames)} given.'))
@@ -119,7 +125,7 @@ class MoleculeTop:
             [(resname_1, number_of_atoms_with_resname_1),
             (resname_2, number_of_atoms_with_resname_2), ...]
         """
-        tot_resnames = ('{:5}{}'.format(atom.resname, atom.resnr)
+        tot_resnames = ('{:5}{}'.format(atom.resname, atom.resid)
                         for atom in self)  # type: ignore
         res_len = []
         old_resname: List = []
@@ -256,4 +262,4 @@ def _find_connected_atoms(atoms: List[AtomTop], index: int, connected: list):
      for new_index in atoms[index].bonds:
          if new_index in connected:
              continue
-         return _find_connected_atoms(atoms, new_index, connected)
+         _find_connected_atoms(atoms, new_index, connected)
