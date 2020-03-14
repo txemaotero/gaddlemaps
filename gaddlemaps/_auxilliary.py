@@ -15,7 +15,7 @@ def rotation_matrix(axis: np.ndarray, theta: float) -> np.ndarray:
     Parameters
     ----------
     axis : list or numpy.ndarray
-        A vector that defines the axis of rotation
+        A vector in 3D space that defines the axis of rotation
     theta : float
         The angle to rotate in radians in counter clockwise.
 

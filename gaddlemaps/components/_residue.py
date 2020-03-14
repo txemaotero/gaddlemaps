@@ -4,7 +4,7 @@ This submodule defines a Residue class that will constitute molecules.
 
 import re
 import warnings
-from typing import TYPE_CHECKING, Any, List, Union
+from typing import TYPE_CHECKING, Any, List, Union, Generator, Optional
 
 import numpy as np
 
@@ -44,12 +44,16 @@ class Residue:
                               'Residue initialization'))
         if len(residnames) > 1:
             raise ValueError(('The atoms of a Residue must have the same'
-                              'residue name and number. Found residues: '
+                              ' residue name and number. Found residues: '
                               f'{residnames}.'))
         self._atoms_gro = atoms
 
     def __getitem__(self, index: int) -> 'AtomGro':
         return self._atoms_gro[index]
+
+    def __iter__(self) -> Generator['AtomGro', None, None]:
+        for atom in self._atoms_gro:
+            yield atom
 
     def __len__(self) -> int:
         return len(self._atoms_gro)
@@ -64,7 +68,7 @@ class Residue:
         Two residues are equal if all their atoms are equal.
         """
         if isinstance(element, Residue) and (len(self) == len(element)):
-            return all(at1 == at2 for at1, at2 in zip(element, self)) # type: ignore
+            return all(at1 == at2 for at1, at2 in zip(element, self))
         return False
 
     def __ne__(self, element: Any) -> bool:
@@ -73,7 +77,7 @@ class Residue:
     def __add__(self, other: Union['Residue', 'AtomGro']) -> 'Residue':
         if isinstance(other, Residue):
             if self.residname != other.residname:
-                raise ValueError(('To add two Resides the must have the same'
+                raise ValueError(('To add two Residues they must have the same'
                                   ' residue name and number. Given residues:'
                                   f' {self.residname}, {other.residname}.'))
             return Residue(self.atoms + other.atoms)
@@ -108,27 +112,33 @@ class Residue:
         """
         numpy.ndarray((N, 3)) : An array with the atoms positions.
         """
-        return np.array([a.position for a in self])  # type: ignore
+        return np.array([a.position for a in self])
 
     @atoms_positions.setter
     def atoms_positions(self, new_positions: np.ndarray):
-        for atom, pos in zip(self, new_positions):  # type: ignore
+        for atom, pos in zip(self, new_positions):
             atom.position = pos
 
     @property
-    def atoms_velocities(self) -> np.ndarray:
+    def atoms_velocities(self) -> Optional[np.ndarray]:
         """
-        numpy.ndarray((N, 3)) : An array with the atoms velocities.
+        numpy.ndarray((N, 3)) or None : An array with the atoms velocities.
+            If one of the atoms has no velocity this returns None.
         """
-        return np.array([a.velocity for a in self])  # type: ignore
+        vels = []
+        for atom in self:
+            if atom.velocity is None:
+                return None
+            vels.append(atom.velocity)
+        return np.array(vels)
 
     @atoms_velocities.setter
-    def atoms_velocities(self, new_velocities: np.ndarray):
+    def atoms_velocities(self, new_velocities: Optional[np.ndarray]):
         if new_velocities is None:
-            for atom in self:  # type: ignore
+            for atom in self:
                 atom.velocity = None
             return
-        for atom, vel in zip(self, new_velocities):  # type: ignore
+        for atom, vel in zip(self, new_velocities):
             atom.velocity = vel
 
     @property
@@ -136,13 +146,15 @@ class Residue:
         """
         list of int: A list with the ids of the atoms of the residue.
         """
-        return [at.atomid for at in self]  # type: ignore
+        return [at.atomid for at in self]
 
     @atoms_ids.setter
     def atoms_ids(self, new_ids: List[int]):
         if len(self) != len(new_ids):
             raise IndexError('The new ids must have the same length as self.')
-        for atom, _id in zip(self, new_ids):  # type: ignore
+        if not all(isinstance(i, int) for i in new_ids):
+            raise TypeError(f'atomids must be integers, given: {new_ids}')
+        for atom, _id in zip(self, new_ids):
             atom.atomid = _id
 
     @property
@@ -291,10 +303,10 @@ class Residue:
 
         """
         with GroFile(fout, 'w') as fgro:
-            for atom in self:  # type: ignore
+            for atom in self:
                 fgro.writeline(atom.gro_line())
 
-    def update_from_molecule_itp(self, mtop: "MoleculeTop"):
+    def update_from_molecule_top(self, mtop: "MoleculeTop"):
         """
         Modifies the Residue atoms name to match the mtop.
 
@@ -317,7 +329,7 @@ class Residue:
         if len(mtop) != len(self):
             raise ValueError((f'The Residue with name {self.resname} '
                               f'missmatch the itp molecule {mtop.name}.'))
-        for at_gro, at_itp in zip(self, mtop):  # type: ignore
+        for at_gro, at_itp in zip(self, mtop):
             at_gro.name = at_itp.name
 
     def distance_to(self, residue: Union['Residue', np.ndarray],
@@ -326,7 +338,7 @@ class Residue:
         """
         Returns the distance between self and residue.
 
-        mol can be a molecule instance or a 3D vector.
+        residue can be a Residue instance or a 3D vector.
 
         Parameters
         ----------
@@ -335,8 +347,8 @@ class Residue:
         box_vects : numpy.ndarray
             The box vectors to apply periodic boundary conditions.
         inv : bool
-            If it is True, box_vects are considered as the inverse matrix of the
-           actual box_vects for a better performance.
+            If it is True, box_vects are considered as the inverse matrix of
+            the actual box_vects for a better performance.
 
         Returns
         -------
@@ -449,7 +461,7 @@ class AtomGro:
     def __ne__(self, element: Any) -> bool:
         return not self == element
 
-    def gro_line(self, parsed: bool = True) -> List[Union[str, int, float]]:
+    def gro_line(self, parsed: bool = True) -> Union[str, List[Union[str, int, float]]]:
         """
         Returns the gro line corresponding to the atom.
 

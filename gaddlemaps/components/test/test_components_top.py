@@ -21,7 +21,7 @@ def bf4_itp_fname() -> str:
 
 
 @pytest.fixture
-def bf4_molecule(bf4_itp_fname) -> MoleculeTop:
+def bf4_molecule(bf4_itp_fname: str) -> MoleculeTop:
     """
     A BF4 MoleculeTop.
     """
