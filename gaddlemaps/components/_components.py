@@ -4,7 +4,7 @@ both gro and itp files.
 '''
 
 from collections import defaultdict
-from typing import Any, Dict, Iterator, List, Tuple, DefaultDict
+from typing import Any, Dict, Iterator, List, Tuple, DefaultDict, Union
 
 from scipy.spatial.distance import euclidean
 
@@ -42,7 +42,7 @@ class Atom:
             raise TypeError('atom_gro input have to be an AtomGro instance.')
         if not isinstance(atom_top, AtomTop):
             raise TypeError('atom_top input have to be an AtomTop instance.')
-        if atom_gro.residname != atom_top.residname:
+        if atom_gro.resname != atom_top.resname or atom_gro.name != atom_top.name:
             raise IOError((f'Input atoms do not match:\n-{atom_gro}'
                            f'\n-{atom_top}'))
         self._atom_gro = atom_gro
@@ -62,18 +62,45 @@ class Atom:
         """
         return self._atom_top
 
+    @property
+    def top_resid(self) -> int:
+        """
+        Residue number for the part of the atom with the topology (atom_top).
+        """
+        return self._atom_top.resid
+    
+    @top_resid.setter
+    def top_resid(self, new_resid: int):
+        self._atom_top.resid = new_resid
+
+    @property
+    def gro_resid(self) -> int:
+        """
+        Residue number for the gro part of the atom (atom_gro).
+        """
+        return self._atom_gro.resid
+    
+    @gro_resid.setter
+    def gro_resid(self, new_resid: int):
+        self._atom_gro.resid = new_resid
+
     def __getattr__(self, attr: str) -> Any:
+        if attr == 'resid':
+            raise AttributeError(('To access resid use gro_resid or'
+                                  ' top_resid properties.'))
         if hasattr(self._atom_gro, attr):
             return getattr(self._atom_gro, attr)
-        elif hasattr(self._atom_top, attr):
+        if hasattr(self._atom_top, attr):
             return getattr(self._atom_top, attr)
-        else:
-            raise AttributeError(f'Atom object has no attribute {attr}')
+        raise AttributeError(f'Atom object has no attribute {attr}')
 
     def __setattr__(self, attr: str, value: Any):
         if attr in ['_atom_top', '_atom_gro']:
             super(Atom, self).__setattr__(attr, value)
         # Special cases that are present in both atoms
+        elif attr == 'resid':
+            raise AttributeError(('To set resid use gro_resid or'
+                                  ' top_resid properties.'))
         elif attr in ('resname', 'name'):
             setattr(self._atom_top, attr, value)
             setattr(self._atom_gro, attr, value)
@@ -88,7 +115,7 @@ class Atom:
 
     def __str__(self) -> str:
         string = (f'Atom {self.name} of molecule {self.resname}'
-                  f' with residue number {self.resid}.')
+                  f' with gro residue number {self.gro_resid}.')
         return string
 
     __repr__ = __str__
@@ -120,8 +147,16 @@ class Atom:
         return Atom(self._atom_top, self._atom_gro.copy())
 
     def __eq__(self, atom: Any) -> bool:
+        """
+        Two atoms are the same if they have the same name, resname, index and top_resid.
+        """
+        
         if isinstance(atom, Atom):
-            return self.residname == atom.residname
+            condition = (self.resname == atom.resname and
+                         self.name == atom.name and
+                         self.index == atom.index and
+                         self.top_resid == atom.top_resid)
+            return condition
         return False
 
 
@@ -165,9 +200,9 @@ class Molecule:
         index = 0
         for res_index, res in enumerate(residues):
             self._residues.append(res.copy())
-            self._each_atom_resid.append(res_index)
             for atom in res:  # type: ignore
                 self._atoms.append(Atom(molecule_top[index], atom))
+                self._each_atom_resid.append(res_index)
                 index += 1
 
     @property
@@ -201,7 +236,7 @@ class Molecule:
         raise AttributeError(f'Molecule object has no attribute {attr}')
 
     def __setattr__(self, attr: str, value: Any):
-        if attr in ['_molecule_itp', '_residues']:
+        if attr in ['_molecule_top', '_residues']:
             super(Molecule, self).__setattr__(attr, value)
         elif attr in super(Molecule, self).__dir__():
             super(Molecule, self).__setattr__(attr, value)
@@ -245,20 +280,20 @@ class Molecule:
         return [atom.copy() for atom in self._atoms]
 
     @property
-    def resnames(self) -> List[str]:
+    def resnames(self) -> Union[str, List[str]]:
         """
         List of string: A list with the names of the residues constituting the
             molecule.
 
-        To set this property, a list of strings with the same lenght as the
-        original must be passed. This will change each residue resname. You can
+        To set this property, a list of strings with the same length as the
+        original must be passed. This will change each residue name. You can
         also pass just a string and this will set all the residue names to the
         same value.
         """
         return [res.resname for res in self._residues]
 
     @resnames.setter
-    def resnames(self, new_resnames: List[str]):
+    def resnames(self, new_resnames: Union[str, List[str]]):
         if isinstance(new_resnames, list) and isinstance(new_resnames[0], str):
             if len(new_resnames) != len(self.resnames):
                 raise ValueError(('You should provide a list with'
@@ -367,8 +402,9 @@ def _molecule_top_and_residues_match(molecule_top: MoleculeTop,
         return False
     index = 0
     for res in residues:
-        for atom in res:  # type: ignore
-            if atom.residname != molecule_top[index]:
+        for atom in res:
+            at_top = molecule_top[index]
+            if atom.resname != at_top.resname or atom.name != at_top.name:
                 return False
             index += 1
     return True
