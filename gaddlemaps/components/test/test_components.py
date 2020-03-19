@@ -439,6 +439,9 @@ class TestMolecule:
         assert np.isclose(molecule_bmim[3].position, change_atom).all()
         assert np.isclose(test_bmim_pos, molecule_bmim.atoms_positions).all()
 
+        geom_test = np.mean(test_bmim_pos, axis=0)
+        assert np.isclose(geom_test, molecule_bmim.geometric_center).all()
+
         with pytest.raises(ValueError):
             molecule_bmim.atoms_positions = change_atom
 
@@ -507,6 +510,9 @@ class TestMolecule:
         assert np.isclose(molecule_protein[3].position, change_atom).all()
         assert np.isclose(test_protein_pos, molecule_protein.atoms_positions).all()
 
+        geom_test = np.mean(test_protein_pos, axis=0)
+        assert np.isclose(geom_test, molecule_protein.geometric_center).all()
+
         with pytest.raises(ValueError):
             molecule_protein.atoms_positions = change_atom
 
@@ -520,3 +526,25 @@ class TestMolecule:
         test_protein_pos[5] = change_atom
         assert np.isclose(molecule_protein[5].velocity, change_atom).all()
         assert np.isclose(test_protein_pos, molecule_protein.atoms_velocities).all()
+
+    def test_atoms_ids(self, molecule_protein: Molecule):
+        """
+        Test for the atoms_ids property for the molecule with multiple residues.
+        """
+        test_ids = list(range(1, 35))
+        assert molecule_protein.atoms_ids == test_ids
+
+        test_ids[2] = 5
+        molecule_protein.atoms_ids = test_ids
+        assert molecule_protein.atoms_ids == test_ids
+
+        test_ids[4] = 40
+        molecule_protein[4].atomid = 40
+        assert molecule_protein.atoms_ids == test_ids
+
+        with pytest.raises(IndexError):
+            molecule_protein.atoms_ids = [1, 2]
+
+        with pytest.raises(TypeError):
+            test_wrong = [1] * (len(test_ids) - 1) + ['test']  # type: ignore
+            molecule_protein.atoms_ids = test_wrong

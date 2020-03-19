@@ -413,6 +413,29 @@ class Molecule:
         for atom, vel in zip(self, new_velocities):
             atom.velocity = vel
 
+    @property
+    def geometric_center(self) -> np.ndarray:
+        """
+        numpy.ndarray(3): Coordinates of the geometric center of the molecule.
+        """
+        return np.mean(self.atoms_positions, axis=0)
+
+    @property
+    def atoms_ids(self) -> List[int]:
+        """
+        list of int: A list with the ids of the atoms in the residues.
+        """
+        return sum((res.atoms_ids for res in self._residues), [])
+
+    @atoms_ids.setter
+    def atoms_ids(self, new_ids: List[int]):
+        if len(self) != len(new_ids):
+            raise IndexError('The new ids must have the same length as self.')
+        if not all(isinstance(i, int) for i in new_ids):
+            raise TypeError(f'atomids must be integers, given: {new_ids}')
+        for atom, _id in zip(self, new_ids):
+            atom.atomid = _id
+
     @classmethod
     def from_files(cls, fgro: str, ftop: str) -> 'Molecule':
         """
