@@ -548,3 +548,26 @@ class TestMolecule:
         with pytest.raises(TypeError):
             test_wrong = [1] * (len(test_ids) - 1) + ['test']  # type: ignore
             molecule_protein.atoms_ids = test_wrong
+
+    def test_hidden_methods(self, molecule_bmim: Molecule):
+        """
+        Test not implemented properties and methods.
+        """
+        with pytest.raises(AttributeError):
+            test = molecule_bmim.resname
+        with pytest.raises(AttributeError):
+            molecule_bmim.resname = 'test'
+
+        with pytest.raises(AttributeError):
+            test = molecule_bmim.resid # type: ignore
+        with pytest.raises(AttributeError):
+            molecule_bmim.resid = 'test'  # type: ignore
+
+        with pytest.raises(AttributeError):
+            test = molecule_bmim.residname
+        with pytest.raises(AttributeError):
+            molecule_bmim.residname = 'test'  # type: ignore
+
+        with pytest.raises(AttributeError):
+            test = molecule_bmim.remove_atom(molecule_bmim[0]) # type: ignore
+        

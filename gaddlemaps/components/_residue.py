@@ -116,6 +116,9 @@ class Residue:
 
     @atoms_positions.setter
     def atoms_positions(self, new_positions: np.ndarray):
+        if new_positions.shape != (len(self), 3):
+            raise ValueError(('The new positions must be an array of shape '
+                              f'({len(self)}, 3)'))
         for atom, pos in zip(self, new_positions):
             atom.position = pos
 
@@ -138,6 +141,9 @@ class Residue:
             for atom in self:
                 atom.velocity = None
             return
+        if new_velocities.shape != (len(self), 3):
+            raise ValueError(('The new velocities must be an array of shape '
+                              f'({len(self)}, 3)'))
         for atom, vel in zip(self, new_velocities):
             atom.velocity = vel
 
@@ -216,7 +222,7 @@ class Residue:
 
     @resid.setter
     def resid(self, value: int):
-        for atom in self:  # type: ignore
+        for atom in self:
             atom.resid = value
 
     @property

@@ -162,13 +162,15 @@ class Atom:
         return False
 
 
-class Molecule:
+class Molecule(Residue):
     """
     Loads a molecule combining a MoleculeTop and a list of Residue.
 
     This class wraps all the features of both MoleculeTop and Residues which
     conform the molecule. When an object is initialized a copy of the input
-    residues is stored (to avoid undesired attribute changes).
+    residues is stored (to avoid undesired attribute changes). This class
+    inherits from Residue so they have the same methods and properties
+    (although most of them are reimplemented).
 
     Parameters
     ----------
@@ -185,6 +187,7 @@ class Molecule:
         If residues do not constitute the molecule_top.
 
     """
+    __excluded__ = ['resname', 'resid', 'residname', 'remove_atom']
 
     def __init__(self, molecule_top: MoleculeTop, residues: List[Residue]):
         if not _molecule_top_and_residues_match(molecule_top, residues):
@@ -202,50 +205,20 @@ class Molecule:
             self._residues.append(res.copy())
             self._each_atom_resid += [res_index] * len(res)
 
-    @property
-    def molecule_top(self) -> MoleculeTop:
-        """
-        MoleculeTop : The object with the topology information of the molecule.
-        """
-        return self._molecule_top
-
-    @property
-    def residues(self) -> List[Residue]:
-        """
-        List of Residue : a list with the Residue objects that constitute the
-        molecule.
-        """
-        return self._residues
-
-    def __getitem__(self, index: int) -> 'Atom':
+    def __getitem__(self, index: int) -> 'Atom':  # type: ignore
         residue_index = self._each_atom_resid[index]
         atom_index = sum(i == residue_index for i in self._each_atom_resid[:index])
         return Atom(self._molecule_top[index], self._residues[residue_index][atom_index])
 
-    def __len__(self) -> int:
-        return len(self._each_atom_resid)
-
-    def __iter__(self) -> Iterator['Atom']:
+    def __iter__(self) -> Iterator['Atom']:  # type: ignore
         index = 0
         for res in self._residues:
             for atom in res:
                 yield Atom(self.molecule_top[index], atom)
                 index += 1
 
-    def __getattr__(self, attr: str) -> Any:
-        if hasattr(self._molecule_top, attr):
-            return getattr(self._molecule_top, attr)
-        raise AttributeError(f'Molecule object has no attribute {attr}')
-
-    def __setattr__(self, attr: str, value: Any):
-        if attr in ['_molecule_top', '_residues']:
-            super(Molecule, self).__setattr__(attr, value)
-        elif attr in super(Molecule, self).__dir__():
-            super(Molecule, self).__setattr__(attr, value)
-        elif hasattr(self._molecule_top, attr):
-            setattr(self._molecule_top, attr, value)
-        else:
-            super(Molecule, self).__setattr__(attr, value)
+    def __len__(self) -> int:
+        return len(self._each_atom_resid)
 
     def __str__(self) -> str:
         return f'Molecule of {self.name}.'
@@ -266,6 +239,39 @@ class Molecule:
     def __ne__(self, molecule: Any) -> bool:
         return not self == molecule
 
+    def __add__(self, other: Union['Residue', 'AtomGro']) -> 'Residue':
+        raise NotImplementedError
+
+    def __radd__(self, other: Union['Residue', 'AtomGro']) -> 'Residue':
+        raise NotImplementedError
+
+    def __getattribute__(self, attr: str) -> Any:
+        """
+        Special methods that are implemented for Residue but not for
+        Molecule.
+        """
+        if attr in ['resname', 'resid', 'residname', 'remove_atom']:
+            raise AttributeError(attr)
+        else:
+            return super(Molecule, self).__getattribute__(attr)
+
+    def __getattr__(self, attr: str) -> Any:
+        if hasattr(self._molecule_top, attr):
+            return getattr(self._molecule_top, attr)
+        raise AttributeError(f'Molecule object has no attribute {attr}')
+
+    def __setattr__(self, attr: str, value: Any):
+        if attr in ['resname', 'resid', 'residname', 'remove_atom']:
+            raise AttributeError(attr)
+        if attr in ['_molecule_top', '_residues']:
+            super(Molecule, self).__setattr__(attr, value)
+        elif attr in super(Molecule, self).__dir__():
+            super(Molecule, self).__setattr__(attr, value)
+        elif hasattr(self._molecule_top, attr):
+            setattr(self._molecule_top, attr, value)
+        else:
+            super(Molecule, self).__setattr__(attr, value)
+
     def __dir__(self) -> List[str]:
         """
         For Ipython autocompletion.
@@ -275,11 +281,66 @@ class Molecule:
         return list(_dir)
 
     @property
-    def atoms(self) -> List['Atom']:
+    def molecule_top(self) -> MoleculeTop:
+        """
+        MoleculeTop : The object with the topology information of the molecule.
+        """
+        return self._molecule_top
+
+    @property
+    def residues(self) -> List[Residue]:
+        """
+        List of Residue : a list with the Residue objects that constitute the
+        molecule.
+        """
+        return self._residues
+
+    @property
+    def atoms(self) -> List['Atom']:  # type: ignore
         """
         list of Atom: List with the copies of the atoms of the molecule.
         """
         return [atom.copy() for atom in self]
+
+    @property
+    def atoms_positions(self) -> np.ndarray:
+        """
+        numpy.ndarray((N, 3)) : An array with the atoms positions.
+        """
+        return np.concatenate([res.atoms_positions for res in self._residues])
+
+    @atoms_positions.setter
+    def atoms_positions(self, new_positions: np.ndarray):
+        super(Molecule, type(self)).atoms_positions.fset(self, new_positions)
+
+    @property
+    def atoms_velocities(self) -> Optional[np.ndarray]:
+        """
+        numpy.ndarray((N, 3)) or None : An array with the atoms velocities.
+            If one of the atoms has no velocity this returns None.
+        """
+        vels = []
+        for res in self._residues:
+            res_vel = res.atoms_velocities
+            if res_vel is None:
+                return None
+            vels.append(res_vel)
+        return np.concatenate(vels)
+
+    @atoms_velocities.setter
+    def atoms_velocities(self, new_velocities: Optional[np.ndarray]):
+        super(Molecule, type(self)).atoms_velocities.fset(self, new_velocities) # type: ignore
+
+    @property
+    def atoms_ids(self) -> List[int]:
+        """
+        list of int: A list with the ids of the atoms in the residues.
+        """
+        return sum((res.atoms_ids for res in self._residues), [])
+
+    @atoms_ids.setter
+    def atoms_ids(self, new_ids: List[int]):
+        super(Molecule, type(self)).atoms_ids.fset(self, new_ids) # type: ignore
 
     @property
     def resnames(self) -> Union[str, List[str]]:
@@ -371,70 +432,6 @@ class Molecule:
                 distance = euclidean(atom.position, atom_to.position)
                 bond_info[index].append((index_to, distance))
         return dict(bond_info)
-
-    @property
-    def atoms_positions(self) -> np.ndarray:
-        """
-        numpy.ndarray((N, 3)) : An array with the atoms positions.
-        """
-        return np.concatenate([res.atoms_positions for res in self._residues])
-
-    @atoms_positions.setter
-    def atoms_positions(self, new_positions: np.ndarray):
-        if new_positions.shape != (len(self._each_atom_resid), 3):
-            raise ValueError(('The new positions must be an array of shape '
-                              f'({len(self._each_atom_resid)}, 3)'))
-        for atom, pos in zip(self, new_positions):
-            atom.position = pos
-
-    @property
-    def atoms_velocities(self) -> Optional[np.ndarray]:
-        """
-        numpy.ndarray((N, 3)) or None : An array with the atoms velocities.
-            If one of the atoms has no velocity this returns None.
-        """
-        vels = []
-        for res in self._residues:
-            res_vel = res.atoms_velocities
-            if res_vel is None:
-                return None
-            vels.append(res_vel)
-        return np.concatenate(vels)
-
-    @atoms_velocities.setter
-    def atoms_velocities(self, new_velocities: Optional[np.ndarray]):
-        if new_velocities is None:
-            for atom in self:
-                atom.velocity = None
-            return
-        if new_velocities.shape != (len(self._each_atom_resid), 3):
-            raise ValueError(('The new velocities must be an array of shape '
-                              f'({len(self._each_atom_resid)}, 3)'))
-        for atom, vel in zip(self, new_velocities):
-            atom.velocity = vel
-
-    @property
-    def geometric_center(self) -> np.ndarray:
-        """
-        numpy.ndarray(3): Coordinates of the geometric center of the molecule.
-        """
-        return np.mean(self.atoms_positions, axis=0)
-
-    @property
-    def atoms_ids(self) -> List[int]:
-        """
-        list of int: A list with the ids of the atoms in the residues.
-        """
-        return sum((res.atoms_ids for res in self._residues), [])
-
-    @atoms_ids.setter
-    def atoms_ids(self, new_ids: List[int]):
-        if len(self) != len(new_ids):
-            raise IndexError('The new ids must have the same length as self.')
-        if not all(isinstance(i, int) for i in new_ids):
-            raise TypeError(f'atomids must be integers, given: {new_ids}')
-        for atom, _id in zip(self, new_ids):
-            atom.atomid = _id
 
     @classmethod
     def from_files(cls, fgro: str, ftop: str) -> 'Molecule':
