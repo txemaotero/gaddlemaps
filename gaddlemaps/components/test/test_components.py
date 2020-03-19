@@ -3,11 +3,13 @@ Tests for _components submodule.
 """
 
 from typing import Callable, List
+from pathlib import Path
 
 import os
 import pytest
 import numpy as np
 
+from gaddlemaps import rotation_matrix
 from gaddlemaps.parsers import GroFile
 from gaddlemaps.components import (AtomGro, AtomTop, Atom, Molecule,
                                    MoleculeTop, Residue)
@@ -571,3 +573,86 @@ class TestMolecule:
         with pytest.raises(AttributeError):
             test = molecule_bmim.remove_atom(molecule_bmim[0]) # type: ignore
         
+    def test_rotate(self, molecule_protein: Molecule):
+        """
+        Test for the rotate method.
+        """
+        rot_mat = rotation_matrix([0, 0, 1], 2*np.pi)
+        old_pos = molecule_protein.atoms_positions
+        molecule_protein.rotate(rot_mat)
+        assert np.isclose(old_pos, molecule_protein.atoms_positions).all()
+
+        rot_mat = rotation_matrix([0, 0, 1], 0)
+        molecule_protein.rotate(rot_mat)
+        assert np.isclose(old_pos, molecule_protein.atoms_positions).all()
+        
+    def test_move(self, molecule_protein: Molecule):
+        """
+        Tests for the moving methods.
+        """
+        # move_to
+        move_to = [0, 1, 2]
+        old_pos = molecule_protein.atoms_positions
+        displ = move_to - molecule_protein.geometric_center
+        molecule_protein.move_to(move_to)
+        assert np.isclose(move_to, molecule_protein.geometric_center).all()
+        assert np.isclose(old_pos + displ, molecule_protein.atoms_positions).all()
+
+        # move
+        move = [0, 1, 2]
+        old_pos = molecule_protein.atoms_positions
+        old_center = molecule_protein.geometric_center
+        molecule_protein.move(move)
+        assert np.isclose(move + old_center, molecule_protein.geometric_center).all()
+        assert np.isclose(old_pos + move, molecule_protein.atoms_positions).all()
+
+    def test_write_gro(self, molecule_protein: Molecule, tmp_path: Path):
+        """
+        Test for writing gro files.
+        """
+        subdir = tmp_path / "molecule_test"
+        subdir.mkdir()
+        fgrotmp = str(subdir / "test_write_gro.gro")
+        molecule_protein.write_gro(fgrotmp)
+        with GroFile(fgrotmp) as fgro:
+            assert fgro.natoms == 34
+            for line, atom in zip(fgro, molecule_protein):
+                atom_gro = AtomGro(line)
+                assert atom.atom_gro == atom_gro
+
+    def test_update_from_top(self, molecule_bmim: Molecule):
+        """
+        Test for update_from_molecule_top method.
+        """
+        # Make a copy of the original top
+        fname = os.path.join(ACTUAL_PATH, '../../data/BMIM_AA.itp')
+        mol_top = MoleculeTop(fname)
+        for at1, at2 in zip(mol_top, molecule_bmim):
+            assert at1.name == at2.name
+
+        mol_top[1].name = 'test'
+        molecule_bmim.update_from_molecule_top(mol_top)
+        for at1, at2 in zip(mol_top, molecule_bmim):
+            assert at1.name == at2.name
+        assert molecule_bmim[1].name == 'test'
+
+    def test_distance_to(self, molecule_protein: Molecule):
+        """
+        Test for method related with distances.
+        """
+        center = molecule_protein.geometric_center
+        # Distance to zero
+        assert ((center**2).sum())**.5 == molecule_protein.distance_to_zero
+
+        # Distance to self
+        assert molecule_protein.distance_to(molecule_protein) == 0
+        # Distance to zero
+        assert molecule_protein.distance_to([0, 0, 0]) == molecule_protein.distance_to_zero
+        # Distance to zero with box vector
+        box_vects = np.diag(molecule_protein.geometric_center)
+        assert round(molecule_protein.distance_to([0, 0, 0],
+                                                  box_vects=box_vects), 8) == 0
+        # Distance to zero with box vector with inv
+        inv_box = np.linalg.inv(box_vects)
+        assert round(molecule_protein.distance_to([0, 0, 0], box_vects=inv_box,
+                                                  inv=True), 8) == 0
