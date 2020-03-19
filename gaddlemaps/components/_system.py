@@ -1,5 +1,5 @@
 """
-This module defines the System and SystemGro classes.
+This submodule defines the System and SystemGro classes.
 """
 
 import typing
@@ -26,6 +26,12 @@ class System:
         Gromacs file with the system information.
     *ftops : string
         Paths with the files with the bonds information to load molecules.
+
+    Raises
+    ------
+    IOError
+        If one of the topology files do not match with any molecule in the
+        system.
 
     """
     def __init__(self, fgro: str, *ftops: str):
@@ -64,15 +70,19 @@ class System:
             for info in islice(self._molecules_ordered_all_gen(), index.start,
                                index.stop, index.step):
                 itp_index, gro_start, gro_end = info
-                m_gro = sum(self.system_gro[gro_start:gro_end])
-                mol = self.different_molecules[itp_index].copy(m_gro)
+                residues = self.system_gro[gro_start:gro_end]
+                mol = self.different_molecules[itp_index].copy(residues)
                 molecules.append(mol)
             return molecules
+        if index < 0:
+            index += len(self)
+        if index < 0:
+            raise IndexError('Molecule index out of range')
         for i, info in enumerate(self._molecules_ordered_all_gen()):
             if i == index:
                 itp_index, gro_start, gro_end = info
-                m_gro = sum(self.system_gro[gro_start:gro_end])
-                mol = self.different_molecules[itp_index].copy(m_gro)
+                residues = self.system_gro[gro_start:gro_end]
+                mol = self.different_molecules[itp_index].copy(residues)
                 return mol
         raise IndexError('Molecule index out of range')
 
@@ -124,9 +134,9 @@ class System:
         """
         Adds and identifies the molecule from the ftop to the system.
         """
-        self.add_molecule_itp(MoleculeTop(ftop))
+        self.add_molecule_top(MoleculeTop(ftop))
 
-    def add_molecule_itp(self, mol_top: MoleculeTop):
+    def add_molecule_top(self, mol_top: MoleculeTop):
         """
         Adds a molecule to the system and find it in the gro file.
         """
@@ -171,7 +181,7 @@ class SystemGro:
     """
     Class to work with the information in gro files.
 
-    Basically this class acts as a list of Residue objects. Only one Residue
+    Basically this class acts like a list of Residue objects. Only one Residue
     instance of each type is loaded to afford memory for large systems. The
     positions of the rest of the residues are storage and they are generated
     when requested.
@@ -286,20 +296,12 @@ class SystemGro:
         """
         return self._open_fgro.box_matrix
 
-    @box_matrix.setter
-    def box_matrix(self, new_matrix: np.ndarray):
-        self._open_fgro.box_matrix = new_matrix
-
     @property
     def comment_line(self) -> str:
         """
         str: The comment line in the gro file.
         """
         return self._open_fgro.comment
-
-    @comment_line.setter
-    def comment_line(self, new_comment: str):
-        self._open_fgro.comment = new_comment
 
     @property
     def molecules_info_ordered_all(self) -> Generator[int, None, None]:
