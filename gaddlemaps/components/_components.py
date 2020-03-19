@@ -192,18 +192,13 @@ class Molecule:
 
         self._molecule_top = molecule_top
         self._residues: List[Residue] = []
-        self._atoms: List[Atom] = []
         # Save the residue number of each atom
         self._each_atom_resid: List[int] = []
 
         # Initialize attributes
-        index = 0
         for res_index, res in enumerate(residues):
             self._residues.append(res.copy())
-            for atom in res:  # type: ignore
-                self._atoms.append(Atom(molecule_top[index], atom))
-                self._each_atom_resid.append(res_index)
-                index += 1
+            self._each_atom_resid += [res_index] * len(res)
 
     @property
     def molecule_top(self) -> MoleculeTop:
@@ -221,14 +216,19 @@ class Molecule:
         return self._residues
 
     def __getitem__(self, index: int) -> 'Atom':
-        return self._atoms[index]
+        residue_index = self._each_atom_resid[index]
+        atom_index = sum(i == residue_index for i in self._each_atom_resid[:index])
+        return Atom(self._molecule_top[index], self._residues[residue_index][atom_index])
 
     def __len__(self) -> int:
-        return len(self._atoms)
+        return len(self._each_atom_resid)
 
     def __iter__(self) -> Iterator['Atom']:
-        for atom in self._atoms:
-            yield atom
+        index = 0
+        for res in self._residues:
+            for atom in res:
+                yield Atom(self.molecule_top[index], atom)
+                index += 1
 
     def __getattr__(self, attr: str) -> Any:
         if hasattr(self._molecule_top, attr):
@@ -277,7 +277,7 @@ class Molecule:
         """
         list of Atom: List with the copies of the atoms of the molecule.
         """
-        return [atom.copy() for atom in self._atoms]
+        return [atom.copy() for atom in self]
 
     @property
     def resnames(self) -> Union[str, List[str]]:
@@ -302,13 +302,9 @@ class Molecule:
 
             for atom, res_index in zip(self, self._each_atom_resid):
                 atom.resname = new_resnames[res_index]
-            for res, resname in zip(self._residues, new_resnames):
-                res.resname = resname
         elif isinstance(new_resnames, str):
             for atom in self:
                 atom.resname = new_resnames
-            for res in self._residues:
-                res.resname = new_resnames
         else:
             raise TypeError('Resnames must be a string or a list of string.')
 
@@ -316,7 +312,7 @@ class Molecule:
         """
         Returns a copy of the molecule.
 
-        If new_molecule_gro is passed, the old molecule_gro will be replaced
+        If new_molecule_gro is passed, the old residues will be replaced
         to update the positions. This is used in the extrapolation step.
 
         Parameters
@@ -350,7 +346,10 @@ class Molecule:
             The index of the atom in the molecule.
 
         """
-        return self._atoms.index(atom)
+        for index, self_atom in enumerate(self):
+            if self_atom == atom:
+                return index
+        raise ValueError(f'{atom} is not in molecule.')
 
     @property
     def bonds_distance(self) -> Dict[int, List[Tuple[int, float]]]:
