@@ -393,3 +393,130 @@ class TestMolecule:
                 diff = atom.position - molecule_bmim[index_to].position
                 dist_test = np.linalg.norm(diff)
                 assert round(dist, 5) == round(dist_test, 5)
+
+    def test_position_velocities_bmim(self, molecule_bmim: Molecule):
+        """
+        Test for the atom position and velocities get and setter for bmim
+        molecule.
+        """
+        test_bmim_pos = np.array([
+            [1.593, 1.896, 0.729],
+            [1.706, 1.984, 0.708],
+            [1.807, 1.892, 0.660],
+            [1.755, 1.761, 0.652],
+            [1.626, 1.764, 0.693],
+            [1.738, 2.029, 0.805],
+            [1.809, 1.674, 0.618],
+            [1.559, 1.679, 0.698],
+            [1.464, 1.937, 0.778],
+            [1.942, 1.930, 0.624],
+            [2.044, 1.858, 0.713],
+            [2.188, 1.899, 0.677],
+            [2.289, 1.828, 0.765],
+            [1.463, 2.046, 0.799],
+            [1.441, 1.883, 0.872],
+            [1.385, 1.914, 0.703],
+            [1.960, 1.904, 0.517],
+            [1.955, 2.039, 0.636],
+            [2.024, 1.884, 0.819],
+            [2.034, 1.748, 0.701],
+            [2.200, 2.009, 0.689],
+            [2.208, 1.872, 0.571],
+            [2.392, 1.859, 0.737],
+            [2.273, 1.854, 0.872],
+            [2.281, 1.718, 0.753]
+        ])
+        assert np.isclose(test_bmim_pos, molecule_bmim.atoms_positions).all()
+        assert molecule_bmim.atoms_velocities is None
+
+        test_bmim_pos[1] = np.array((1, 1, 1))
+        molecule_bmim.atoms_positions = test_bmim_pos
+        assert np.isclose(test_bmim_pos, molecule_bmim.atoms_positions).all()
+
+        change_atom = np.array((2, 3, 4))
+        test_bmim_pos[3] = change_atom
+        molecule_bmim[3].position = change_atom
+        assert np.isclose(molecule_bmim[3].position, change_atom).all()
+        assert np.isclose(test_bmim_pos, molecule_bmim.atoms_positions).all()
+
+        with pytest.raises(ValueError):
+            molecule_bmim.atoms_positions = change_atom
+
+        with pytest.raises(ValueError):
+            molecule_bmim.atoms_velocities = change_atom
+
+        molecule_bmim.atoms_velocities = test_bmim_pos
+        assert np.isclose(test_bmim_pos, molecule_bmim.atoms_velocities).all()
+
+        change_atom = np.array((5, 1, 3))
+        test_bmim_pos[5] = change_atom
+        assert np.isclose(molecule_bmim[5].velocity, change_atom).all()
+        assert np.isclose(test_bmim_pos, molecule_bmim.atoms_velocities).all()
+
+    def test_position_velocities_protein(self, molecule_protein: Molecule):
+        """
+        Test for the atom position and velocities get and setter for the
+        molecule with multiple residues.
+        """
+        test_protein_pos = np.array([
+            [2.490, 3.850, 5.330],
+            [2.310, 4.040, 5.170],
+            [2.190, 4.380, 5.220],
+            [2.480, 3.530, 5.200],
+            [2.280, 3.350, 5.350],
+            [2.180, 3.040, 5.290],
+            [2.700, 3.410, 5.120],
+            [2.770, 3.370, 4.800],
+            [2.900, 3.290, 5.390],
+            [3.220, 3.190, 5.390],
+            [3.440, 3.130, 5.540],
+            [2.700, 3.030, 5.470],
+            [2.490, 3.060, 5.730],
+            [2.430, 3.160, 6.050],
+            [2.710, 2.860, 5.200],
+            [2.550, 2.950, 4.940],
+            [3.040, 2.820, 5.150],
+            [3.110, 2.980, 4.860],
+            [3.090, 2.690, 5.460],
+            [3.280, 2.580, 5.720],
+            [3.120, 2.490, 5.990],
+            [2.830, 2.450, 5.450],
+            [2.750, 2.270, 5.670],
+            [2.460, 2.210, 5.800],
+            [2.910, 2.280, 5.170],
+            [2.850, 2.430, 4.850],
+            [3.210, 2.310, 5.160],
+            [3.250, 2.010, 5.010],
+            [3.330, 1.820, 5.160],
+            [3.220, 2.140, 5.500],
+            [3.550, 2.070, 5.510],
+            [3.830, 2.170, 5.540],
+            [3.050, 1.870, 5.590],
+            [2.790, 1.770, 5.390]
+        ])
+        assert np.isclose(test_protein_pos, molecule_protein.atoms_positions).all()
+        assert molecule_protein.atoms_velocities is None
+
+        test_protein_pos[1] = np.array((1, 1, 1))
+        molecule_protein.atoms_positions = test_protein_pos
+        assert np.isclose(test_protein_pos, molecule_protein.atoms_positions).all()
+
+        change_atom = np.array((2, 3, 4))
+        test_protein_pos[3] = change_atom
+        molecule_protein[3].position = change_atom
+        assert np.isclose(molecule_protein[3].position, change_atom).all()
+        assert np.isclose(test_protein_pos, molecule_protein.atoms_positions).all()
+
+        with pytest.raises(ValueError):
+            molecule_protein.atoms_positions = change_atom
+
+        with pytest.raises(ValueError):
+            molecule_protein.atoms_velocities = change_atom
+
+        molecule_protein.atoms_velocities = test_protein_pos
+        assert np.isclose(test_protein_pos, molecule_protein.atoms_velocities).all()
+
+        change_atom = np.array((5, 1, 3))
+        test_protein_pos[5] = change_atom
+        assert np.isclose(molecule_protein[5].velocity, change_atom).all()
+        assert np.isclose(test_protein_pos, molecule_protein.atoms_velocities).all()

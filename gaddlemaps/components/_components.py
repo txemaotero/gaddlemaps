@@ -4,8 +4,10 @@ both gro and itp files.
 '''
 
 from collections import defaultdict
-from typing import Any, Dict, Iterator, List, Tuple, DefaultDict, Union
+from typing import (Any, Dict, Iterator, List, Tuple, DefaultDict, Union,
+                    Optional)
 
+import numpy as np
 from scipy.spatial.distance import euclidean
 
 from . import AtomGro, AtomTop, MoleculeTop, Residue
@@ -369,6 +371,47 @@ class Molecule:
                 distance = euclidean(atom.position, atom_to.position)
                 bond_info[index].append((index_to, distance))
         return dict(bond_info)
+
+    @property
+    def atoms_positions(self) -> np.ndarray:
+        """
+        numpy.ndarray((N, 3)) : An array with the atoms positions.
+        """
+        return np.concatenate([res.atoms_positions for res in self._residues])
+
+    @atoms_positions.setter
+    def atoms_positions(self, new_positions: np.ndarray):
+        if new_positions.shape != (len(self._each_atom_resid), 3):
+            raise ValueError(('The new positions must be an array of shape '
+                              f'({len(self._each_atom_resid)}, 3)'))
+        for atom, pos in zip(self, new_positions):
+            atom.position = pos
+
+    @property
+    def atoms_velocities(self) -> Optional[np.ndarray]:
+        """
+        numpy.ndarray((N, 3)) or None : An array with the atoms velocities.
+            If one of the atoms has no velocity this returns None.
+        """
+        vels = []
+        for res in self._residues:
+            res_vel = res.atoms_velocities
+            if res_vel is None:
+                return None
+            vels.append(res_vel)
+        return np.concatenate(vels)
+
+    @atoms_velocities.setter
+    def atoms_velocities(self, new_velocities: Optional[np.ndarray]):
+        if new_velocities is None:
+            for atom in self:
+                atom.velocity = None
+            return
+        if new_velocities.shape != (len(self._each_atom_resid), 3):
+            raise ValueError(('The new velocities must be an array of shape '
+                              f'({len(self._each_atom_resid)}, 3)'))
+        for atom, vel in zip(self, new_velocities):
+            atom.velocity = vel
 
     @classmethod
     def from_files(cls, fgro: str, ftop: str) -> 'Molecule':
