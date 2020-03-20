@@ -232,7 +232,7 @@ class GroFile:
 
         self._file.seek(self._init_position + index * self._atomline_bytesize)
 
-    def _readline(self):
+    def _readline(self) -> str:
         return self._file.readline()
 
     def writelines(self, list_atomlist: List[GroLine]):
@@ -286,7 +286,7 @@ class GroFile:
         self._file.write("\n")
         self._current_atom += 1
 
-    def _setup_write_file(self, atomlist):
+    def _setup_write_file(self, atomlist: Union[str, GroLine]):
         if isinstance(atomlist, str):
             atomlist = self.parse_atomline(atomlist)
         # setupt the format_dict
@@ -309,7 +309,7 @@ class GroFile:
         self.writeline(atomlist)
         self._atomline_bytesize = self._file.tell() - self._init_position
 
-    def readline(self, parsed: bool=True) -> Union[str, List[Union[str, int, float]]]:
+    def readline(self, parsed: bool=True) -> Union[GroLine, str]:
         """
         Returns the next line of the gro file.
 
@@ -338,7 +338,7 @@ class GroFile:
         self._current_atom += 1
         return self.parse_atomline(info, self._format)
 
-    def readlines(self) -> List[List[Union[str, int, float]]]:
+    def readlines(self) -> List[GroLine]:
         """
         Returns all the lines of a grofile parsed in lists.
 
@@ -352,14 +352,14 @@ class GroFile:
         info = [i for i in self]
         return info
 
-    def next(self):
+    def next(self) -> GroLine:
         """
         Returns next atomline formatted
         """
-        return self.readline()
+        return self.readline()  #type: ignore
 
     @classmethod
-    def _correct_mode(cls, mode):
+    def _correct_mode(cls, mode: str) -> str:
         """
         Checks if the '+' modifier is set and removes it because it is
         not compatible yet
@@ -476,7 +476,7 @@ class GroFile:
 
     @classmethod
     def parse_atomline(cls, atomline: str, 
-                       format_dict: Optional[Dict] = None) -> List:
+                       format_dict: Optional[Dict] = None) -> GroLine:
         """
         Parses an atom line and returns its content in a list.
 
@@ -533,23 +533,23 @@ class GroFile:
 
         res_num, atom_num = _validate_res_atom_numbers(atomline)
 
-        info = [
-            res_num,
-            atomline[5:10].strip(),
-            atomline[10:15].strip(),
-            atom_num,
-            float(atomline[20:20+space]),
-            float(atomline[20+space:20+2*space]),
-            float(atomline[20+2*space:20+3*space])
-        ]
+        info: GroLine = (
+                res_num,
+                atomline[5:10].strip(),
+                atomline[10:15].strip(),
+                atom_num,
+                float(atomline[20:20+space]),
+                float(atomline[20+space:20+2*space]),
+                float(atomline[20+2*space:20+3*space])
+        )
 
         if format_dict["velocities"]:
-            aux_info = [
+            aux_info: Tuple[float, float, float] = (
                 float(atomline[20+3*space:20+4*space]),
                 float(atomline[20+4*space:20+5*space]),
                 float(atomline[20+5*space:20+6*space]),
-            ]
-            info += aux_info
+            )
+            info += aux_info  #type: ignore
 
         return info
 
