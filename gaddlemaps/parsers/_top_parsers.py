@@ -3,9 +3,9 @@ This module defines functions to parse topology files and return a list of the
 atoms already bonded.
 """
 
-from typing import Tuple, List, TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Tuple
 
-from . import ItpLineAtom, ItpFile, ItpLineBonds
+from . import ItpFile, ItpLineAtom, ItpLineBonds
 
 if TYPE_CHECKING:
     from ..components import AtomTop
@@ -85,4 +85,3 @@ def _parse_itp_bonds(itp_file: ItpFile) -> List[Tuple[int, int]]:
         for bond in itp_file.get(key, []):
             bonds.append((bond.atom_from, bond.atom_to))
     return bonds
-

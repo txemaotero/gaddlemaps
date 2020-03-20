@@ -5,7 +5,7 @@ atom and molecule information relative to the bonds between atoms.
 
 import os
 from itertools import groupby
-from typing import Any, List, Set, Tuple, Generator
+from typing import Any, Generator, List, Set, Tuple
 
 from ..parsers import itp_top
 

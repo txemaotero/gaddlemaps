@@ -4,8 +4,8 @@ both gro and itp files.
 '''
 
 from collections import defaultdict
-from typing import (Any, Dict, Iterator, List, Tuple, DefaultDict, Union,
-                    Optional)
+from typing import (Any, DefaultDict, Dict, Iterator, List, Optional, Tuple,
+                    Union)
 
 import numpy as np
 from scipy.spatial.distance import euclidean

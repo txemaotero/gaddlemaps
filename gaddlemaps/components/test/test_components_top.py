@@ -3,9 +3,10 @@ Test for the _components_top submodule.
 """
 
 import os
+
 import pytest
 
-from gaddlemaps.components import MoleculeTop, AtomTop
+from gaddlemaps.components import AtomTop, MoleculeTop
 from gaddlemaps.components._components_top import (_are_connected,
                                                    _find_connected_atoms)
 
@@ -167,5 +168,3 @@ class TestMoleculeTop:
         for atom in bf4_molecule:
             assert atom.resname == 'BMIM'
         assert bf4_molecule.resnames == ['BMIM']
-
-        

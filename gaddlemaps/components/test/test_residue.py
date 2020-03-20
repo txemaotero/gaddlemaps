@@ -3,14 +3,14 @@ Tests for the _residue submodule.
 """
 
 import os
-import pytest
 from pathlib import Path
 
 import numpy as np
+import pytest
 
 from gaddlemaps import rotation_matrix
+from gaddlemaps.components import AtomGro, MoleculeTop, Residue
 from gaddlemaps.parsers import GroFile
-from gaddlemaps.components import Residue, AtomGro, MoleculeTop
 
 ACTUAL_PATH = os.path.split(os.path.join(os.path.abspath(__file__)))[0]
 

@@ -5,11 +5,12 @@ submodule.
 
 
 import os
-import pytest
-import numpy as np
-from gaddlemaps.parsers import (GroFile, _validate_res_atom_numbers,
-                                extract_lattice_gro, dump_lattice_gro)
 
+import numpy as np
+import pytest
+
+from gaddlemaps.parsers import (GroFile, _validate_res_atom_numbers,
+                                dump_lattice_gro, extract_lattice_gro)
 
 ACTUAL_PATH = os.path.split(os.path.join(os.path.abspath(__file__)))[0]
 

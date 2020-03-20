@@ -4,7 +4,7 @@ This submodule defines a Residue class that will constitute molecules.
 
 import re
 import warnings
-from typing import TYPE_CHECKING, Any, List, Union, Generator, Optional
+from typing import TYPE_CHECKING, Any, Generator, List, Optional, Union
 
 import numpy as np
 

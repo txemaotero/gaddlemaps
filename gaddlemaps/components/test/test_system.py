@@ -5,10 +5,10 @@ Tests for the _system submodule.
 import os
 from typing import Tuple
 
-import pytest
 import numpy as np
+import pytest
 
-from gaddlemaps.components import System, SystemGro, MoleculeTop
+from gaddlemaps.components import MoleculeTop, System, SystemGro
 
 ACTUAL_PATH = os.path.split(os.path.join(os.path.abspath(__file__)))[0]
 
@@ -153,10 +153,20 @@ class TestSystem:
         empty.add_molecule_top(MoleculeTop(fitpADN))
 
     def test_props(self, system: System):
+        """
+        Tests some system properties.
+        """
         assert len(system) == 1068
         assert system[0].name == 'DNA'
         assert system[1].name == 'DPSM'
         assert system[-1].name == 'VTE'
+
+        # Slice
+        dna, dpsm = system[:2]
+        assert dna.name == 'DNA'
+        assert len(dna) == 232
+        assert dpsm.name == 'DPSM'
+        assert len(dpsm) == 9
 
         dna = system.different_molecules[0]
         assert dna == system[0]

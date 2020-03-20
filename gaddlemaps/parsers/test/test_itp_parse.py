@@ -3,12 +3,12 @@ Tests for the _itp_parse submodule.
 """
 
 import os
-import pytest
 from pathlib import Path
 
-from gaddlemaps.parsers import (ItpFile, ItpSection, ItpLineAtom, ItpLine,
-                                ItpLineBonds)
+import pytest
 
+from gaddlemaps.parsers import (ItpFile, ItpLine, ItpLineAtom, ItpLineBonds,
+                                ItpSection)
 
 ACTUAL_PATH = os.path.split(os.path.join(os.path.abspath(__file__)))[0]
 
@@ -134,4 +134,3 @@ def test_itp_write(itp_file: ItpFile, tmp_path: Path):
                 print(l1, l2)
                 assert l1.content == l2.content
                 assert l1.comment == l2.comment
-    

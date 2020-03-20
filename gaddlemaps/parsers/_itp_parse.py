@@ -1,17 +1,12 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 '''
 This module contains useful features to parse itp files.
-
 '''
 
 
 import re
-from warnings import warn
 from collections import OrderedDict
-
-from typing import Tuple, List, Union, Dict, Optional, Any
+from typing import Any, Dict, List, Optional, Tuple, Union
+from warnings import warn
 
 
 class ItpFile(OrderedDict):

@@ -2,19 +2,18 @@
 Tests for _components submodule.
 """
 
-from typing import Callable, List
-from pathlib import Path
-
 import os
-import pytest
+from pathlib import Path
+from typing import Callable, List
+
 import numpy as np
+import pytest
 
 from gaddlemaps import rotation_matrix
-from gaddlemaps.parsers import GroFile
-from gaddlemaps.components import (AtomGro, AtomTop, Atom, Molecule,
+from gaddlemaps.components import (Atom, AtomGro, AtomTop, Molecule,
                                    MoleculeTop, Residue)
 from gaddlemaps.components._components import _molecule_top_and_residues_match
-
+from gaddlemaps.parsers import GroFile
 
 AtomGenerator = Callable[..., AtomGro]
 
