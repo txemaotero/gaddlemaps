@@ -230,12 +230,12 @@ class TestResidue:
         assert residue.distance_to([0, 0, 0]) == residue.distance_to_zero
         # Distance to zero with box vector
         box_vects = np.diag(residue.geometric_center)
-        assert residue.distance_to([0, 0, 0],
-                                   box_vects=box_vects) == 0
+        assert round(residue.distance_to([0, 0, 0],
+                                         box_vects=box_vects), 8) == 0
         # Distance to zero with box vector with inv
         inv_box = np.linalg.inv(box_vects)
-        assert residue.distance_to([0, 0, 0], box_vects=inv_box,
-                                   inv=True) == 0
+        assert round(residue.distance_to([0, 0, 0], box_vects=inv_box,
+                                         inv=True), 8) == 0
 
         # Velocities
         vel_test = np.array([
