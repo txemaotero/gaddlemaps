@@ -22,6 +22,8 @@ AtomGro and AtomTop).
 
 """
 
+from typing import List, Union
+
 from ._components_top import MoleculeTop, AtomTop
 
 from ._residue import Residue, AtomGro
@@ -30,4 +32,34 @@ from ._system import System, SystemGro
 
 
 __all__ = ["AtomGro", "AtomTop", "Atom", "Residue", "MoleculeTop",
-           "Molecule", "SystemGro", "System"]
+           "Molecule", "SystemGro", "System", "are_connected"]
+
+
+def are_connected(atoms: List[Union[AtomTop, Atom]]) -> bool:
+    """
+    Check if the input atoms are connected.
+
+    Parameters
+    ----------
+    atoms: List of AtomTop or Atom
+        The list of atoms to compute if they are connected.
+
+    Returns
+    -------
+    connected : bool
+       True if the atoms are connected, else False.
+    """
+    
+    connected_atoms: List[int] = []
+    _find_connected_atoms(atoms, 0, connected_atoms)
+    return len(connected_atoms) == len(atoms)
+
+
+def _find_connected_atoms(atoms: List[Union[AtomTop, Atom]],
+                          index: int, connected: list):
+     if index not in connected:
+         connected.append(index)
+     for new_index in atoms[index].bonds:
+         if new_index in connected:
+             continue
+         _find_connected_atoms(atoms, new_index, connected)

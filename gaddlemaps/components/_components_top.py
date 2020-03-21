@@ -62,10 +62,6 @@ class MoleculeTop:
         for bond in atoms_bonds:
             self.atoms[bond[0]].connect(self.atoms[bond[1]])
 
-        if not _are_connected(self.atoms):
-            raise IOError(('The molecule is not fully connected.'
-                           ' Check your topology file.'))
-
     def __getitem__(self, index: int) -> 'AtomTop':
         return self.atoms[index]
 
@@ -248,18 +244,3 @@ class AtomTop:
             The list with the index of natoms atoms bonded self.
         """
         return sorted(self.bonds)[:natoms]
-
-
-def _are_connected(atoms: List[AtomTop]) -> bool:
-    connected_atoms: List[int] = []
-    _find_connected_atoms(atoms, 0, connected_atoms)
-    return len(connected_atoms) == len(atoms)
-
-
-def _find_connected_atoms(atoms: List[AtomTop], index: int, connected: list):
-     if index not in connected:
-         connected.append(index)
-     for new_index in atoms[index].bonds:
-         if new_index in connected:
-             continue
-         _find_connected_atoms(atoms, new_index, connected)

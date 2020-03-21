@@ -6,9 +6,8 @@ import os
 
 import pytest
 
-from gaddlemaps.components import AtomTop, MoleculeTop
-from gaddlemaps.components._components_top import (_are_connected,
-                                                   _find_connected_atoms)
+from gaddlemaps.components import (AtomTop, MoleculeTop, are_connected,
+                                   _find_connected_atoms)
 
 ACTUAL_PATH = os.path.split(os.path.join(os.path.abspath(__file__)))[0]
 
@@ -67,7 +66,7 @@ def test_connect_atom_top():
     """
     Tests the connectivity related methods for AtomTop.
 
-    This also test the _are_connected function and the _find_connected_atoms
+    This also test the are_connected function and the _find_connected_atoms
     one.
     """
     # Atom0 connected with the rest
@@ -94,7 +93,7 @@ def test_connect_atom_top():
     connected_atoms_index = []
     _find_connected_atoms(connected_atoms, 0, connected_atoms_index)
     assert sorted(connected_atoms_index) == [0, 1, 2, 3]
-    assert _are_connected(connected_atoms)
+    assert are_connected(connected_atoms)
 
     # Not connected atom
     atom4 = AtomTop('B4', 'BF4', 1, 4)
@@ -108,7 +107,7 @@ def test_connect_atom_top():
     _find_connected_atoms(not_connected_atoms, 4, connected_atoms_index)
     assert connected_atoms_index == [4]
 
-    assert not _are_connected(not_connected_atoms)
+    assert not are_connected(not_connected_atoms)
     
 
 class TestMoleculeTop:
