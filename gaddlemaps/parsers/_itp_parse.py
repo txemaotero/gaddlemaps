@@ -135,7 +135,7 @@ class ItpSection(list):
         """
         if sec_name == 'atoms':
             return ItpLineAtom(line)
-        elif sec_name in ['bonds', 'constraints']:
+        elif sec_name in ['bonds', 'constraints', 'pairs']:
             return ItpLineBonds(line)
         elif sec_name in 'moleculetype':
             return ItpLineMoleculetype(line)

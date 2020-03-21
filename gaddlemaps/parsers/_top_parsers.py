@@ -81,7 +81,7 @@ def _parse_itp_bonds(itp_file: ItpFile) -> List[Tuple[int, int]]:
     condition_constraints = 'constraints' in itp_file
     condition_bonds = 'bonds' in itp_file
     bonds = []
-    for key in ('constraints', 'bonds'):
+    for key in ('constraints', 'bonds', 'pairs'):
         for bond in itp_file.get(key, []):
             bonds.append((bond.atom_from, bond.atom_to))
     return bonds
