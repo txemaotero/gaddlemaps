@@ -4,12 +4,13 @@ Test for the _alignment submodule.
 
 import json
 import os
+from pathlib import Path
 
 import numpy as np
 import pytest
 
-from gaddlemaps import (Alignment, ExchangeMap, guess_molecule_restrains,
-                        guess_protein_restrains, remove_hydrogens)
+from gaddlemaps import (Alignment, ExchangeMap, guess_protein_restrains,
+                        guess_residue_restrains, remove_hydrogens)
 from gaddlemaps.components import (AtomGro, Molecule, MoleculeTop, Residue,
                                    System, SystemGro)
 from gaddlemaps.parsers import GroFile
@@ -18,7 +19,10 @@ ACTUAL_PATH = os.path.split(os.path.join(os.path.abspath(__file__)))[0]
 
 
 @pytest.fixture
-def molecule_aa():
+def molecule_aa() -> Molecule:
+    """
+    Molecule instance of curcumine all atom.
+    """
     fgro = os.path.join(ACTUAL_PATH, '../data/CUR_AA.gro')
     with GroFile(fgro) as _file:
         atoms = [AtomGro(line) for line in _file]
@@ -29,7 +33,10 @@ def molecule_aa():
 
 
 @pytest.fixture
-def molecule_cg():
+def molecule_cg() -> Molecule:
+    """
+    Molecule instance of curcumine coarse-grained.
+    """
     fgro = os.path.join(ACTUAL_PATH, '../data/CUR_map.gro')
     with GroFile(fgro) as _file:
         atoms = [AtomGro(line) for line in _file]
@@ -40,21 +47,30 @@ def molecule_cg():
 
 
 @pytest.fixture
-def protein_aa():
+def protein_aa() -> Molecule:
+    """
+    Molecule instance of a protein all-atom.
+    """
     fgro = os.path.join(ACTUAL_PATH, '../data/Protein_AA.gro')
     fitp = os.path.join(ACTUAL_PATH, '../data/Protein_AA.itp')
     return System(fgro, fitp)[0]
 
 
 @pytest.fixture
-def protein_cg():
+def protein_cg() -> Molecule:
+    """
+    Molecule instance of a protein coarse-grained.
+    """
     fgro = os.path.join(ACTUAL_PATH, '../data/Protein_CG.gro')
     fitp = os.path.join(ACTUAL_PATH, '../data/Protein_CG.itp')
     return System(fgro, fitp)[0]
 
 
 @pytest.fixture
-def vte_aa():
+def vte_aa() -> Molecule:
+    """
+    Molecule instance of vitamin E all-atom.
+    """
     fgro = os.path.join(ACTUAL_PATH, '../data/VTE_AA.gro')
     with GroFile(fgro) as _file:
         atoms = [AtomGro(line) for line in _file]
@@ -65,14 +81,21 @@ def vte_aa():
 
 
 @pytest.fixture
-def vte_cg():
+def vte_cg() -> Molecule:
+    """
+    Molecule instance of vitamin E coarse-grained.
+    """
     fgro = os.path.join(ACTUAL_PATH, '../data/sistema_CG.gro')
     fitp = os.path.join(ACTUAL_PATH, '../data/vitamin_E_CG.itp')
     return System(fgro, fitp)[0]
 
 
 @pytest.fixture
-def vte_map_cg():
+def vte_map_cg() -> Molecule:
+    """
+    Molecule instance of vitamin E coarse-grained coming from the map
+    process.
+    """
     fgro = os.path.join(ACTUAL_PATH, '../data/VTE_map.gro')
     with GroFile(fgro) as _file:
         atoms = [AtomGro(line) for line in _file]
@@ -83,11 +106,17 @@ def vte_map_cg():
 
 
 @pytest.fixture
-def alignment(molecule_aa, molecule_cg):
+def alignment(molecule_aa: Molecule, molecule_cg: Molecule) -> Alignment:
+    """
+    Alignment instance with the curcumine molecule.
+    """
     return Alignment(start=molecule_cg, end=molecule_aa)
 
 
-def test_remove_hydrogens(vte_aa):
+def test_remove_hydrogens(vte_aa: Molecule):
+    """
+    Test for the remove_hydrogens function.
+    """
     restr = [(0, 0), (19, 50)]
     pos, restr = remove_hydrogens(vte_aa, restr)
     restr_test = [(0, 0), (18, 50)]
@@ -96,15 +125,16 @@ def test_remove_hydrogens(vte_aa):
 
 class TestAlignment:
     """
-    Test for the Alignment class
-
+    Wraps all the tests for the Alignment class
     """
-
-    def test_init(self, molecule_aa, molecule_cg):
+    def test_initialization(self, molecule_aa: Molecule, molecule_cg: Molecule):
+        """
+        Test the alignment class initialization.
+        """
         with pytest.raises(TypeError):
-            ali = Alignment(start=1)
+            ali = Alignment(start=1)  # type: ignore
         with pytest.raises(TypeError):
-            ali = Alignment(end=1)
+            ali = Alignment(end=1)  # type: ignore
         ali = Alignment()
         assert ali.start is None
         assert ali.end is None
@@ -117,9 +147,10 @@ class TestAlignment:
         with pytest.raises(ValueError):
             ali.end = molecule_aa
 
-    def test_align(self, alignment):
+    def test_align(self, alignment: Alignment):
         """
-        The molecules are already aligned.
+        Test that the alignment engine runs with are already aligned
+        molecules.
         """
         # Simulate few steps
         alignment.STEPS_FACTOR = 10
@@ -127,14 +158,23 @@ class TestAlignment:
         def_type = (0, 1, 2)
         ign_h = False
         # Uncomment this to test a short simulation
-        # alignment.align_molecules(restr, def_type, ign_h)
+        alignment.align_molecules(restr, def_type, ign_h)
 
-    def test_exchange_map(self, alignment):
+    def test_exchange_map(self, alignment: Alignment):
+        """
+        Test the exchange map initialization from the alignment.
+        """
         alignment.init_exchange_map(scale_factor=1)
         assert isinstance(alignment.exchange_map, ExchangeMap)
 
-    def test_compare_file(self, alignment):
-        tname = 'compare.gro'
+    def test_write_comparative_gro(self, alignment: Alignment, tmp_path: Path):
+        """
+        Tests the write_comparative_gro method.
+        """
+        subdir = tmp_path / "alignment_test"
+        subdir.mkdir()
+        tname = str(subdir / "compare.gro")
+
         alignment.write_comparative_gro(tname)
         # Load the sys
         s = SystemGro(tname)
@@ -146,7 +186,11 @@ class TestAlignment:
         assert len(end) == 41
         os.remove(tname)
 
-    def test_redefine_start(self, vte_aa, vte_cg, vte_map_cg):
+    def test_redefine_start(self, vte_aa: Molecule, vte_cg: Molecule,
+                            vte_map_cg: Molecule):
+        """
+        Test the setter of the start molecule in alignment.
+        """
         ali = Alignment(start=vte_cg)
         ali.end = vte_aa
         # Change start
@@ -157,48 +201,34 @@ class TestAlignment:
         for at1, at2 in zip(ali.end, vte_aa):
             assert np.array_equal(at1.position, at2.position)
 
-    def test_exchange_map_vte(self, vte_aa, vte_cg, vte_map_cg):
+    def test_exchange_map_vte(self, vte_aa: Molecule, vte_cg: Molecule,
+                              vte_map_cg: Molecule):
+        """
+        Test the setter of the end molecule in alignment.
+        """
         ali = Alignment(start=vte_map_cg, end=vte_aa)
+
+        # For typing
+        assert isinstance(ali.end, Molecule)
+        assert isinstance(ali.start, Molecule)
 
         # Check that mols are well near.
         assert np.allclose(ali.start.geometric_center,
                            ali.end.geometric_center, rtol=0.5, atol=0.5)
 
         ali.init_exchange_map(scale_factor=1)
+        assert isinstance(ali.exchange_map, ExchangeMap)
+
         new = ali.exchange_map(vte_cg)
         assert np.allclose(new.geometric_center,
                            vte_cg.geometric_center, rtol=0.5, atol=0.5)
 
-    def test_info(self, alignment, molecule_aa, molecule_cg):
-        info = alignment.info
-        info_test = {
-            'start': molecule_cg.info.to_dict(),
-            'end': molecule_aa.info.to_dict(),
-            'exchange_map': None,
-        }
-        assert info == info_test
-        alignment.init_exchange_map(0.6)
-        info = alignment.info
-        info_test['exchange_map'] = 0.6
-        assert info == info_test
-        new_alig = Alignment.from_info(info)
-        assert alignment.start == new_alig.start
-        assert alignment.end == new_alig.end
-        assert alignment.exchange_map.scale_factor == alignment.exchange_map.scale_factor
-        # json test
-        text = json.dumps(info, indent=2)
-        parse_text = json.loads(text)
-        new_alig = Alignment.from_info(parse_text)
-        assert alignment.start == new_alig.start
-        assert alignment.end == new_alig.end
-        assert alignment.exchange_map.scale_factor == alignment.exchange_map.scale_factor
 
-
-def test_gess_molecule_restrains(vte_cg, vte_aa):
+def test_gess_residue_restrains(vte_cg: Molecule, vte_aa: Molecule):
     """
-    Test gess_molecule_restrains function with simple molecule.
+    Test gess_residue_restrains function with simple molecule.
     """
-    restr = guess_molecule_restrains(vte_cg, vte_aa)
+    restr = guess_residue_restrains(vte_cg, vte_aa)
 
     restr_test = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6),
                   (2, 7), (2, 8), (3, 9), (3, 10), (3, 11), (4, 12), (4, 13),

@@ -89,8 +89,7 @@ class ExchangeMap:
             if len(atom.bonds) >= 2:
                 # Get 2 of the atoms that are bonded to the atom
                 ind1, ind2 = atom.closest_atoms()
-                neighbour1, neighbour2 = (molecule.hash2atom(ind1),
-                                          molecule.hash2atom(ind2))
+                neighbour1, neighbour2 = (molecule[ind1], molecule[ind2])
                 positions = [atom.position, neighbour1.position,
                              neighbour2.position]
                 # se the 3 atoms to calculate the base
@@ -116,7 +115,9 @@ class ExchangeMap:
         Returns the name of the closest reference system to the atom
 
         """
-        def ref_pos(index): return self._refmolecule.hash2atom(index).position
+        def ref_pos(index):
+            return self._refmolecule[index].position
+
         distances = [(euclidean(targetatom.position, ref_pos(index)), index)
                      for index in self._refsystems]
         return sorted(distances)[0][1]
@@ -162,7 +163,7 @@ class ExchangeMap:
         self._calculate_refsystems(refmolecule)
         new_mol = self._restore_molecule()
         # change the indexes
-        new_mol.resid = refmolecule.resid
+        new_mol.resids = refmolecule.resids
         return new_mol
 
     @property

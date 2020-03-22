@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 '''
 This module contains the class that is used to manage the inputs in the
 mapping process, starts the alignment and extrapolate the system.
@@ -10,9 +9,9 @@ from . import Alignment, guess_protein_restrains
 from .components import Molecule, System
 from .parsers import GroFile
 
-
 Deformations = Dict[str, Optional[Tuple[int, ...]]]
 Restrictions = Dict[str, Optional[List[Tuple[int, int]]]]
+
 
 class Manager:
     """
@@ -67,21 +66,21 @@ class Manager:
     def __init__(self, system: System):
         self.system = system
         self.molecule_correspondence: Dict[str, Alignment] = {
-            mol.name: Alignment(start=mol)
+            mol.name: Alignment(start = mol)
             for mol in self.system.different_molecules
         }
 
     @classmethod
-    def from_files(cls, f_system_gro: str, *fitps: str) -> 'Manager':
+    def from_files(cls, f_system_gro: str, *ftops: str) -> 'Manager':
         """
-        Build the object using the system .gro file and molecules .itp.
+        Build the object using the system .gro file and molecules topologies.
 
         Parameters
         ----------
         f_system_gro : str
             Gromacs file path with the system information.
-        *fitps : str, optional
-            A list with the .itp files path of the molecules to load.
+        *ftops : str, optional
+            A list with the topology files path of the molecules to load.
 
         Returns
         -------
@@ -89,7 +88,7 @@ class Manager:
             The built mapping manager.
 
         """
-        sys = System(f_system_gro, *fitps)
+        sys = System(f_system_gro, *ftops)
         return Manager(sys)
 
     def extrapolate_system(self, fgro_out: str):
@@ -164,7 +163,7 @@ class Manager:
 
         """
         if not isinstance(molecule, Molecule):
-            raise TypeError(('The start attribute has to be an instance of'
+            raise TypeError(('The end attribute has to be an instance of'
                              ' Molecule, not {}.').format(type(molecule)))
         name = molecule.name
         if name not in self.molecule_correspondence:

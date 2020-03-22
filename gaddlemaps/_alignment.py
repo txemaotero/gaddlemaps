@@ -8,7 +8,7 @@ from typing import Any, List, Optional, Tuple
 import numpy as np
 
 from . import ExchangeMap, minimize_molecules
-from .components import Molecule
+from .components import Molecule, are_connected, Residue
 from .parsers import GroFile
 
 
@@ -222,7 +222,12 @@ class Alignment:
             restrictions = [i[::-1] for i in restrictions]
         else:
             molecules = [self.start, self.end]
-        molecules = sorted([self.start, self.end], key=len, reverse=True)
+        # Check connectivity
+        if not are_connected(molecules[1].atoms):
+            raise IOError((f'Problem with {molecules[1].name} molecule. In'
+                           ' the alignment process the molecules in low '
+                           'resolution must be formed by connected atoms.'
+                           ' Please, check you topologies.'))
         # Init the inputs to the backend
         if ignore_hydrogens:
             mol1_positions, restrictions = remove_hydrogens(molecules[0],
@@ -281,18 +286,18 @@ class Alignment:
         
         if fname is None:
             fname = '{}_compare.gro'.format(self.start.name)
-        start = self.start.molecule_gro.copy()
-        end = self.end.molecule_gro.copy()
-        start.resname = 'START'
-        end.resname = 'END'
-        start.resid = 1
-        end.resid = 2
+        start = self.start.copy()
+        end = self.end.copy()
+        start.resnames = 'START'  # type: ignore
+        end.resnames = 'END'  # type: ignore
+        start.resids = 1  # type: ignore
+        end.resids = 2  # type: ignore
         start.atoms_velocities = None
         end.atoms_velocities = None
         with GroFile(fname, 'w') as fgro:
-            for atom in start:  # type: ignore
+            for atom in start:
                 fgro.writeline(atom.gro_line())
-            for atom in end:  # type: ignore
+            for atom in end:
                 fgro.writeline(atom.gro_line())
 
 
@@ -385,36 +390,35 @@ def guess_protein_restrains(mol1: Molecule,
     restrains: List[Tuple[int, int]] = []
     offset1 = 0
     offset2 = 0
-    for mol_res1, mol_res2 in zip(mol1.molecules, mol2.molecules):
-        restrains += guess_molecule_restrains(mol_res1, mol_res2, offset1,
+    for mol_res1, mol_res2 in zip(mol1.residues, mol2.residues):
+        restrains += guess_residue_restrains(mol_res1, mol_res2, offset1,
                                               offset2)
         offset1 += len(mol_res1)
         offset2 += len(mol_res2)
     return restrains
 
 
-def guess_molecule_restrains(mol1: Molecule, mol2: Molecule,
-                             offset1: int = 0,
-                             offset2: int = 0) -> List[Tuple[int, int]]:
+def guess_residue_restrains(res1: Residue, res2: Residue, offset1: int = 0,
+                            offset2: int = 0) -> List[Tuple[int, int]]:
     """
     Guess restrains for molecules with one residue.
 
     Parameters
     ----------
-    mol1 : Molecule or MoleculeGro
-        The first molecule to find the restrains.
-    mol2 : Molecule or MoleculeGro
-        The second molecule to find the restrains.
+    res1 : Residue
+        The first residue to find the restrains.
+    res2 : Residue
+        The second residue to find the restrains.
     offset1 : int
-        An offset to add to the atom index of mol1.
+        An offset to add to the atom index of res1.
     offset2 : int
-        An offset to add to the atom index of mol2.
+        An offset to add to the atom index of res2.
 
     Returns
     -------
     restrains : list of tuple of int
         A list of tuples with pairs of atom numbers corresponding to start
-        and end atoms molecules. The align will be performed privileging
+        and end atoms residues. The align will be performed privileging
         configurations where those atoms are close. By default is set to [].
 
         Example:
@@ -423,9 +427,9 @@ def guess_molecule_restrains(mol1: Molecule, mol2: Molecule,
         IMPORTANT: INDEX ARE REFERENCED TO THE ATOM INDEX IN THE MOLECULE
         (STARTS IN 0).
     """
-    n_parts = min(len(mol1), len(mol2))
-    mol1_ids_groups = _split_list(list(range(len(mol1))), n_parts)
-    mol2_ids_groups = _split_list(list(range(len(mol2))), n_parts)
+    n_parts = min(len(res1), len(res2))
+    mol1_ids_groups = _split_list(list(range(len(res1))), n_parts)
+    mol2_ids_groups = _split_list(list(range(len(res2))), n_parts)
     restr: List[Tuple[int, int]] = []
     for group1, group2 in zip(mol1_ids_groups, mol2_ids_groups):
         restr += [(i+offset1, j+offset2) for i in group1 for j in group2]

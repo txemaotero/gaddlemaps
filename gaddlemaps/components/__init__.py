@@ -34,8 +34,9 @@ from ._system import System, SystemGro
 __all__ = ["AtomGro", "AtomTop", "Atom", "Residue", "MoleculeTop",
            "Molecule", "SystemGro", "System", "are_connected"]
 
+AtomsConnected = Union[List[Atom], List[AtomTop]]
 
-def are_connected(atoms: List[Union[AtomTop, Atom]]) -> bool:
+def are_connected(atoms:AtomsConnected) -> bool:
     """
     Check if the input atoms are connected.
 
@@ -55,8 +56,8 @@ def are_connected(atoms: List[Union[AtomTop, Atom]]) -> bool:
     return len(connected_atoms) == len(atoms)
 
 
-def _find_connected_atoms(atoms: List[Union[AtomTop, Atom]],
-                          index: int, connected: list):
+def _find_connected_atoms(atoms: AtomsConnected, index: int,
+                          connected: list):
      if index not in connected:
          connected.append(index)
      for new_index in atoms[index].bonds:
