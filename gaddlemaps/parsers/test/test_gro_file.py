@@ -59,7 +59,7 @@ def test_gro_file():
     assert np.isclose(box, box_test).all()
 
     first_line = next(open_fgro)
-    assert isinstance(first_line, list)
+    assert isinstance(first_line, tuple)
     assert len(first_line) == 7
     assert first_line[0] == 1
     assert first_line[1] == 'BMIM'
