@@ -1,5 +1,8 @@
 # Created by https://www.gitignore.io/api/vim,macos,python,virtualenv,visualstudiocode
-# Edit at https://www.gitignore.io/?templates=vim,macos,python,virtualenv,visualstudiocode
+# Edit at
+https://www.gitignore.io/?templates=vim,macos,python,virtualenv,visualstudiocode
+
+examples/**/*.gro
 
 ### macOS ###
 # General
@@ -175,11 +178,11 @@ pip-selfcheck.json
 
 ### VisualStudioCode ###
 .vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-settings.json
+# !.vscode/settings.json
+# !.vscode/tasks.json
+# !.vscode/launch.json
+# !.vscode/extensions.json
+# settings.json
 
 ### VisualStudioCode Patch ###
 # Ignore all local history of files
