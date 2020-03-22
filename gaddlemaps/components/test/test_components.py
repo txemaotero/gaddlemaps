@@ -11,7 +11,7 @@ import pytest
 
 from gaddlemaps import rotation_matrix
 from gaddlemaps.components import (Atom, AtomGro, AtomTop, Molecule,
-                                   MoleculeTop, Residue)
+                                   MoleculeTop, Residue, System)
 from gaddlemaps.components._components import _molecule_top_and_residues_match
 from gaddlemaps.parsers import GroFile
 
@@ -326,8 +326,14 @@ class TestMolecule:
         """
         Test the molecule initialization from files.
         """
-        # TODO: Implement when the tests for System are implemented.
-        pass
+        fitp = os.path.join(ACTUAL_PATH, '../../data/BMIM_AA.itp')
+        fgro = os.path.join(ACTUAL_PATH, '../../data/BMIM_AA.gro')
+        bmim = Molecule.from_files(fgro, fitp)
+        assert len(bmim) == 25
+        fitp = os.path.join(ACTUAL_PATH, '../../data/BMIM_CG.itp')
+        fgro = os.path.join(ACTUAL_PATH, '../../data/system_bmimbf4_cg.gro')
+        with pytest.raises(IOError):
+            bmim = Molecule.from_files(fgro, fitp)
 
     def test_resnames(self, molecule_protein: Molecule,
                       molecule_bmim: Molecule):
@@ -342,7 +348,7 @@ class TestMolecule:
         for atom in molecule_bmim:
             assert atom.resname == 'BF4'
 
-        molecule_bmim.resnames = 'test'
+        molecule_bmim.resnames = 'test'  # type: ignore
         assert molecule_bmim.resnames == ['test']
         assert molecule_bmim.molecule_top.resnames == ['test']
         assert molecule_bmim.residues[0].resname == 'test'
@@ -361,7 +367,7 @@ class TestMolecule:
             res_index = molecule_protein._each_atom_resid[index]
             assert atom.resname == resnames_compare[res_index]
 
-        molecule_protein.resnames = 'hello'
+        molecule_protein.resnames = 'hello'  # type: ignore
         assert molecule_protein.resnames == ['hello'] * len(resnames_compare)
         for res, res_test in zip(molecule_protein.residues, resnames_compare):
             assert res.resname == 'hello'
