@@ -76,7 +76,7 @@ def molecule_top_protein() -> MoleculeTop:
     """
     MoleculeTop instance for molecule with multiple residues.
     """
-    fname = os.path.join(ACTUAL_PATH, '../../data/protein_CG.itp')
+    fname = os.path.join(ACTUAL_PATH, '../../data/Protein_CG.itp')
     return MoleculeTop(fname)
 
 
@@ -85,7 +85,7 @@ def residue_protein() -> List[Residue]:
     """
     List of Residue instances for a molecule with multiple residues.
     """
-    fname = os.path.join(ACTUAL_PATH, '../../data/protein_CG.gro')
+    fname = os.path.join(ACTUAL_PATH, '../../data/Protein_CG.gro')
     residues: List[Residue] = []
     with GroFile(fname) as fgro:
         atom = AtomGro(next(fgro))
