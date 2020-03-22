@@ -115,6 +115,34 @@ class MoleculeTop:
             atom.resname = new_resnames[resname_index]
 
     @property
+    def resids(self) -> List[int]:
+        """
+        list of str: Residue names of the atoms without consecutive
+            repetitions.
+
+        To set this property a list with the same length of residues must be
+        passed.
+        """
+        tot_resids = ('{:5}{}'.format(atom.resname, atom.resid)
+                        for atom in self)  # type: ignore
+        return [int(x[0][5:].strip()) for x in groupby(tot_resids)]
+    
+    @resids.setter
+    def resids(self, new_resids: List[int]):
+        if not isinstance(new_resids, list):
+            raise ValueError('new_resids must be a list of strings.')
+        if len(new_resids) != len(self.resids):
+            raise ValueError((f'Expected {len(self.resids)} residue name'
+                              f' while {len(new_resids)} given.'))
+        resid_index = 0
+        actual_resid = self[0].residname
+        for atom in self:  # type: ignore
+            if atom.residname != actual_resid:
+                resid_index += 1
+                actual_resid = atom.residname
+            atom.resid = new_resids[resid_index]
+
+    @property
     def resname_len_list(self) -> List[Tuple[str, int]]:
         """
         list of tuple(str, int) : 

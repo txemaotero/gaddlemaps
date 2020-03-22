@@ -167,3 +167,18 @@ class TestMoleculeTop:
         for atom in bf4_molecule:
             assert atom.resname == 'BMIM'
         assert bf4_molecule.resnames == ['BMIM']
+
+    def test_resids(self, bf4_molecule: MoleculeTop):
+        """
+        Resids access and setter.
+        """
+        assert bf4_molecule.resids == [1]
+        with pytest.raises(ValueError, match='new_resids.*'):
+            bf4_molecule.resids = 1  # type: ignore
+        with pytest.raises(ValueError, match='Expected.*'):
+            bf4_molecule.resids = [0, 23]
+
+        bf4_molecule.resids = [3]
+        for atom in bf4_molecule:
+            assert atom.resid == 3
+        assert bf4_molecule.resids == [3]
