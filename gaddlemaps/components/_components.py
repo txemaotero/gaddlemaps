@@ -343,7 +343,7 @@ class Molecule(Residue):
         super(Molecule, type(self)).atoms_ids.fset(self, new_ids) # type: ignore
 
     @property
-    def resnames(self) -> Union[str, List[str]]:
+    def resnames(self) -> List[str]:
         """
         List of string: A list with the names of the residues constituting the
             molecule.
@@ -370,6 +370,37 @@ class Molecule(Residue):
                 atom.resname = new_resnames
         else:
             raise TypeError('Resnames must be a string or a list of string.')
+
+    @property
+    def resids(self) -> List[int]:
+        """
+        List of int: A list with the residues ids of the residues
+            constituting the molecule.
+
+        To set this property, a list of int with the same length as the
+        original must be passed. This will change each residue id. You can
+        also pass just an int and this will set all the residue ids to the
+        same value.
+        """
+        return [res.resid for res in self._residues]
+
+    @resids.setter
+    def resids(self, new_resids: Union[int, List[int]]):
+        if isinstance(new_resids, list) and isinstance(new_resids[0], int):
+            if len(new_resids) != len(self.resids):
+                raise ValueError(('You should provide a list with'
+                                  f' {len(self.resids)} residue ids instead'
+                                  f' of {len(new_resids)}.'))
+
+            for atom, res_index in zip(self, self._each_atom_resid):
+                atom.top_resid = new_resids[res_index]
+                atom.gro_resid = new_resids[res_index]
+        elif isinstance(new_resids, int):
+            for atom in self:
+                atom.top_resid = new_resids
+                atom.gro_resid = new_resids
+        else:
+            raise TypeError('Resids must be an int or a list of int.')
 
     def copy(self, new_residues: List[Residue] = None) -> 'Molecule':
         """

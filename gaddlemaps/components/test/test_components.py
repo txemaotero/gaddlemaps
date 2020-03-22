@@ -368,6 +368,48 @@ class TestMolecule:
         for atom in molecule_protein:
             assert atom.resname == 'hello'
 
+    def test_resids(self, molecule_protein: Molecule,
+                    molecule_bmim: Molecule):
+        """
+        Tests for the resids property
+        """
+        assert molecule_bmim.resids == [1]
+        molecule_bmim.resids = [5]
+        assert molecule_bmim.resids == [5]
+        assert molecule_bmim.molecule_top.resids == [5]
+        assert molecule_bmim.residues[0].resid == 5
+        for atom in molecule_bmim:
+            assert atom.top_resid == 5
+            assert atom.gro_resid == 5
+
+        molecule_bmim.resids = 3  # type: ignore
+        assert molecule_bmim.resids == [3]
+        assert molecule_bmim.molecule_top.resids == [3]
+        assert molecule_bmim.residues[0].resid == 3
+        for atom in molecule_bmim:
+            assert atom.top_resid == 3
+            assert atom.gro_resid == 3
+
+        resids_compare = list(range(1, 14))
+        assert molecule_protein.resids == resids_compare
+        resids_compare[3] = 8
+        molecule_protein.resids = resids_compare
+        assert molecule_protein.resids == resids_compare
+        for res, res_test in zip(molecule_protein.residues, resids_compare):
+            assert res.resid == res_test
+        for index, atom in enumerate(molecule_protein):
+            res_index = molecule_protein._each_atom_resid[index]
+            assert atom.top_resid == resids_compare[res_index]
+            assert atom.gro_resid == resids_compare[res_index]
+
+        molecule_protein.resids = 49  # type: ignore
+        assert molecule_protein.resids == [49] * len(resids_compare)
+        for res, res_test in zip(molecule_protein.residues, resids_compare):
+            assert res.resid == 49
+        for atom in molecule_protein:
+            assert atom.top_resid == 49
+            assert atom.gro_resid == 49
+
     def test_get_set_attributes(self, molecule_top_bmim: MoleculeTop,
                                 molecule_bmim: Molecule):
         """
