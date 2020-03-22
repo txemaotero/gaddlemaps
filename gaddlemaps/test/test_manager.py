@@ -21,7 +21,8 @@ def system() -> System:
     System instance with DNA and E vitamin E molecules.
     """
     
-    fgro = os.path.join(ACTUAL_PATH, '../data/sistema_CG.gro')
+    fgro = os.path.join(ACTUAL_PATH, '../data/system_CG.gro')
+    fgro = os.path.join(ACTUAL_PATH, '../data/system_CG.gro')
     fitpDNA = os.path.join(ACTUAL_PATH, '../data/DNA_CG.itp')
     fitpVTE = os.path.join(ACTUAL_PATH, '../data/vitamin_E_CG.itp')
     return System(fgro, fitpDNA, fitpVTE)
@@ -112,7 +113,8 @@ class TestManager:
         """
         Tests the Manager initialization from corresponding files.
         """
-        fgro = os.path.join(ACTUAL_PATH, '../data/sistema_CG.gro')
+        fgro = os.path.join(ACTUAL_PATH, '../data/system_CG.gro')
+        fgro = os.path.join(ACTUAL_PATH, '../data/system_CG.gro')
         fitpDNA = os.path.join(ACTUAL_PATH, '../data/DNA_CG.itp')
         fitpVTE = os.path.join(ACTUAL_PATH, '../data/vitamin_E_CG.itp')
         man = Manager.from_files(fgro, fitpVTE, fitpDNA)
@@ -257,7 +259,7 @@ class TestManager:
             _ = manager._parse_ignore_hydrogens({'test': True})
         # Wrong format
         with pytest.raises(ValueError):
-            _ = manager._parse_ignore_hydrogens({'DNA': 1})
+            _ = manager._parse_ignore_hydrogens({'DNA': 1})  # type: ignore
         # Complete
         ign_comp = {
             'DNA': False,

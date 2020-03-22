@@ -18,7 +18,8 @@ dna_aa_itp = os.path.join(ACTUAL_PATH, '../data/DNA_AA.itp')
 dna_aa_gro = os.path.join(ACTUAL_PATH, '../data/DNA_AA.gro')
 
 
-sys_cg_gro = os.path.join(ACTUAL_PATH, '../data/sistema_CG.gro')
+sys_cg_gro = os.path.join(ACTUAL_PATH, '../data/system_CG.gro')
+sys_cg_gro = os.path.join(ACTUAL_PATH, '../data/system_CG.gro')
 dna_cg_itp = os.path.join(ACTUAL_PATH, '../data/DNA_CG.itp')
 sys = System(sys_cg_gro, dna_cg_itp)
 

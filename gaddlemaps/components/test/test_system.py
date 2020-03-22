@@ -20,7 +20,8 @@ def bmimbf4_gro_fname() -> str:
 
 @pytest.fixture
 def system() -> System:
-    fgro = os.path.join(ACTUAL_PATH, '../../data/sistema_CG.gro')
+    fgro = os.path.join(ACTUAL_PATH, '../../data/system_CG.gro')
+    fgro = os.path.join(ACTUAL_PATH, '../../data/system_CG.gro')
     fitpDNA = os.path.join(ACTUAL_PATH, '../../data/DNA_CG.itp')
     fitpDPSM = os.path.join(ACTUAL_PATH, '../../data/DPSM_CG.itp')
     fitpVTE = os.path.join(ACTUAL_PATH, '../../data/vitamin_E_CG.itp')
@@ -138,7 +139,8 @@ class TestSystem:
         Test System initialization with a system with molecules with multiple
         residues.
         """
-        fgro = os.path.join(ACTUAL_PATH, '../../data/sistema_CG.gro')
+        fgro = os.path.join(ACTUAL_PATH, '../../data/system_CG.gro')
+        fgro = os.path.join(ACTUAL_PATH, '../../data/system_CG.gro')
         fitpSDS = os.path.join(ACTUAL_PATH, '../../data/SDS_AA.itp')
         fitpADN = os.path.join(ACTUAL_PATH, '../../data/DNA_CG.itp')
 

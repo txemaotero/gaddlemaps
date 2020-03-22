@@ -16,7 +16,8 @@ from gaddlemaps.components import System
 # Define some file names
 ACTUAL_PATH = os.path.split(os.path.join(os.path.abspath(__file__)))[0]
 
-SYS_CG_GRO = os.path.join(ACTUAL_PATH, '../data/sistema_CG.gro')
+SYS_CG_GRO = os.path.join(ACTUAL_PATH, '../data/system_CG.gro')
+SYS_CG_GRO = os.path.join(ACTUAL_PATH, '../data/system_CG.gro')
 
 VTE_CG_ITP = os.path.join(ACTUAL_PATH, '../data/vitamin_E_CG.itp')
 VTE_CG_MAP_GRO = os.path.join(ACTUAL_PATH, '../data/VTE_map.gro')

@@ -35,7 +35,8 @@ man.add_end_molecule(bf4)
 man.align_molecules()
 man.calculate_exchange_maps()
 
-fname = os.path.join(ACTUAL_PATH, '../data/sistema_CG_mapeado_test.gro')
+fname = os.path.join(ACTUAL_PATH, '../data/system_CG_mapeado_test.gro')
+fname = os.path.join(ACTUAL_PATH, '../data/system_CG_mapeado_test.gro')
 try:
     man.extrapolate_system(fname)
 except:

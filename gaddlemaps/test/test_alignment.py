@@ -85,7 +85,8 @@ def vte_cg() -> Molecule:
     """
     Molecule instance of vitamin E coarse-grained.
     """
-    fgro = os.path.join(ACTUAL_PATH, '../data/sistema_CG.gro')
+    fgro = os.path.join(ACTUAL_PATH, '../data/system_CG.gro')
+    fgro = os.path.join(ACTUAL_PATH, '../data/system_CG.gro')
     fitp = os.path.join(ACTUAL_PATH, '../data/vitamin_E_CG.itp')
     return System(fgro, fitp)[0]
 
