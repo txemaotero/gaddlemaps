@@ -16,7 +16,10 @@ ACTUAL_PATH = os.path.split(os.path.join(os.path.abspath(__file__)))[0]
 
 
 @pytest.fixture
-def molecule_aa():
+def molecule_aa() -> Molecule:
+    """
+    Molecule instance of curcumine in all-atom resolution.
+    """
     fgro = os.path.join(ACTUAL_PATH, '../data/CUR_AA.gro')
     with GroFile(fgro) as _file:
         atoms = [AtomGro(line) for line in _file]
@@ -27,7 +30,10 @@ def molecule_aa():
 
 
 @pytest.fixture
-def molecule_cg():
+def molecule_cg() -> Molecule:
+    """
+    Molecule instance of curcumine in coarse-grained resolution.
+    """
     fgro = os.path.join(ACTUAL_PATH, '../data/CUR_map.gro')
     with GroFile(fgro) as _file:
         atoms = [AtomGro(line) for line in _file]
@@ -38,21 +44,30 @@ def molecule_cg():
 
 
 @pytest.fixture
-def bf4_aa():
+def bf4_aa() -> Molecule:
+    """
+    Molecule instance of BF4 in all-atom resolution.
+    """
     fgro = os.path.join(ACTUAL_PATH, '../data/BF4_AA.gro')
     fitp = os.path.join(ACTUAL_PATH, '../data/BF4_AA.itp')
     return System(fgro, fitp)[0]
 
 
 @pytest.fixture
-def bf4_cg():
+def bf4_cg() -> Molecule:
+    """
+    Molecule instance of BF4 in coarse-grained resolution.
+    """
     fgro = os.path.join(ACTUAL_PATH, '../data/BF4_CG.gro')
     fitp = os.path.join(ACTUAL_PATH, '../data/BF4_CG.itp')
     return System(fgro, fitp)[0]
 
 
 @pytest.fixture
-def vte_aa():
+def vte_aa() -> Molecule:
+    """
+    Molecule instance of E vitamin in all-atom resolution.
+    """
     fgro = os.path.join(ACTUAL_PATH, '../data/VTE_AA.gro')
     with GroFile(fgro) as _file:
         atoms = [AtomGro(line) for line in _file]
@@ -63,14 +78,21 @@ def vte_aa():
 
 
 @pytest.fixture
-def vte_cg():
+def vte_cg() -> Molecule:
+    """
+    Molecule instance of E vitamin in coarse-grained resolution.
+    """
     fgro = os.path.join(ACTUAL_PATH, '../data/sistema_CG.gro')
     fitp = os.path.join(ACTUAL_PATH, '../data/vitamin_E_CG.itp')
     return System(fgro, fitp)[0]
 
 
 @pytest.fixture
-def vte_map_cg():
+def vte_map_cg() -> Molecule:
+    """
+    Molecule instance of E vitamin in coarse-grained resolution after being
+    mapped.
+    """
     fgro = os.path.join(ACTUAL_PATH, '../data/VTE_map.gro')
     with GroFile(fgro) as _file:
         atoms = [AtomGro(line) for line in _file]
@@ -80,10 +102,9 @@ def vte_map_cg():
     return Molecule(mitp, [mgro])
 
 
-def test_exchange_map(molecule_cg, molecule_aa):
+def test_exchange_map(molecule_cg: Molecule, molecule_aa: Molecule):
     """
-    Test the ExchangeMap class.
-
+    Tests the ExchangeMap class for curcumine.
     """
     emap = ExchangeMap(molecule_cg, molecule_aa, scale_factor=1)
     with pytest.raises(TypeError, match='.*Argument.*'):
@@ -108,7 +129,10 @@ def test_exchange_map(molecule_cg, molecule_aa):
         assert np.allclose(at1.position, at2.position)
 
 
-def test_bf4_map(bf4_cg, bf4_aa):
+def test_bf4_map(bf4_cg: Molecule, bf4_aa: Molecule):
+    """
+    Tests the ExchangeMap class for BF4 molecules.
+    """
     emap = ExchangeMap(bf4_cg, bf4_aa, scale_factor=1)
     with pytest.raises(TypeError, match='.*Argument.*'):
         emap(2)
@@ -132,7 +156,12 @@ def test_bf4_map(bf4_cg, bf4_aa):
                        rtol=1.e-3, atol=1.e-3)
 
 
-def test_vte_map(vte_aa, vte_cg, vte_map_cg):
+def test_vte_map(vte_aa: Molecule, vte_cg: Molecule, vte_map_cg: Molecule):
+    """
+    Tests ExchangeMap class for E vitamin and checks the map with a previously
+    obtained map.
+    """
+    
     emap = ExchangeMap(vte_map_cg, vte_aa, scale_factor=1)
     # Check the copy of ref-molecule
     start_positions = vte_aa.atoms_positions

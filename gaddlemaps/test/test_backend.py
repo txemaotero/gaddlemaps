@@ -9,7 +9,7 @@ from gaddlemaps import Chi2Calculator, accept_metropolis
 
 def test_chi2_molecules():
     """
-    Test simple cases with simple molecules.
+    Test chi2 calculations with simple molecules.
     """
     mol1 = np.array([
         [0, 0, 0],
@@ -38,6 +38,10 @@ def test_chi2_molecules():
 
 
 def test_chi2_molecules_inv():
+    """
+    Same test as test_chi2_molecules but changing the order in input
+    molecules.
+    """
     mol1 = np.array([
         [0, 0, 1],
         [0, 2, 0],
@@ -55,7 +59,7 @@ def test_chi2_molecules_inv():
 
 def test_accept_metropolis():
     """
-    Test the deterministic case.
+    Test the acceptance algorithm with non random cases.
     """
     assert accept_metropolis(50, 40)
     assert accept_metropolis(40, 40)

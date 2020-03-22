@@ -268,7 +268,7 @@ class Manager:
             >>> restrictions = [(1, 3), (4, 5)]
 
             IMPORTANT: INDEX ARE REFERENCED TO THE ATOM NUMBER IN THE .itp FILE
-            (STARTS IN 1).
+            (IT USUALLY STARTS IN 1).
         guess_proteins : bool, optional
             If True, restriction for proteins with more than 3 residues will be
             guessed using "guess_protein_restrain" function. This will
@@ -343,30 +343,25 @@ class Manager:
         mol_end = self.molecule_correspondence[name].end
         assert isinstance(mol_end, Molecule)
 
-        msg_format = ('{}: The input restriction has wrong format. See '
-                      'documentation of align_molecules method.')
+        msg = f'{name}: '
+        msg_format = msg + ('The input restriction has wrong format. See '
+                            'documentation of align_molecules method.')
 
+        msg_index = msg + ('Error accessing the {}th atom in the {}'
+                           ' resolution molecule.')
         list_res = []
         for tup in restriction:
-            if not hasattr(tup, '__len__'):
-                raise ValueError(msg_format.format(name))
-            if len(tup) != 2:
-                raise ValueError(msg_format.format(name))
+            if not hasattr(tup, '__len__') or len(tup) != 2:
+                raise ValueError(msg_format)
             try:
-                ind1 = mol_start.hash2index(tup[0])
-            except KeyError:
-                msg = '{}: '.format(name)
-                msg += ('Molecule in initial resolution has no atom'
-                        ' with number {}'.format(tup[0]))
-                raise ValueError(msg)
+                ind1 = mol_start[tup[0]]
+            except IndexError:
+                raise ValueError(msg_index.format(tup[0], 'initial'))
             try:
-                ind2 = mol_end.hash2index(tup[1])
-            except KeyError:
-                msg = '{}: '.format(name)
-                msg += ('Molecule in final resolution has no atom'
-                        ' with number {}'.format(tup[1]))
-                raise ValueError(msg)
-            list_res.append((ind1, ind2))
+                ind2 = mol_end[tup[1]]
+            except IndexError:
+                raise ValueError(msg_index.format(tup[1], 'final'))
+            list_res.append(tup)
         return list_res
 
     def _parse_deformations(self, deformations: Deformations = None) -> Dict[str, Any]:

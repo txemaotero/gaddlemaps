@@ -2,6 +2,8 @@
 Test for the features from _transform_molecule submodule.
 '''
 
+from typing import Dict, List, Tuple
+
 import pytest
 import numpy as np
 
@@ -9,8 +11,9 @@ from gaddlemaps import find_atom_random_displ, move_mol_atom
 
 
 @pytest.fixture
-def atom_pos():
-    """Atoms positions
+def atom_pos() -> np.ndarray:
+    """
+    Some artificial atom positions
     """
     atom = np.array([
         [0, 0, 0],
@@ -23,34 +26,22 @@ def atom_pos():
 
 
 @pytest.fixture
-def bonds_info():
-    """Bonds information
+def bonds_info() -> Dict[int, List[Tuple[int, float]]]:
+    """
+    Some artificial bonds information
     """
     bonds = {
-        0: [
-            (1, 1.),
-        ],
-        1: [
-            (0, 1.),
-            (2, 1.),
-            (3, 2**.5),
-        ],
-        2: [
-            (1, 1.),
-            (4, 1.),
-        ],
-        3: [
-            (1, 2**.5),
-        ],
-        4: [
-            (2, 1.),
-        ],
+        0: [ (1, 1.), ],
+        1: [ (0, 1.), (2, 1.), (3, 2**.5), ],
+        2: [ (1, 1.), (4, 1.), ],
+        3: [ (1, 2**.5), ],
+        4: [ (2, 1.), ],
     }
-
     return bonds
 
 
-def test_find_atom_random_displ(atom_pos, bonds_info):
+def test_find_atom_random_displ(atom_pos: np.ndarray,
+                                bonds_info: Dict[int, List[Tuple[int, float]]]):
     """
     Test the direction of the found displacements.
     """
@@ -66,9 +57,10 @@ def test_find_atom_random_displ(atom_pos, bonds_info):
     assert not np.dot(three_bond, np.array([0, 1, 0]))
 
 
-def test_move_mol_atom(atom_pos, bonds_info):
+def test_move_mol_atom(atom_pos: np.ndarray,
+                       bonds_info: Dict[int, List[Tuple[int, float]]]):
     """
-    Test deformation of molecule in x dir
+    Test deformation of molecule in the x direction.
     """
     disp = np.array([1, 0, 0])
     new = move_mol_atom(atom_pos, bonds_info, 4, disp)

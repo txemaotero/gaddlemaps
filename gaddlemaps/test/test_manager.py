@@ -4,6 +4,7 @@ This module contains test for _manager module.
 
 import json
 import os
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -15,7 +16,11 @@ ACTUAL_PATH = os.path.split(os.path.join(os.path.abspath(__file__)))[0]
 
 
 @pytest.fixture
-def system():
+def system() -> System:
+    """
+    System instance with DNA and E vitamin E molecules.
+    """
+    
     fgro = os.path.join(ACTUAL_PATH, '../data/sistema_CG.gro')
     fitpDNA = os.path.join(ACTUAL_PATH, '../data/DNA_CG.itp')
     fitpVTE = os.path.join(ACTUAL_PATH, '../data/vitamin_E_CG.itp')
@@ -23,18 +28,10 @@ def system():
 
 
 @pytest.fixture
-def manager(system):
-    return Manager(system)
-
-
-@pytest.fixture
-def manager_added(manager, molecule_DNA_AA, molecule_VTE_AA):
-    manager.add_end_molecules(molecule_DNA_AA, molecule_VTE_AA)
-    return manager
-
-
-@pytest.fixture
-def molecule_VTE_AA():
+def molecule_VTE_AA() -> Molecule:
+    """
+    Molecule instance of E vitamin in all-atom resolution.
+    """
     fitpVTE = os.path.join(ACTUAL_PATH, '../data/VTE_AA.itp')
     fgroVTE = os.path.join(ACTUAL_PATH, '../data/VTE_AA.gro')
     VTEgro = SystemGro(fgroVTE)[0]
@@ -43,14 +40,11 @@ def molecule_VTE_AA():
 
 
 @pytest.fixture
-def molecule_DNA_AA():
-    fitpDNA = os.path.join(ACTUAL_PATH, '../data/DNA_AA.itp')
-    fgroDNA = os.path.join(ACTUAL_PATH, '../data/DNA_AA.gro')
-    return System(fgroDNA, fitpDNA)[0]
-
-
-@pytest.fixture
-def molecule_VTE_map():
+def molecule_VTE_map() -> Molecule:
+    """
+    Molecule instance of E vitamin in coarse-grained resolution after being
+    mapped.
+    """
     fitpVTE = os.path.join(ACTUAL_PATH, '../data/vitamin_E_CG.itp')
     fgroVTE = os.path.join(ACTUAL_PATH, '../data/VTE_map.gro')
     VTEgro = SystemGro(fgroVTE)[0]
@@ -59,14 +53,30 @@ def molecule_VTE_map():
 
 
 @pytest.fixture
-def molecule_DNA_map():
+def molecule_DNA_AA() -> Molecule:
+    """
+    Molecule instance of DNA in all-atom resolution.
+    """
+    fitpDNA = os.path.join(ACTUAL_PATH, '../data/DNA_AA.itp')
+    fgroDNA = os.path.join(ACTUAL_PATH, '../data/DNA_AA.gro')
+    return System(fgroDNA, fitpDNA)[0]
+
+
+@pytest.fixture
+def molecule_DNA_map() -> Molecule:
+    """
+    Molecule instance of DNA in coarse-grained resolution after being mapped.
+    """
     fitpDNA = os.path.join(ACTUAL_PATH, '../data/DNA_CG.itp')
     fgroDNA = os.path.join(ACTUAL_PATH, '../data/DNA_map.gro')
     return System(fgroDNA, fitpDNA)[0]
 
 
 @pytest.fixture
-def molecule_popc_AA():
+def molecule_popc_AA() -> Molecule:
+    """
+    Molecule instance of POPC in all-atom resolution.
+    """
     fitppopc = os.path.join(ACTUAL_PATH, '../data/popc-AA.itp')
     fgropopc = os.path.join(ACTUAL_PATH, '../data/popc-AA.gro')
     popcgro = SystemGro(fgropopc)[0]
@@ -74,13 +84,34 @@ def molecule_popc_AA():
     return Molecule(popcitp, [popcgro])
 
 
+@pytest.fixture
+def manager(system: System) -> Manager:
+    """
+    Manager instance initialized with the system with DNA and E vitamin but
+    without molecule assignment in the final resolution.
+    """
+    return Manager(system)
+
+
+@pytest.fixture
+def manager_added(manager: Manager, molecule_DNA_AA: Molecule,
+                  molecule_VTE_AA: Molecule) -> Manager:
+    """
+    Manager instance initialized with the system with DNA and E vitamin
+    with molecules in the final resolution assigned.
+    """
+    manager.add_end_molecules(molecule_DNA_AA, molecule_VTE_AA)
+    return manager
+
+
 class TestManager:
     """
-    Test for Manager class.
-
+    Wraps all tests for Manager class.
     """
-
     def test_init_from_files(self):
+        """
+        Tests the Manager initialization from corresponding files.
+        """
         fgro = os.path.join(ACTUAL_PATH, '../data/sistema_CG.gro')
         fitpDNA = os.path.join(ACTUAL_PATH, '../data/DNA_CG.itp')
         fitpVTE = os.path.join(ACTUAL_PATH, '../data/vitamin_E_CG.itp')
@@ -92,7 +123,10 @@ class TestManager:
         assert isinstance(man.molecule_correspondence['DNA'].start, Molecule)
         assert isinstance(man.molecule_correspondence['VTE'].start, Molecule)
 
-    def test_attrs(self, manager):
+    def test_attributes(self, manager: Manager):
+        """
+        Tests some attributes with an initialized Manager.
+        """
         man = manager
         assert isinstance(man.system, System)
         assert len(man.molecule_correspondence) == 2
@@ -101,23 +135,33 @@ class TestManager:
         assert isinstance(man.molecule_correspondence['DNA'].start, Molecule)
         assert isinstance(man.molecule_correspondence['VTE'].start, Molecule)
 
-    def test_add_mols(self, manager, molecule_DNA_AA, molecule_popc_AA,
-                      molecule_VTE_AA):
+    def test_add_mols(self, manager: Manager, molecule_DNA_AA: Molecule,
+                      molecule_popc_AA: Molecule, molecule_VTE_AA: Molecule):
+        """
+        Tests the final resolution Molecule assignment.
+        """
         with pytest.raises(TypeError):
-            manager.add_end_molecule(4)
+            manager.add_end_molecule(4)  # type: ignore
         with pytest.raises(KeyError):
             manager.add_end_molecule(molecule_popc_AA)
         manager.add_end_molecules(molecule_DNA_AA, molecule_VTE_AA)
         assert manager.molecule_correspondence['DNA'].end == molecule_DNA_AA
         assert manager.molecule_correspondence['VTE'].end == molecule_VTE_AA
 
-    def test_manager_added(self, manager_added):
+    def test_manager_added(self, manager_added: Manager):
+        """
+        Tests manager complete_correspondence attribute.
+        """
         comp = manager_added.complete_correspondence
         assert 'DNA' in comp
         assert 'VTE' in comp
 
-    def test_parse_restrictions(self, manager_added):
+    def test_parse_restrictions(self, manager_added: Manager):
+        """
+        Tests pares_restriction methods.
+        """
         manager = manager_added
+
         # If its None
         rest_comp = {
             'DNA': None,
@@ -125,41 +169,44 @@ class TestManager:
         }
         rest = manager.parse_restrictions(None)
         assert rest == rest_comp
+
         # Wrong name
         with pytest.raises(KeyError):
             rest = manager.parse_restrictions({'test': [(1, 2), ]})
+
         # Wrong format
         with pytest.raises(ValueError):
-            rest = manager.parse_restrictions({'DNA': (1, 2)})
+            rest = manager.parse_restrictions({'DNA': (1, 2)})  # type: ignore
         with pytest.raises(ValueError):
-            rest = manager.parse_restrictions({'DNA': [(1, 2, 3), ]})
-        # Not changes
-        rest_comp = {
+            rest = manager.parse_restrictions({'DNA': [(1, 2, 3), ]})  # type: ignore
+
+        # No changes
+        rest_comp1 = {
             'DNA': [(0, 1), ],
             'VTE': [(0, 1), ],
         }
-        rest = {
-            'DNA': [(1, 2), ],
-            'VTE': [(1, 2), ],
-        }
-        rest = manager.parse_restrictions(rest)
-        assert rest == rest_comp
+        new_rest = manager.parse_restrictions(rest_comp1)  # type: ignore
+        assert new_rest == rest_comp1
+
         # Complete
-        rest_comp = {
+        rest_comp2 = {
             'DNA': [(0, 1), ],
             'VTE': None,
         }
         rest = {
-            'DNA': [(1, 2), ],
+            'DNA': [(0, 1), ],
         }
         rest = manager.parse_restrictions(rest)
-        assert rest == rest_comp
+        assert rest == rest_comp2
         # Protein
         rest = manager.parse_restrictions(None, guess_proteins=True)
         assert rest['VTE'] == None
         assert len(rest['DNA']) == 1142
 
-    def test_parse_deformations(self, manager_added):
+    def test_parse_deformations(self, manager_added: Manager):
+        """
+        Tests the _parse_deformations method
+        """
         manager = manager_added
         # If its None
         def_comp = {
@@ -173,18 +220,18 @@ class TestManager:
             _ = manager._parse_deformations({'test': (2, 0)})
         # Wrong format
         with pytest.raises(ValueError):
-            _ = manager._parse_deformations({'DNA': 1})
+            _ = manager._parse_deformations({'DNA': 1})  # type: ignore
         with pytest.raises(ValueError):
             _ = manager._parse_deformations({'DNA': (1, 2, 3, 4, 4)})
         # Not changes
-        def_comp = {
+        def_comp1 = {
             'DNA': (1, 2),
             'VTE': (1, 2),
         }
-        defo = manager._parse_deformations(def_comp)
-        assert defo == def_comp
+        defo = manager._parse_deformations(def_comp1)  # type: ignore
+        assert defo == def_comp1
         # Complete
-        def_comp = {
+        def_comp2 = {
             'DNA': (1, 2),
             'VTE': None,
         }
@@ -192,9 +239,12 @@ class TestManager:
             'DNA': (1, 2),
         }
         defo = manager._parse_deformations(defo)
-        assert defo == def_comp
+        assert defo == def_comp2
 
-    def test_parse_ignore_hydrogens(self, manager_added):
+    def test_parse_ignore_hydrogens(self, manager_added: Manager):
+        """
+        Tests _parse_ignore_hydrogens method.
+        """
         manager = manager_added
         # If its None
         ign_comp = {
@@ -219,44 +269,17 @@ class TestManager:
         ign = manager._parse_ignore_hydrogens(ign)
         assert ign == ign_comp
 
-    def test_info(self, manager_added, system, molecule_DNA_AA, molecule_VTE_AA):
-        info = manager_added.info
-        mols_per_name = system.different_molecules
-        end_name = {'DNA': molecule_DNA_AA, 'VTE': molecule_VTE_AA}
-        mol_corr_info = {mol.name: Alignment(mol, end_name[mol.name]).info
-                         for mol in mols_per_name}
-        info_test = {
-            'system': system.info,
-            'molecule_correspondence': mol_corr_info,
-        }
-        assert info_test == info
-        new_man = Manager.from_info(info)
-        assert len(new_man.system) == len(manager_added.system)
-        assert new_man.molecule_correspondence.keys(
-        ) == manager_added.molecule_correspondence.keys()
-        for (n1, ali1), (n2, ali2) in zip(new_man.molecule_correspondence.items(),
-                                          manager_added.molecule_correspondence.items()):
-            assert n1 == n2
-            assert ali1.start == ali2.start
-            assert ali1.end == ali2.end
-        # Load from json
-        # json test
-        text = json.dumps(info, indent=2)
-        parse_text = json.loads(text)
-        new_man = Manager.from_info(parse_text)
-        assert len(new_man.system) == len(manager_added.system)
-        assert sorted(new_man.molecule_correspondence.keys()) == sorted(
-            manager_added.molecule_correspondence.keys())
-        for (n1, ali1), (n2, ali2) in zip(sorted(new_man.molecule_correspondence.items()),
-                                          sorted(manager_added.molecule_correspondence.items())):
-            assert n1 == n2
-            assert ali1.start == ali2.start
-            assert ali1.end == ali2.end
+    def test_extrapolate(self, manager: Manager, molecule_DNA_map: Molecule,
+                         molecule_VTE_map: Molecule, system: System,
+                         molecule_VTE_AA: Molecule, molecule_DNA_AA: Molecule,
+                         tmp_path: Path):
+        """
+        Tests the extrapolation functionality.
+        """
+        subdir = tmp_path / "manager_test"
+        subdir.mkdir()
+        fname = str(subdir / "system_CG_mapped_test.gro")
 
-    def test_extrapolate(self, manager, molecule_DNA_map, molecule_VTE_map,
-                         system, molecule_VTE_AA, molecule_DNA_AA):
-        fname = os.path.join(
-            ACTUAL_PATH, '../data/sistema_CG_mapeado_test.gro')
         with pytest.raises(SystemError):
             _ = manager.extrapolate_system(fname)
 
@@ -271,31 +294,19 @@ class TestManager:
 
         manager.calculate_exchange_maps()
 
-        try:
-            manager.extrapolate_system(fname)
-        except:
-            import sys
-            print('Error: ' + sys.exc_info()[0])
-            try:
-                os.remove(fname)
-            except FileNotFoundError:
-                pass
-            raise
-
-        sys = system
+        manager.extrapolate_system(fname)
 
         fgro = fname
         fitpDNA = os.path.join(ACTUAL_PATH, '../data/DNA_AA.itp')
         fitpVTE = os.path.join(ACTUAL_PATH, '../data/VTE_AA.itp')
         sys_end = System(fgro, fitpDNA, fitpVTE)
-        os.remove(fname)
 
-        poss = sys[0].atoms_positions
+        poss = system[0].atoms_positions
         tol = 0.1 * np.linalg.norm(np.max(poss, 0) + np.min(poss, 0))
 
-        assert len(sys) == len(sys_end)
-        assert sys.composition == sys_end.composition
+        assert len(system) == len(sys_end)
+        assert system.composition == sys_end.composition
         # The geometric center of each molecule should be more or less equal
-        for mol1, mol2 in zip(sys, sys_end):
+        for mol1, mol2 in zip(system, sys_end):
             assert np.allclose(mol1.geometric_center, mol2.geometric_center,
                                rtol=tol, atol=tol)
