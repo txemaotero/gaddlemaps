@@ -20,6 +20,7 @@ from ._backend import minimize_molecules, Chi2Calculator, accept_metropolis
 from ._alignment import (Alignment, remove_hydrogens, guess_residue_restrains,
                          guess_protein_restrains)
 from ._manager import Manager
+from ._represent import interactive_restrictions
 
 
 __all__ = ["rotation_matrix", "calcule_base", "ExchangeMap",
