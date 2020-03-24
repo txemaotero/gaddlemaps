@@ -181,6 +181,24 @@ class MoleculeTop:
         """
         return self.atoms.index(atom)
 
+    def copy(self) -> 'MoleculeTop':
+        """
+        Returns a copy of the molecule_top.
+
+        The atoms forming the copy are not the same objects as the original
+        molecule so you do not have to worry about linked objects.
+
+        Returns
+        -------
+        molecule_top : MoleculeTop
+            The copy of the molecule.
+        """
+        mol = self.__new__(self.__class__)
+        mol.ftop = self.ftop
+        mol.name = self.name
+        mol.atoms = [atom.copy() for atom in self]
+        return mol
+
 
 class AtomTop:
     """
@@ -229,7 +247,8 @@ class AtomTop:
             condition = (
                 (self.index == atom.index) and
                 (self.resname == atom.resname) and
-                (self.name == atom.name)
+                (self.name == atom.name) and
+                (self.bonds == atom.bonds)
             ) 
             return condition
         return False
@@ -272,3 +291,16 @@ class AtomTop:
             The list with the index of natoms atoms bonded self.
         """
         return sorted(self.bonds)[:natoms]
+
+    def copy(self) -> 'AtomTop':
+        """
+        Returns a copy of the current atom.
+
+        Returns 
+        -------
+        atom_top : AtomTop
+            The copy of the atom.
+        """
+        atom = AtomTop(self.name, self.resname, self.resid, self.index)
+        atom.bonds = self.bonds.copy()
+        return atom

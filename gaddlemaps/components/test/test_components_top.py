@@ -52,13 +52,18 @@ def test_single_atom_top():
     atom_compare = AtomTop('B1', 'BF4', 1, 0)
     assert atom == atom_compare
     assert atom is not atom_compare
+
     
     # Same index different resid
     atom_compare = AtomTop('B1', 'BF4', 5, 0)
     assert atom == atom_compare
 
     # Same resid different index
-    atom_compare = AtomTop('B1', 'BF4', 1, 1)
+    atom_compare2 = AtomTop('B1', 'BF4', 1, 1)
+    assert atom != atom_compare2
+
+    # Different bonds
+    atom_compare.connect(atom_compare2)
     assert atom != atom_compare
     
 
@@ -135,6 +140,10 @@ class TestMoleculeTop:
             ('F5', 'BF4', 1)
         ]
         atoms_test = [AtomTop(*info, i) for i, info in enumerate(atoms_info)]
+        atoms_test[0].connect(atoms_test[1])
+        atoms_test[0].connect(atoms_test[2])
+        atoms_test[0].connect(atoms_test[3])
+        atoms_test[0].connect(atoms_test[4])
         assert molecule.atoms == atoms_test
 
     def test_methods(self, bf4_molecule: MoleculeTop,
@@ -143,7 +152,12 @@ class TestMoleculeTop:
         Tests simple methods and magic-methods.
         """
         assert isinstance(bf4_molecule[0], AtomTop)
-        assert bf4_molecule[0] == AtomTop('B1', 'BF4', 1, 0)
+        atom_compare = AtomTop('B1', 'BF4', 1, 0)
+        atom_compare.bonds.add(1)
+        atom_compare.bonds.add(2)
+        atom_compare.bonds.add(3)
+        atom_compare.bonds.add(4)
+        assert bf4_molecule[0] == atom_compare
         assert len(bf4_molecule) == 5
         assert bf4_molecule == bf4_molecule
         assert bf4_molecule != 1
@@ -152,6 +166,13 @@ class TestMoleculeTop:
         assert bmim_molecule.resname_len_list == [('BMIM', 25)]
         for index, atom in enumerate(bf4_molecule):
             assert bf4_molecule.index(atom) == index
+
+        # copy
+        copy_mol = bmim_molecule.copy()
+        assert copy_mol == bmim_molecule
+        for at1, at2 in zip(copy_mol, bmim_molecule):
+            assert at1 == at2
+            assert at1 is not at2
     
     def test_resnames(self, bf4_molecule: MoleculeTop):
         """

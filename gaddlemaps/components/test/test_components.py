@@ -703,3 +703,41 @@ class TestMolecule:
         inv_box = np.linalg.inv(box_vects)
         assert round(molecule_protein.distance_to([0, 0, 0], box_vects=inv_box,
                                                   inv=True), 8) == 0
+
+    def test_copy(self, molecule_bmim: Molecule):
+        """
+        Test the copy method of Molecule class.
+        """
+        copy_mol = molecule_bmim.copy()
+
+        assert copy_mol == molecule_bmim
+        assert copy_mol.resnames == molecule_bmim.resnames
+
+        assert copy_mol.molecule_top == molecule_bmim.molecule_top
+        assert copy_mol.molecule_top is molecule_bmim.molecule_top
+
+        assert copy_mol.residues == molecule_bmim.residues
+        assert copy_mol.residues is not molecule_bmim.residues
+
+        # Tricky change in the resname of the topology
+        copy_mol.molecule_top.resnames = ['Test']
+        assert molecule_bmim.molecule_top.resnames == ['Test']
+
+    def test_deep_copy(self, molecule_bmim: Molecule):
+        """
+        Test the deep_copy method of Molecule class.
+        """
+        copy_mol = molecule_bmim.deep_copy()
+
+        assert copy_mol == molecule_bmim
+        assert copy_mol.resnames == molecule_bmim.resnames
+
+        assert copy_mol.molecule_top == molecule_bmim.molecule_top
+        assert copy_mol.molecule_top is not molecule_bmim.molecule_top
+
+        assert copy_mol.residues == molecule_bmim.residues
+        assert copy_mol.residues is not molecule_bmim.residues
+
+        # Tricky change in the resname of the topology
+        copy_mol.molecule_top.resnames = ['Test']
+        assert molecule_bmim.molecule_top.resnames == ['BMIM']

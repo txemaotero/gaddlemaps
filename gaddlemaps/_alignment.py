@@ -286,8 +286,8 @@ class Alignment:
         
         if fname is None:
             fname = '{}_compare.gro'.format(self.start.name)
-        start = self.start.copy()
-        end = self.end.copy()
+        start = self.start.deep_copy()
+        end = self.end.deep_copy()
         start.resnames = 'START'  # type: ignore
         end.resnames = 'END'  # type: ignore
         start.resids = 1  # type: ignore

@@ -409,6 +409,11 @@ class Molecule(Residue):
         If new_molecule_gro is passed, the old residues will be replaced
         to update the positions. This is used in the extrapolation step.
 
+        NOTE: With this method, the molecule_top used for the Molecule
+        initialization remains the same. This means that future changes in
+        copied molecules may affect other parts of you code. If you want a
+        completely independent new molecule use "deep_copy" method.
+
         Parameters
         ----------
         new_residues
@@ -424,6 +429,30 @@ class Molecule(Residue):
         if new_residues is None:
             new_residues = self._residues
         return Molecule(self._molecule_top, new_residues)
+
+    def deep_copy(self, new_residues: List[Residue] = None) -> 'Molecule':
+        """
+        Returns a deep copy of the molecule.
+
+        If new_molecule_gro is passed, the old residues will be replaced
+        to update the positions. This is used in the extrapolation step. This
+        method generates a new molecule that is not linked to any attribute of
+        the original one.
+
+        Parameters
+        ----------
+        new_residues
+            List of residues to replace the original positions.
+
+        Returns
+        -------
+        molecule : Molecule
+            The deep copy of the molecule.
+
+        """
+        if new_residues is None:
+            new_residues = self._residues
+        return Molecule(self._molecule_top.copy(), new_residues)
 
     def index(self, atom: 'Atom') -> int:
         """
