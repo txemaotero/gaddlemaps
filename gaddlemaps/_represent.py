@@ -1,4 +1,6 @@
 from . import Manager
+from .components import Residue
+from .parsers import GroFile
 from ._manager import Restrictions
 from typing import List, Tuple, Dict
 from ipywidgets import Button, HBox, VBox, Layout, Label, Box, Tab, Accordion, Widget
@@ -28,7 +30,25 @@ class Cycle:
     def reset(self):
         self._index = 0
 
-def create_widget_restrictions(file_low_res: str, file_high_res: str,
+def nglview_struct(molecule: Residue):
+    import nglview
+    class NglResidue(nglview.Structure):
+        def __init__(self, molecule: Residue, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+                self._molecule = molecule
+                self.ext = "gro"
+        
+        def get_structure_string(self):
+            header = f"Generated for using with GADDLE Maps\n {len(self._molecule)}\n"
+            footer = f"1.0 1.0 1.0\n"
+            
+            data = "\n".join([GroFile.parse_atomlist(atom.gro_line()) for atom in self._molecule])
+            
+            return header + data + footer
+                
+    return NglResidue(molecule)
+
+def create_widget_restrictions(mol_low_res: Residue, mol_high_res: Residue,
                                 restrict: Restriction = None)-> Tuple[Box, Restriction]:
     import nglview
 
@@ -40,10 +60,10 @@ def create_widget_restrictions(file_low_res: str, file_high_res: str,
     
     
     text = Label(value="Low Resolution")
-    view = nglview.show_file(file_low_res)
+    view = nglview.NGLWidget(nglview_struct(mol_low_res))
 
     text2 = Label(value="High Resolution")
-    view2 = nglview.show_file(file_high_res)
+    view2 = nglview.NGLWidget(nglview_struct(mol_high_res))
 
     button = Button(description="Add restriction")
     button2 = Button(description="Delete restriction")
@@ -94,26 +114,15 @@ def create_widget_restrictions(file_low_res: str, file_high_res: str,
 def create_interactive_restriction(manager: Manager,
                                    folder: str=None) -> Tuple[Dict[str, Box],
                                                               Restrictions]:
-
-    if folder is None:
-        folder = "representation_tempfiles"
-    
-    if not isdir(folder):
-        mkdir(folder)
-    
     restrictions = {}
     boxes = {}
     
     for specie in manager.molecule_correspondence:
         if manager.molecule_correspondence[specie].end is None:
             continue
-        low_res_file = join(folder, f"{specie}_low_res.gro")
-        high_res_file = join(folder, f"{specie}_high_res.gro")
         
-        manager.molecule_correspondence[specie].start.write_gro(low_res_file)
-        manager.molecule_correspondence[specie].end.write_gro(high_res_file)
-        
-        box, restrict = create_widget_restrictions(low_res_file, high_res_file)
+        box, restrict = create_widget_restrictions(manager.molecule_correspondence[specie].start,
+                                                   manager.molecule_correspondence[specie].end)
         
         boxes[specie] = box
         restrictions[specie] = restrict
@@ -145,6 +154,37 @@ def interactive_restrictions(manager: Manager, folder: str=None,
             restriction_widget.set_title(index, specie)
     
     return restriction_widget, restrictions
+
+
+def comparate_molecules(molecule_low_res: Residue, molecule_high_res: Residue,
+                        radius: float=None):
+    import nglview
+    if radius is None:
+        radius = 2.5
+    view = nglview.NGLWidget()
+    struct1 = view.add_structure(nglview_struct(molecule_low_res))
+    struct1.clear_representations()
+    struct1.add_representation("licorice", radius=radius, opacity=0.3)
+
+    struct2 = view.add_structure(nglview_struct(molecule_high_res))
+    struct2.clear_representations()
+    struct2.add_representation("licorice")
+    return view
+
+def comparate_alignment(manager: Manager, radius: float=None):
+    items = []
+    
+    for specie, correspondence in manager.complete_correspondence.items():
+        if correspondence.end is None or correspondence.start is None:
+            continue
+        items.append(Label(value=specie))
+        items.append(comparate_molecules(correspondence.start,
+                                         correspondence.end,
+                                         radius=radius))
+    return VBox(items)
+    
+    
+    
     
     
     
