@@ -5,7 +5,7 @@ atom and molecule information relative to the bonds between atoms.
 
 import os
 from itertools import groupby
-from typing import Any, Generator, List, Set, Tuple
+from typing import Any, Generator, List, Set, Tuple, overload
 
 from ..parsers import itp_top
 
@@ -62,7 +62,13 @@ class MoleculeTop:
         for bond in atoms_bonds:
             self.atoms[bond[0]].connect(self.atoms[bond[1]])
 
+    @overload
     def __getitem__(self, index: int) -> 'AtomTop':
+        ...
+    @overload
+    def __getitem__(self, index: slice) -> List['AtomTop']:
+        ...
+    def __getitem__(self, index):
         return self.atoms[index]
 
     def __len__(self) -> int:

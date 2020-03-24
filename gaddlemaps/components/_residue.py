@@ -4,7 +4,8 @@ This submodule defines a Residue class that will constitute molecules.
 
 import re
 import warnings
-from typing import TYPE_CHECKING, Any, Generator, List, Optional, Union
+from typing import (TYPE_CHECKING, Any, Generator, List, Optional, Union,
+                    overload)
 
 import numpy as np
 
@@ -48,7 +49,14 @@ class Residue:
                               f'{residnames}.'))
         self._atoms_gro = atoms
 
+
+    @overload
     def __getitem__(self, index: int) -> 'AtomGro':
+        ...
+    @overload
+    def __getitem__(self, index: slice) -> List['AtomGro']:
+        ...
+    def __getitem__(self, index):
         return self._atoms_gro[index]
 
     def __iter__(self) -> Generator['AtomGro', None, None]:

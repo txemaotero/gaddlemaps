@@ -127,6 +127,10 @@ def test_molecule_top_and_residues_match(molecule_top_bmim: MoleculeTop,
                                             [residue_bmim])
     assert _molecule_top_and_residues_match(molecule_top_protein,
                                             residue_protein)
+    residue_bmim.resname = 'test'
+    assert not _molecule_top_and_residues_match(molecule_top_bmim,
+                                                [residue_bmim])
+    
 
 
 class TestAtom:
@@ -140,10 +144,11 @@ class TestAtom:
         atom_gro = atom_gro_generator()
         atom_top = AtomTop('N1', 'BMIM', 1, 0)
         atom = Atom(atom_top, atom_gro)
-        assert atom._atom_gro is atom_gro
-        assert atom._atom_top is atom_top
+        assert atom.atom_gro is atom_gro
+        assert atom.atom_top is atom_top
         new_atom = atom.copy()
         assert new_atom == atom
+        assert atom != 0
         assert new_atom is not atom
         assert hash(atom) == 0
 
@@ -160,6 +165,19 @@ class TestAtom:
         atom_gro.resname = 'BF4'
         with pytest.raises(IOError):
             atom = Atom(atom_top, atom_gro)
+
+        # Print and str
+        atom_str = str(atom)
+        assert atom_str == repr(atom)
+        line = 'Atom N1 of molecule BF4 with gro residue number 1.'
+        assert atom_str == line
+
+        # Some check to the dir()
+        atom_dir = dir(atom)
+        for key in dir(atom.atom_gro):
+            assert key in atom_dir
+        for key in dir(atom.atom_top):
+            assert key in atom_dir
 
     def test_get_set_attributes(self, atom_n1_bmim: Atom):
         """
@@ -184,6 +202,12 @@ class TestAtom:
             resid = atom_n1_bmim.resid
         with pytest.raises(AttributeError):
             atom_n1_bmim.resid = 1
+        
+        # Other access and set
+        with pytest.raises(AttributeError):
+            resid = atom_n1_bmim.test
+        atom_n1_bmim.test = 1
+        assert atom_n1_bmim.test == 1
 
         assert atom_n1_bmim.gro_resid == 1
         atom_n1_bmim.gro_resid = 3
@@ -249,11 +273,18 @@ class TestMolecule:
         Tests Molecule initialization with only one residue and some basic
         attributes and methods.
         """
+        # Wrong residue
+        new_residue = Residue(residue_bmim[:-1])
+        with pytest.raises(IOError):
+            molec = Molecule(molecule_top_bmim, [new_residue])
+
         molec = Molecule(molecule_top_bmim, [residue_bmim])
 
         assert len(molec) == len(molecule_top_bmim)
         assert len(molec) == len(residue_bmim)
         assert len(molec) == 25
+
+        assert str(molec) == 'Molecule of BMIM.'
 
         for atom, atom_top, atom_gro in zip(molec, molecule_top_bmim,
                                             residue_bmim):
@@ -266,19 +297,30 @@ class TestMolecule:
         assert molec[-1] == atom_compare
         assert atom_compare != molec[0]
         assert molec.index(atom_compare) == 24
+        with pytest.raises(ValueError):
+            _ = molec.index(34)  # type: ignore 
 
         assert molec._each_atom_resid == [0] * len(molec)
 
         assert molec == molec
         assert molec is molec
 
-        assert molec.copy() == molec
-        assert molec.copy() is not molec
+        copy_mol = molec.copy()
+        assert copy_mol == molec
+        assert copy_mol is not molec
 
         assert len(molec.residues) == 1
         assert molec.residues[0] == residue_bmim
         assert molec.residues[0] is not residue_bmim
         assert molec.molecule_top is molecule_top_bmim
+
+        with pytest.raises(NotImplementedError):
+            _ = molec + 1  # type: ignore
+        with pytest.raises(NotImplementedError):
+            _ = 1 + molec  # type: ignore
+
+        for key in dir(molec.molecule_top):
+            assert key in dir(molec)
 
     def test_init_multi_residue(self, molecule_top_protein: MoleculeTop,
                                 residue_protein: List[Residue]):
@@ -310,6 +352,7 @@ class TestMolecule:
                                           8, 8, 8, 9, 9, 10, 10, 10, 11, 11,
                                           11, 12, 12]
 
+        assert molec != 0
         assert molec == molec
         assert molec is molec
 
@@ -347,6 +390,11 @@ class TestMolecule:
         assert molecule_bmim.residues[0].resname == 'BF4'
         for atom in molecule_bmim:
             assert atom.resname == 'BF4'
+
+        with pytest.raises(ValueError):
+            molecule_bmim.resnames = ['BF4', 'Test']
+        with pytest.raises(TypeError):
+            molecule_bmim.resnames = 4  # type: ignore
 
         molecule_bmim.resnames = 'test'  # type: ignore
         assert molecule_bmim.resnames == ['test']
@@ -387,6 +435,11 @@ class TestMolecule:
         for atom in molecule_bmim:
             assert atom.top_resid == 5
             assert atom.gro_resid == 5
+
+        with pytest.raises(ValueError):
+            molecule_bmim.resids = [1, 2]
+        with pytest.raises(TypeError):
+            molecule_bmim.resids = 'test'  # type: ignore
 
         molecule_bmim.resids = 3  # type: ignore
         assert molecule_bmim.resids == [3]
@@ -737,6 +790,10 @@ class TestMolecule:
 
         assert copy_mol.residues == molecule_bmim.residues
         assert copy_mol.residues is not molecule_bmim.residues
+
+        copy_mol.molecule_top[0].name = 'T2'
+        copy_mol.residues[0][0].name = 'T2'
+        assert molecule_bmim != copy_mol
 
         # Tricky change in the resname of the topology
         copy_mol.molecule_top.resnames = ['Test']
