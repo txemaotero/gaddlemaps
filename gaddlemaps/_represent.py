@@ -25,6 +25,7 @@ class Cycle:
             yield self._values[self._index]
             self._index += 1
             self._index %= len(self._values)
+
     def __next__(self):
             val = self._values[self._index]
             self._index += 1
@@ -240,7 +241,7 @@ def interactive_restrictions(manager: Manager, style:int=None) -> Tuple[Widget, 
     
     boxes, restrictions = create_interactive_restriction(manager)
     
-    restriction_widget = representation(sync=False)
+    restriction_widget = representation()
     
     for index, specie in enumerate(boxes):
         child = boxes[specie]
