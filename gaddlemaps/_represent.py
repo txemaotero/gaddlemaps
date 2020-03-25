@@ -183,6 +183,8 @@ def create_interactive_restriction(manager: Manager) -> Tuple[Dict[str, Box],
         if  start_molecule is None or  end_molecule is None:
             continue
         
+        start_molecule.move_to([0, 0, 0])
+        end_molecule.move_to([0, 0, 0])
         box, restrict = create_widget_restrictions(start_molecule,
                                                    end_molecule)
         
