@@ -59,7 +59,7 @@ def nglview_struct(molecule: Residue):
         
         def get_structure_string(self):
             header = f"Generated for using with GADDLE Maps\n {len(self._molecule)}\n"
-            footer = f"1.0 1.0 1.0\n"
+            footer = f"0.0 0.0 0.0\n"
             
             data = "\n".join([GroFile.parse_atomlist(atom.gro_line()) for atom in self._molecule])
             
