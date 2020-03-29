@@ -4,7 +4,7 @@ This submodule defines the System and SystemGro classes.
 
 import typing
 from collections import Counter
-from itertools import islice
+from more_itertools import islice_extended, last
 from typing import Dict, Generator, List, Mapping, Tuple, overload
 
 import numpy as np
@@ -64,27 +64,33 @@ class System:
     def __getitem__(self, index: slice) -> List[Molecule]:
         ...
     def __getitem__(self, index):
-        if isinstance(index, slice):
-            molecules = []
-            info = list(self._molecules_ordered_all_gen())
-            for info in islice(self._molecules_ordered_all_gen(), index.start,
-                               index.stop, index.step):
-                itp_index, gro_start, gro_end = info
-                residues = self.system_gro[gro_start:gro_end]
-                mol = self.different_molecules[itp_index].copy(residues)
-                molecules.append(mol)
-            return molecules
-        if index < 0:
-            index += len(self)
-        if index < 0:
-            raise IndexError('Molecule index out of range')
-        for i, info in enumerate(self._molecules_ordered_all_gen()):
-            if i == index:
+        try:
+            if isinstance(index, slice):
+                molecules = []
+                info = list(self._molecules_ordered_all_gen())
+                for info in islice_extended(self._molecules_ordered_all_gen(),
+                                            index.start, index.stop,
+                                            index.step):
+                    itp_index, gro_start, gro_end = info
+                    residues = self.system_gro[gro_start:gro_end]
+                    mol = self.different_molecules[itp_index].copy(residues)
+                    molecules.append(mol)
+                return molecules
+            elif isinstance(index, int):
+                if index == -1:
+                    info = last(self._molecules_ordered_all_gen())
+                else:
+                    info = next(islice_extended(self._molecules_ordered_all_gen(),
+                                                index, index+1))
                 itp_index, gro_start, gro_end = info
                 residues = self.system_gro[gro_start:gro_end]
                 mol = self.different_molecules[itp_index].copy(residues)
                 return mol
-        raise IndexError('Molecule index out of range')
+            else:
+                raise TypeError(('System indices must be integers or slices,'
+                                 f' not {type(index)}.'))
+        except StopIteration:
+            raise IndexError('Molecule index out of range')
 
     def __len__(self) -> int:
         return sum(elem[2] for elem in self._molecules_ordered)
@@ -224,22 +230,31 @@ class SystemGro:
     def __getitem__(self, index: slice) -> List[Residue]:
         ...
     def __getitem__(self, index):
-        if isinstance(index, slice):
-            molecules = []
-            for _, start, len_mol in islice(self._molecules_ordered_all_gen(),
-                                            index.start, index.stop,
-                                            index.step):
-                self._open_fgro.seek_atom(start)
-                molecules.append(Residue([AtomGro(next(self._open_fgro))
-                                          for _ in range(len_mol)]))
-            return molecules
-        for i, info in enumerate(self._molecules_ordered_all_gen()):
-            if i == index:
+        try:
+            if isinstance(index, slice):
+                molecules = []
+                for _, start, len_mol in islice_extended(self._molecules_ordered_all_gen(),
+                                                        index.start, index.stop,
+                                                        index.step):
+                    self._open_fgro.seek_atom(start)
+                    molecules.append(Residue([AtomGro(next(self._open_fgro))
+                                              for _ in range(len_mol)]))
+                return molecules
+            if isinstance(index, int):
+                if index == -1:
+                    info = last(self._molecules_ordered_all_gen())
+                else:
+                    info = next(islice_extended(self._molecules_ordered_all_gen(),
+                                                index, index+1))
                 _, start, len_mol = info
                 self._open_fgro.seek_atom(start)
                 return Residue([AtomGro(next(self._open_fgro))
                                 for _ in range(len_mol)])
-        raise IndexError('Residue index out of range')
+            else:
+                raise TypeError(('SystemGro indices must be integers or slices,'
+                                 f' not {type(index)}.'))
+        except StopIteration:
+            raise IndexError('Residue index out of range')
 
     def __len__(self) -> int:
         return sum(elem[1] for elem in self._pk_ammount_ordered_gen())

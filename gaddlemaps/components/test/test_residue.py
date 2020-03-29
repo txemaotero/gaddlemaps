@@ -88,6 +88,7 @@ class TestAtomGro:
         """
         assert atom_gro1 == atom_gro1
         assert atom_gro1 != atom_gro2
+        assert atom_gro1 != 1
         copy_1 = atom_gro1.copy()
         assert copy_1 == atom_gro1
         assert copy_1 is not atom_gro1
@@ -99,6 +100,10 @@ class TestAtomGro:
         assert atom_gro1.element == 'N'
         assert atom_gro2.element == 'H'
         assert atom_gro3.element == 'H'
+
+        atom_gro1.name = '345'
+        with pytest.raises(IOError):
+            _ = atom_gro1.element
 
     def test_atom_gro_line(self, atom_gro1: AtomGro, atom_gro3: AtomGro):
         """
@@ -129,11 +134,19 @@ class TestResidue:
 
         residue = Residue([atom_gro1, atom_gro2])
         assert residue._atoms_gro == [atom_gro1, atom_gro2]
+        assert str(residue) == 'Residue BMIM with number 1.'
 
     def test_resid_name(self, residue: Residue):
         """
         Test resid and resname setter.
         """
+        residue.resname = 'TestLong'
+        assert residue.resname == 'TestL'
+        assert residue.residname == '1TestL'
+
+        with pytest.raises(TypeError):
+            residue.resname = 2  # type:ignore
+
         residue.resname = 'BF4'
         assert residue.resname == 'BF4'
         assert residue.residname == '1BF4'
@@ -148,6 +161,7 @@ class TestResidue:
             assert atom.resid == 2
             assert atom.residname == '2BF4'
 
+
     def test_methods(self, residue: Residue, atom_gro1: AtomGro):
         """
         Test some methods, magic-methods and attributes.
@@ -156,6 +170,7 @@ class TestResidue:
         assert residue[0] is atom_gro1
         assert len(residue) == 2
         assert residue == residue
+        assert not residue != residue
         residue_copy = residue.copy()
         assert residue == residue_copy
         assert residue is not residue_copy
@@ -171,6 +186,10 @@ class TestResidue:
             residue.atoms_ids = [1, 'hola']  # type: ignore
         with pytest.raises(IndexError):
             residue.atoms_ids = [1, 1, 2]
+
+        residue.remove_atom(residue[0])
+        assert len(residue) == 1
+        assert residue.atoms_ids == [3]
 
     def test_add(self, residue: Residue, atom_gro1: AtomGro,
                  atom_gro3: AtomGro):
@@ -189,6 +208,10 @@ class TestResidue:
             new_residue = residue + 1  # type: ignore
 
         new_residue = residue + atom_gro1
+        assert len(new_residue) == 3
+        assert new_residue.residname == atom_gro1.residname
+
+        new_residue = atom_gro1 + residue
         assert len(new_residue) == 3
         assert new_residue.residname == atom_gro1.residname
 
@@ -318,3 +341,7 @@ class TestResidue:
         names = ['B1', 'F2', 'F3', 'F4', 'F5'] 
         for atom, name in zip(new_residue, names):
             assert atom.name == name
+
+        new_residue = residue + residue
+        with pytest.raises(ValueError):
+            new_residue.update_from_molecule_top(bf4_mtop)

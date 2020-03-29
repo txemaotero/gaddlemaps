@@ -65,7 +65,10 @@ def test_single_atom_top():
     # Different bonds
     atom_compare.connect(atom_compare2)
     assert atom != atom_compare
-    
+
+    # Different type
+    assert atom != 0
+
 
 def test_connect_atom_top():
     """
@@ -145,6 +148,7 @@ class TestMoleculeTop:
         atoms_test[0].connect(atoms_test[3])
         atoms_test[0].connect(atoms_test[4])
         assert molecule.atoms == atoms_test
+        assert str(molecule) == 'MoleculeTop of BF4.'
 
     def test_methods(self, bf4_molecule: MoleculeTop,
                      bmim_molecule: MoleculeTop):
@@ -189,6 +193,12 @@ class TestMoleculeTop:
             assert atom.resname == 'BMIM'
         assert bf4_molecule.resnames == ['BMIM']
 
+        # Multiple resnames
+        bf4_molecule[0].resname = 'BF4'
+        assert bf4_molecule.resnames == ['BF4', 'BMIM']
+        bf4_molecule.resnames = ['Test', 'T2']
+        assert bf4_molecule.resnames == ['Test', 'T2']
+
     def test_resids(self, bf4_molecule: MoleculeTop):
         """
         Resids access and setter.
@@ -203,3 +213,9 @@ class TestMoleculeTop:
         for atom in bf4_molecule:
             assert atom.resid == 3
         assert bf4_molecule.resids == [3]
+
+        # Multiple resids
+        bf4_molecule[0].resid = 8
+        assert bf4_molecule.resids == [8, 3]
+        bf4_molecule.resids = [56, 88]
+        assert bf4_molecule.resids == [56, 88]

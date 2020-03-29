@@ -21,7 +21,6 @@ def bmimbf4_gro_fname() -> str:
 @pytest.fixture
 def system() -> System:
     fgro = os.path.join(ACTUAL_PATH, '../../data/system_CG.gro')
-    fgro = os.path.join(ACTUAL_PATH, '../../data/system_CG.gro')
     fitpDNA = os.path.join(ACTUAL_PATH, '../../data/DNA_CG.itp')
     fitpDPSM = os.path.join(ACTUAL_PATH, '../../data/DPSM_CG.itp')
     fitpVTE = os.path.join(ACTUAL_PATH, '../../data/vitamin_E_CG.itp')
@@ -128,6 +127,31 @@ class TestSystemGro:
             'BMIM': 300
         }
         assert system_bmimbf4_gro.composition == test_comp
+        assert 'Simulation system with:' in str(system_bmimbf4_gro)
+        assert 'BMIM  : 300' in str(system_bmimbf4_gro)
+        assert 'BF4   : 300' in str(system_bmimbf4_gro)
+
+    def test_indexing(self, system_bmimbf4_gro: SystemGro):
+        """
+        Tests SystemGro accessing.
+        """
+        mol0 = system_bmimbf4_gro[0]
+        mol1 = system_bmimbf4_gro[1]
+
+        assert system_bmimbf4_gro[:2] == [mol0, mol1]
+        assert system_bmimbf4_gro[-len(system_bmimbf4_gro)] == mol0
+        assert system_bmimbf4_gro[-len(system_bmimbf4_gro):-len(system_bmimbf4_gro)+2] == [mol0, mol1]
+
+        assert not system_bmimbf4_gro[200000:300000]
+        assert not system_bmimbf4_gro[-300000:-200000]
+
+        with pytest.raises(IndexError):
+            _ = system_bmimbf4_gro[200000]
+        with pytest.raises(IndexError):
+            _ = system_bmimbf4_gro[-200000]
+
+        with pytest.raises(TypeError):
+            _ = system_bmimbf4_gro['test']  # type: ignore
 
 
 class TestSystem:
@@ -149,8 +173,18 @@ class TestSystem:
 
         empty = System(fgro)
         assert not empty.different_molecules
-        with pytest.raises(IOError):
+        with pytest.raises(IOError, match=r'The molecule.*'):
             empty.add_molecule_top(MoleculeTop(fitpSDS))
+
+        bad_dna_top = MoleculeTop(fitpADN)
+
+        for atom in bad_dna_top[98:105]:
+            atom.resname = 'DA'
+        for atom in bad_dna_top[105:112]:
+            atom.resname = 'DG'
+
+        with pytest.raises(IOError, match=r'The sequence.*'):
+            empty.add_molecule_top(bad_dna_top)
 
         empty.add_molecule_top(MoleculeTop(fitpADN))
 
@@ -162,6 +196,19 @@ class TestSystem:
         assert system[0].name == 'DNA'
         assert system[1].name == 'DPSM'
         assert system[-1].name == 'VTE'
+
+        fgro = os.path.join(ACTUAL_PATH, '../../data/system_CG.gro')
+        assert system.fgro == fgro
+
+        with pytest.raises(IndexError):
+            _ = system[-2000]
+        with pytest.raises(IndexError):
+            _ = system[2000]
+
+        assert 'Simulation system with:' in str(system)
+        assert 'DNA   : 1' in str(system)
+        assert 'DPSM  : 67' in str(system)
+        assert 'VTE   : 1000' in str(system)
 
         # Slice
         dna, dpsm = system[:2]
@@ -178,3 +225,25 @@ class TestSystem:
         assert comps['DNA'] == 1
         assert comps['DPSM'] == 67
         assert comps['VTE'] == 1000
+
+    def test_indexing(self, system: System):
+        """
+        Tests System accessing.
+        """
+        mol0 = system[0]
+        mol1 = system[1]
+
+        assert system[:2] == [mol0, mol1]
+        assert system[-len(system)] == mol0
+        assert system[-len(system):-len(system)+2] == [mol0, mol1]
+
+        assert not system[200000:300000]
+        assert not system[-300000:-200000]
+
+        with pytest.raises(IndexError):
+            _ = system[200000]
+        with pytest.raises(IndexError):
+            _ = system[-200000]
+
+        with pytest.raises(TypeError):
+            _ = system['test']  # type: ignore

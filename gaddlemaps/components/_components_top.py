@@ -114,7 +114,7 @@ class MoleculeTop:
                               f' while {len(new_resnames)} given.'))
         resname_index = 0
         actual_resname = self[0].residname
-        for atom in self:  # type: ignore
+        for atom in self:
             if atom.residname != actual_resname:
                 resname_index += 1
                 actual_resname = atom.residname
