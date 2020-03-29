@@ -28,11 +28,13 @@ def test_itp_file(itp_file: ItpFile):
     """
     Test the ItpFile class.
     """
-    assert 'moleculetype' in itp_file
-    assert 'bonds' in itp_file
-    assert 'atoms' in itp_file
-    assert 'pairs' in itp_file
+    keys = ('moleculetype', 'bonds', 'atoms', 'pairs')
+    for key in keys:
+        assert key in itp_file
+        assert key in str(itp_file)
+
     assert itp_file is not itp_file.copy()
+    assert 'itp file.' in repr(itp_file)
 
 
 def test_itp_section(itp_file: ItpFile):
@@ -54,6 +56,14 @@ def test_itp_section(itp_file: ItpFile):
     assert isinstance(atoms[0], ItpLineAtom)
     assert isinstance(bonds[0], ItpLineBonds)
 
+    # Different initialization
+    sec = ItpSection('test', ['line1', 'line2'])
+    assert sec.section_name == 'test'
+    assert isinstance(sec[0], ItpLine)
+    assert repr(sec) == 'Itp "test" section.'
+    for line, line_comp in zip(sec.lines, ['line1', 'line2']):
+        assert str(line) == line_comp
+
 
 def test_itp_line(itp_file: ItpFile):
     """
@@ -72,6 +82,9 @@ def test_itp_line(itp_file: ItpFile):
     assert atom_line.name == 'S'
     assert atom_line.cgnr == 1
     assert atom_line.charge == 1.284
+    atom_line.charge = 1.5
+    assert atom_line.charge == 1.5
+    atom_line.charge = 1.284
     assert atom_line.mass == 32.06
 
     assert atom_line.parsed_line == [1, 'S', 1, 'SDS', 'S', 1, 1.284, 32.06]
@@ -98,6 +111,61 @@ def test_itp_line(itp_file: ItpFile):
         m_line.nrexcl = 0
     with pytest.raises(TypeError):
         m_line.nrexcl = 'hola'
+
+    # Special cases
+    test_str = '# test'
+    line_itp = ItpLine(test_str)
+    assert line_itp.line == test_str
+    with pytest.warns(UserWarning):
+        line_itp.content = 'content test'
+
+    test_str = 'hello ; world'
+    line_itp = ItpLine(test_str)
+    assert 'hello' in line_itp.line
+    assert ';' in line_itp.line
+    assert 'world' in line_itp.line
+    line_itp.comment = 'test comment'
+    assert 'test comment' in line_itp.line
+
+    with pytest.raises(IOError):
+        _ = ItpLine('[ atoms ]')
+
+    # no comment
+    line_itp = ItpLine('test ;')
+    assert line_itp.line.strip() == 'test'
+
+
+def test_itp_line_atom():
+    """
+    Some test for atom lines
+    """
+    # Not full atom info
+    line = '1	  S	1  SDS      S 	1'
+    itp_line = ItpLineAtom(line)
+    assert itp_line.charge is None
+    with pytest.raises(AttributeError):
+        _ = itp_line.mass
+    itp_line.mass = 3
+    assert itp_line.mass == 3
+
+    with pytest.raises(AttributeError):
+        _ = itp_line.pair_interaction
+    itp_line.pair_interaction = 0
+    assert itp_line.pair_interaction == 0
+
+    with pytest.raises(AttributeError):
+        _ = itp_line.aux_name
+    itp_line.aux_name = 0
+    assert itp_line.aux_name == 0
+
+
+def test_itp_line_bond():
+    """
+    Some test for bond lines.
+    """
+    with pytest.raises(IOError):
+        _ = ItpLineBonds('1')
+    itp_line = ItpLineBonds('1  2')
 
 
 def test_dna(dna_itp: ItpFile):

@@ -5,6 +5,7 @@ submodule.
 
 
 import os
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -47,7 +48,29 @@ def test_gro_file():
     """
     fname = os.path.join(ACTUAL_PATH, '../../data/BMIM_AA.gro')
     open_fgro = GroFile(fname, 'r')
+    assert open_fgro.name == fname
+
     assert open_fgro.natoms == 25
+    with pytest.raises(AttributeError):
+        open_fgro.natoms = 4
+
+    with pytest.raises(AttributeError):
+        open_fgro.comment = 'Test line'
+    
+    with pytest.raises(IndexError):
+        open_fgro.seek_atom(40)
+
+    assert isinstance(open_fgro.position_format, tuple)
+    assert len(open_fgro.position_format) == 2
+    assert isinstance(open_fgro.position_format[0], int)
+    assert isinstance(open_fgro.position_format[1], int)
+
+    with pytest.raises(AttributeError):
+        open_fgro.position_format = (1, 3)
+
+    with pytest.raises(AttributeError):
+        open_fgro.box_matrix = np.eye(3)
+
     box = open_fgro.box_matrix
     assert isinstance(box, np.ndarray)
     assert box.shape == (3, 3)
@@ -58,6 +81,7 @@ def test_gro_file():
     ])
     assert np.isclose(box, box_test).all()
 
+    open_fgro.seek_atom(0)
     first_line = next(open_fgro)
     assert isinstance(first_line, tuple)
     assert len(first_line) == 7
@@ -73,3 +97,98 @@ def test_gro_file():
     assert isinstance(second_line, str)
     test_second = '1BMIM    C2    2   1.706   1.984   0.708'
     assert second_line.strip() == test_second
+
+
+def test_empty_gro_file(tmp_path: Path):
+    """
+    Test for opening an empty gro and some read write operations.
+    """
+    subdir = tmp_path / "gro_file_test"
+    subdir.mkdir()
+    fgrotmp = str(subdir / "test_write_fgro.gro")
+    open_fgro = GroFile(fgrotmp, 'w')
+    with pytest.raises(ValueError):
+        _ = open_fgro.natoms
+    with pytest.raises(ValueError):
+        open_fgro.seek_atom(3)
+    open_fgro.natoms = 1
+
+    assert isinstance(open_fgro.position_format, tuple)
+    assert len(open_fgro.position_format) == 2
+    assert isinstance(open_fgro.position_format[0], int)
+    assert isinstance(open_fgro.position_format[1], int)
+
+    orig_format = open_fgro.position_format
+    open_fgro.position_format = (1, 3)
+    open_fgro.position_format = orig_format
+
+    open_fgro.box_matrix = np.array((1, 1, 1))
+    assert np.isclose(open_fgro.box_matrix, np.eye(3)).all()
+    with pytest.raises(ValueError):
+        open_fgro.box_matrix = np.array((1, 1, 1, 1))
+
+    bad_fgro = str(subdir / "test_bad_fgro.gro")
+    with open(bad_fgro, 'w') as fgro:
+        fgro.write('Comment\nbad\n')
+    with pytest.raises(IOError, match=r'Second.*'):
+        _ = GroFile(bad_fgro)
+
+    with open(bad_fgro, 'w') as fgro:
+        fgro.write('Comment\n1\n')
+        fgro.write('    1BMIM    C2    A   1.706   1.984   0.708\n')
+        fgro.write('    1BMIM    C2    A   1.706   1.984   0.708\n')
+        line_test = '   0.99000   0.40000   0.17800'
+    with pytest.raises(IOError, match=r'The number of atoms.*'):
+        _ = GroFile(bad_fgro)
+
+    with open(bad_fgro, 'w') as fgro:
+        fgro.write('Comment\n3\n')
+        fgro.write('    1BMIM    C2    A   1.706   1.984   0.708\n')
+        fgro.write('    1BMIM    C2    A   1.706   1.984   0.708\n')
+        line_test = '   0.99000   0.40000   0.17800'
+    with pytest.raises(IOError, match=r'The number of atoms.*'):
+        _ = GroFile(bad_fgro)
+
+    del open_fgro
+
+    open_fgro = GroFile(fgrotmp, 'w')
+    line = '    1BMIM    C2    1   1.706   1.984   0.708'
+    open_fgro.writelines([line, line])  # type: ignore
+    open_fgro.close()
+
+    open_fgro = GroFile(fgrotmp)
+    assert open_fgro.natoms == 2
+    lines = open_fgro.readlines()
+    assert isinstance(lines, list)
+    assert isinstance(lines[0], tuple)
+    open_fgro.close()
+
+    test_list = [1, 2]
+    with pytest.raises(ValueError):
+        _ = GroFile.parse_atomlist(test_list)  # type: ignore
+    with pytest.raises(IOError):
+        _ = GroFile.parse_atomline('Test')
+
+    with pytest.warns(UserWarning):
+        open_fgro = GroFile(fgrotmp, 'w')
+        open_fgro.close()
+
+    open_fgro = GroFile(fgrotmp, 'w')
+    open_fgro.natoms = 3
+    line = '    1BMIM    C2    1   1.706   1.984   0.708'
+    open_fgro.writelines([line, line])  # type: ignore
+    with pytest.raises(IOError):
+        open_fgro.close()
+
+    with pytest.raises(ValueError):
+        GroFile.determine_format('\n\n')
+    with pytest.raises(IOError, match=r"Found.*"):
+        GroFile.determine_format(line + '.\n')
+
+    line = '    1BMIM    C2    1   17.00980986   1.984   0.7080'
+    with pytest.raises(IOError, match=r"Some.*"):
+        GroFile.determine_format(line + '\n')
+
+    with pytest.warns(UserWarning):
+        new = GroFile.validate_string('TestLong')
+        assert new == 'TestL'

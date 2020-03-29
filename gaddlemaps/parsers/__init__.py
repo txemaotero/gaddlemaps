@@ -169,7 +169,7 @@ class GroFile:
         self._comment = self._readline()
 
         if not self._comment:
-            raise IOError("First of a gro line should be not empty")
+            raise IOError("First line of a gro line must not be empty")
 
         try:
             self._natoms = int(self._readline())
@@ -278,7 +278,7 @@ class GroFile:
             self._setup_write_file(atomlist)
             return
 
-        if isinstance(atomlist, list):
+        if isinstance(atomlist, (list, tuple)):
             to_write = self.parse_atomlist(atomlist, format_dict=self._format)
         else:
             to_write = atomlist

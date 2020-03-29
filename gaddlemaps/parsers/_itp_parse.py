@@ -32,10 +32,7 @@ class ItpFile(OrderedDict):
     def _parse_file(self):
         sec = None
         self['header'] = []
-        try:
-            _file = open(self.fitp, encoding='utf-8')
-        except TypeError:  # Python2
-            _file = open(self.fitp)
+        _file = open(self.fitp, encoding='utf-8')
 
         for line in _file:
             # If not section line
@@ -139,11 +136,6 @@ class ItpSection(list):
             return ItpLineBonds(line)
         elif sec_name in 'moleculetype':
             return ItpLineMoleculetype(line)
-        elif sec_name == "angles":
-            return ItpLineAngles(line)
-        elif sec_name == "dihedrals":
-            return ItpLineDihedrals(line)
-
         return ItpLine(line)
 
     def append(self, new_line: str):
@@ -450,179 +442,6 @@ class ItpLineAtom(ItpLine):
     @classmethod
     def read_itp_atom(cls, line: str) -> List[Any]:
         return cls(line).parsed_line
-
-
-class ItpLineDihedrals(ItpLine):
-    """
-    A class to parse atom angle lines from .itp file, based on ItpLine.
-
-    Parameters
-    ----------
-    line : string
-        The itp line to parse.
-
-    """
-    def __init__(self, line: str):
-        super(ItpLineDihedrals, self).__init__(line)
-        self._fields: Dict[str, Any] = {}
-        if self.content:
-            self._init_fields()
-
-    def _init_fields(self):
-        fields = self.content.split()
-        n_fieds = len(fields)
-        if n_fieds < 3:
-            raise IOError('Wrong format for a bonds line.')
-        self._fields['ai'] = int(fields[0])
-        self._fields['aj'] = int(fields[1])
-        self._fields['ak'] = int(fields[2])
-        self._fields['al'] = int(fields[3])
-        try:
-            self._fields['funct'] = int(fields[4])
-        except IndexError:
-            self._fields['funct'] = 3
-        self._fields['const'] = aux = []
-        for i_field in range(5, n_fieds):
-            try:
-                cons0 = float(fields[i_field])
-            except ValueError:
-                cons0 = fields[i_field]
-            aux.append(cons0)
-
-    @property
-    def atom_one(self) -> int:
-        """
-        int : The index of the first bonded atom (ai).
-        """
-        return self._fields['ai']
-
-    @property
-    def atom_two(self) -> int:
-        """
-        int : The index of the second bonded atom (aj).
-        """
-        return self._fields['aj']
-
-    @property
-    def atom_three(self) -> int:
-        """
-        int : The index of the third atom of the angle
-        """
-        return self._fields["ak"]
-
-    @property
-    def atom_four(self) -> int:
-        """
-        int : The index of the third atom of the angle
-        """
-        return self._fields["al"]
-
-    @property
-    def funct(self) -> int:
-        """
-        int : The function of the bond.
-        """
-        return self._fields['funct']
-
-    @property
-    def consts(self) -> List[float]:
-        """
-        All the constants for the dihedrals
-        """
-        return self._fields["const"][:]
-
-    @consts.setter
-    def consts(self, val: List[float]):
-        self._fields["consts"] = val
-
-    def __getattr__(self, const):
-        if const.startswith('const'):
-            try:
-                num = int(const[5:])
-                val = self._fields['const'][num]
-            except (ValueError, IndexError):
-                pass
-            else:
-                return val
-        raise AttributeError(('{} has not attribute {}'
-                              '').format(self.__class__.__name__, const))
-
-
-class ItpLineAngles(ItpLine):
-    """
-    A class to parse atom angle lines from .itp file, based on ItpLine.
-
-    Parameters
-    ----------
-    line : string
-        The itp line to parse.
-
-    """
-    def __init__(self, line: str):
-        super(ItpLineAngles, self).__init__(line)
-        self._fields: Dict[str, Any] = {}
-        if self.content:
-            self._init_fields()
-
-    def _init_fields(self):
-        fields = self.content.split()
-        n_fieds = len(fields)
-        if n_fieds < 3:
-            raise IOError('Wrong format for a bonds line.')
-        self._fields['ai'] = int(fields[0])
-        self._fields['aj'] = int(fields[1])
-        self._fields['ak'] = int(fields[2])
-        try:
-            self._fields['funct'] = int(fields[3])
-        except IndexError:
-            self._fields['funct'] = 2
-        self._fields['const'] = aux = []
-        for i_field in range(4, n_fieds):
-            try:
-                cons0 = float(fields[i_field])
-            except ValueError:
-                cons0 = fields[i_field]
-            aux.append(cons0)
-
-    @property
-    def atom_one(self) -> int:
-        """
-        int : The index of the first bonded atom (ai).
-        """
-        return self._fields['ai']
-
-    @property
-    def atom_two(self) -> int:
-        """
-        int : The index of the second bonded atom (aj).
-        """
-        return self._fields['aj']
-
-    @property
-    def atom_three(self) -> int:
-        """
-        int : The index of the third atom of the angle
-        """
-        return self._fields["ak"]
-
-    @property
-    def funct(self) -> int:
-        """
-        int : The function of the bond.
-        """
-        return self._fields['funct']
-
-    def __getattr__(self, const):
-        if const.startswith('const'):
-            try:
-                num = int(const[5:])
-                val = self._fields['const'][num]
-            except (ValueError, IndexError):
-                pass
-            else:
-                return val
-        raise AttributeError(('{} has not attribute {}'
-                              '').format(self.__class__.__name__, const))
 
 
 class ItpLineBonds(ItpLine):

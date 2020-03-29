@@ -3,6 +3,7 @@ Tests for the _top_parsers submodule.
 """
 
 import os
+from pathlib import Path
 
 import pytest
 
@@ -66,9 +67,35 @@ def test_itp_top_atoms(bf4_itp_file: ItpFile):
         assert atom in atoms
 
 
-def test_itp_top(bf4_itp_fname: str, bf4_itp_file):
+def test_itp_top(bf4_itp_fname: str, bf4_itp_file: ItpFile,
+                 tmp_path: Path):
     name, atoms, bonds = itp_top(bf4_itp_fname)
     atoms_test, bonds_test = _itp_top_atoms(bf4_itp_file)
     assert _itp_top_name(bf4_itp_file) == name
     assert atoms_test == atoms
     assert bonds_test == bonds
+
+    # Raises tests
+    subdir = tmp_path / "itp_top_test"
+    subdir.mkdir()
+    fitptmp = str(subdir / "test_top_itp.gro")
+
+    with open(fitptmp, 'w') as fitp:
+        fitp.write('[ test ]')
+    with pytest.raises(IOError, match=r'.*moleculetype.*'):
+        _ = itp_top(fitptmp)
+
+    with open(fitptmp, 'w') as fitp:
+        fitp.write('[ moleculetype ]\n')
+    with pytest.raises(IOError, match=r'.*atoms.*'):
+        _ = itp_top(fitptmp)
+
+    with open(fitptmp, 'w') as fitp:
+        fitp.write('[ moleculetype ]\n[ atoms ]\n')
+    with pytest.raises(IOError, match=r'There is not molecule.*'):
+        _ = itp_top(fitptmp)
+
+    with open(fitptmp, 'w') as fitp:
+        fitp.write('[ moleculetype ]\nTest   1\n[ atoms ]\n')
+    with pytest.raises(IOError, match=r'There are not atoms.*'):
+        _ = itp_top(fitptmp)
