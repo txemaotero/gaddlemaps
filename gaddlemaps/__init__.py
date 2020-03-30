@@ -16,7 +16,8 @@ TODO: Complete this description
 from ._auxilliary import rotation_matrix, calcule_base
 from ._exchage_map import ExchangeMap
 from ._transform_molecule import find_atom_random_displ, move_mol_atom
-from ._backend import minimize_molecules, Chi2Calculator, accept_metropolis
+from ._backend import (minimize_molecules, Chi2Calculator, accept_metropolis,
+                       check_backend_installed)
 from ._alignment import (Alignment, remove_hydrogens, guess_residue_restrains,
                          guess_protein_restrains)
 from ._manager import Manager

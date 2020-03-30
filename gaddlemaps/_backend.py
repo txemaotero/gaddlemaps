@@ -6,12 +6,47 @@ algorithm to use if the c++ one is not available.
 
 import sys
 from typing import Dict, List, Optional, Tuple
+import warnings
 
 import numpy as np
 from scipy.spatial.distance import cdist
 
 from . import move_mol_atom
 from ._auxilliary import rotation_matrix
+
+
+def check_backend_installed(warn_missing=False) -> bool:
+    """
+    Returns wether the compiled backend is installed and accesible or not. It
+    can also raisea warning if the backend is not fond.
+    
+    Parameters
+    ----------
+    warn_missing: Optional[bool]
+        If True the function will also raise a warning if the backend is not
+        installed. If False no warnings will be raised. Default False
+        
+    Returns
+    -------
+    installed: bool
+        Whether the compiled backend is installed and accesible or not.
+
+    """
+    try:
+        from cython_backend._backend import py_minimize_molecules
+        return True
+    except ImportError:
+        if warn_missing:
+            text = ("Compiled backend was not found, GADDLE MAPS will fallback"
+                    " to the python aligmnet engine. You will experiencie "
+                    "degraded performance in the aligment, but the results will"
+                    " be the same. If the current performance is good enough"
+                    " you may ignore this warning. In any case, refer to the "
+                    "documentation for the installation guide for "
+                    "the compiled backed.")
+            warnings.warn(text)
+        return False
+    
 
 
 def minimize_molecules(mol1_positions: np.ndarray,
@@ -69,15 +104,13 @@ def minimize_molecules(mol1_positions: np.ndarray,
         If it is a list, all specified methods are combined.
 
     """
-    try:
+    if check_backend_installed(warn_missing=True):
         from cython_backend._backend import py_minimize_molecules
         positions = py_minimize_molecules(mol1_positions, mol2_positions,
                                           mol2_com, sigma_scale, n_steps,
                                           restriction, mol2_bonds_info, displacement_module,
                                           sim_type)
-        return np.array(positions)
-    except ImportError:
-        pass
+        return np.array(positions)        
 
     # Performance stuffs
     _chi2_molecules = Chi2Calculator(mol1_positions, mol2_positions,
