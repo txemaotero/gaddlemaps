@@ -1,0 +1,145 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>gaddlemaps.components &#8212; Gaddle Maps  documentation</title>
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Gaddle Maps  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for gaddlemaps.components</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Molecular Simulation Components</span>
+<span class="sd">===============================</span>
+
+<span class="sd">This submodule contains useful objects to workaround with components from</span>
+<span class="sd">molecular dynamics simulations (molecules, atoms...). You can load the</span>
+<span class="sd">information of these components just from the coordinates files (.gro) or add</span>
+<span class="sd">information about atom types or how they are bonded loading the topologies.</span>
+
+<span class="sd">To start, you can load an object with a .gro file of a simulation system with</span>
+<span class="sd">the class SystemGro. You can iterate through this object accessing the</span>
+<span class="sd">residues in the system which will be instances of Residue class. At the same</span>
+<span class="sd">time, you can iterate through the atoms (AtomGro instances) of a Residue</span>
+<span class="sd">instance.</span>
+
+<span class="sd">If you want to include the information from topology files (up to now, just .itp</span>
+<span class="sd">files with gromacs format are compatible) to the system you can</span>
+<span class="sd">initialize an instance of the System class. In this case, the System is</span>
+<span class="sd">formed by Molecule objects (which are combinations of Residue and</span>
+<span class="sd">MoleculeTop objects) and the Molecule is formed by Atom objects (combination of</span>
+<span class="sd">AtomGro and AtomTop).</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">._components_top</span> <span class="k">import</span> <span class="n">MoleculeTop</span><span class="p">,</span> <span class="n">AtomTop</span>
+
+<span class="kn">from</span> <span class="nn">._residue</span> <span class="k">import</span> <span class="n">Residue</span><span class="p">,</span> <span class="n">AtomGro</span>
+<span class="kn">from</span> <span class="nn">._components</span> <span class="k">import</span> <span class="n">Atom</span><span class="p">,</span> <span class="n">Molecule</span>
+<span class="kn">from</span> <span class="nn">._system</span> <span class="k">import</span> <span class="n">System</span><span class="p">,</span> <span class="n">SystemGro</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;AtomGro&quot;</span><span class="p">,</span> <span class="s2">&quot;AtomTop&quot;</span><span class="p">,</span> <span class="s2">&quot;Atom&quot;</span><span class="p">,</span> <span class="s2">&quot;Residue&quot;</span><span class="p">,</span> <span class="s2">&quot;MoleculeTop&quot;</span><span class="p">,</span>
+           <span class="s2">&quot;Molecule&quot;</span><span class="p">,</span> <span class="s2">&quot;SystemGro&quot;</span><span class="p">,</span> <span class="s2">&quot;System&quot;</span><span class="p">,</span> <span class="s2">&quot;are_connected&quot;</span><span class="p">]</span>
+
+<span class="n">AtomsConnected</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Atom</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">AtomTop</span><span class="p">]]</span>
+
+<div class="viewcode-block" id="are_connected"><a class="viewcode-back" href="../../gaddlemaps.components.html#gaddlemaps.components.are_connected">[docs]</a><span class="k">def</span> <span class="nf">are_connected</span><span class="p">(</span><span class="n">atoms</span><span class="p">:</span><span class="n">AtomsConnected</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if the input atoms are connected.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    atoms: List of AtomTop or Atom</span>
+<span class="sd">        The list of atoms to compute if they are connected.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    connected : bool</span>
+<span class="sd">       True if the atoms are connected, else False.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">connected_atoms</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">_find_connected_atoms</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">connected_atoms</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">connected_atoms</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_find_connected_atoms</span><span class="p">(</span><span class="n">atoms</span><span class="p">:</span> <span class="n">AtomsConnected</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                          <span class="n">connected</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+     <span class="k">if</span> <span class="n">index</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">connected</span><span class="p">:</span>
+         <span class="n">connected</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+     <span class="k">for</span> <span class="n">new_index</span> <span class="ow">in</span> <span class="n">atoms</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">bonds</span><span class="p">:</span>
+         <span class="k">if</span> <span class="n">new_index</span> <span class="ow">in</span> <span class="n">connected</span><span class="p">:</span>
+             <span class="k">continue</span>
+         <span class="n">_find_connected_atoms</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">new_index</span><span class="p">,</span> <span class="n">connected</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Gaddle Maps  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Jose Manuel Otero Mato, Hadrián Montes Campos.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+    </div>
+  </body>
+</html>

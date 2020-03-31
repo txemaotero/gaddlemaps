@@ -1,0 +1,256 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>gaddlemaps._exchage_map &#8212; Gaddle Maps  documentation</title>
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Gaddle Maps  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for gaddlemaps._exchage_map</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">This module provides the functor that perform the molecule transformation</span>
+<span class="sd">in GADDLE MAPS.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">DefaultDict</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.spatial.distance</span> <span class="k">import</span> <span class="n">euclidean</span>
+
+<span class="kn">from</span> <span class="nn">._auxilliary</span> <span class="k">import</span> <span class="n">calcule_base</span>
+<span class="kn">from</span> <span class="nn">.components</span> <span class="k">import</span> <span class="n">Atom</span><span class="p">,</span> <span class="n">Molecule</span>
+
+
+<div class="viewcode-block" id="ExchangeMap"><a class="viewcode-back" href="../../gaddlemaps.html#gaddlemaps.ExchangeMap">[docs]</a><span class="k">class</span> <span class="nc">ExchangeMap</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Functor to extrapolate atomic resolution to other configurations.</span>
+
+<span class="sd">    When this class is initialized, a functor is created. It has to be</span>
+<span class="sd">    initialized with the molecules in the initial and final resolution</span>
+<span class="sd">    overlapped. Then you can call this method with new molecules in the</span>
+<span class="sd">    initial resolution to obtain its representation in the final one. The new</span>
+<span class="sd">    coordinates of the extrapolated molecules are scaled by the &quot;scale_factor&quot;.</span>
+<span class="sd">    This factor should be smaller than one if you want to extrapolate a complete</span>
+<span class="sd">    system for future simulations. This avoids molecular overlapping and</span>
+<span class="sd">    prevents the simulations to crash.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    refmolecule : Molecule</span>
+<span class="sd">        Molecule in the initial resolution.</span>
+<span class="sd">    targetmolecule : Molecule</span>
+<span class="sd">        Molecule in the final resolution.</span>
+<span class="sd">    scale_factor : float, Optional</span>
+<span class="sd">        The factor that modulates the scale of the atoms positions in the new</span>
+<span class="sd">        resolution respect it closest atom in the initial resolution.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">       &gt;&gt;&gt; BmimCG_ref = Molecule(fgro, fitp)</span>
+<span class="sd">       &gt;&gt;&gt; BmimAA_target = Molecule(groAA, itpAA)</span>
+
+<span class="sd">       &gt;&gt;&gt; transformation = ExchangeMap(BmimCG_ref, BmimAA_target)</span>
+
+<span class="sd">       &gt;&gt;&gt; BmimCG_new = Molecule(fgro2, fitp)</span>
+<span class="sd">       &gt;&gt;&gt; BmimAA_new = transformation(BmimCG_new)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">refmolecule</span><span class="p">:</span> <span class="n">Molecule</span><span class="p">,</span> <span class="n">targetmolecule</span><span class="p">:</span> <span class="n">Molecule</span><span class="p">,</span>
+                 <span class="n">scale_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_refmolecule</span> <span class="o">=</span> <span class="n">refmolecule</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_targetmolecule</span> <span class="o">=</span> <span class="n">targetmolecule</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scale_factor</span> <span class="o">=</span> <span class="n">scale_factor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_refsystems</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
+                                          <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_equivalences</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_target_coordinates</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_refsystems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_refmolecule</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_make_map</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_calculate_refsystems</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">molecule</span><span class="p">:</span> <span class="n">Molecule</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the referencce system of all the atoms that will</span>
+<span class="sd">        be used as reference points for the coordiante</span>
+<span class="sd">        transformation</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">n_atoms</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">molecule</span><span class="p">)</span>
+        <span class="c1"># Special cases</span>
+        <span class="k">if</span> <span class="n">n_atoms</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]:</span>
+            <span class="n">pos</span> <span class="o">=</span> <span class="n">molecule</span><span class="o">.</span><span class="n">atoms_positions</span>
+            <span class="n">rand_pos</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="o">+</span> <span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="o">-</span><span class="n">n_atoms</span><span class="p">)]</span>
+            <span class="n">positions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">rand_pos</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">coord_syst</span> <span class="o">=</span> <span class="n">calcule_base</span><span class="p">(</span><span class="n">positions</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_refsystems</span><span class="p">[</span><span class="nb">hash</span><span class="p">(</span><span class="n">molecule</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span> <span class="o">=</span> <span class="n">coord_syst</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_refsystems_general</span><span class="p">(</span><span class="n">molecule</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_calculate_refsystems_general</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">molecule</span><span class="p">:</span> <span class="n">Molecule</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Version of _calculate_refsystems for molecules of 3 or more atoms.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Select the atoms that are bonded at least to 2 other atoms</span>
+        <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">molecule</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">bonds</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="c1"># Get 2 of the atoms that are bonded to the atom</span>
+                <span class="n">ind1</span><span class="p">,</span> <span class="n">ind2</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">closest_atoms</span><span class="p">()</span>
+                <span class="n">neighbour1</span><span class="p">,</span> <span class="n">neighbour2</span> <span class="o">=</span> <span class="p">(</span><span class="n">molecule</span><span class="p">[</span><span class="n">ind1</span><span class="p">],</span> <span class="n">molecule</span><span class="p">[</span><span class="n">ind2</span><span class="p">])</span>
+                <span class="n">positions</span> <span class="o">=</span> <span class="p">[</span><span class="n">atom</span><span class="o">.</span><span class="n">position</span><span class="p">,</span> <span class="n">neighbour1</span><span class="o">.</span><span class="n">position</span><span class="p">,</span>
+                             <span class="n">neighbour2</span><span class="o">.</span><span class="n">position</span><span class="p">]</span>
+                <span class="c1"># se the 3 atoms to calculate the base</span>
+                <span class="n">coord_syst</span> <span class="o">=</span> <span class="n">calcule_base</span><span class="p">(</span><span class="n">positions</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_refsystems</span><span class="p">[</span><span class="nb">hash</span><span class="p">(</span><span class="n">atom</span><span class="p">)]</span> <span class="o">=</span> <span class="n">coord_syst</span>
+
+    <span class="k">def</span> <span class="nf">_make_map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make the conections between the atoms of the target and the references.</span>
+
+<span class="sd">        It also calculates the coordinates of target in the ref coordinates</span>
+<span class="sd">        system.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_targetmolecule</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_closest_ref</span><span class="p">(</span><span class="n">atom</span><span class="p">)</span>
+            <span class="n">proyection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_proyect_point</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">atom</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_equivalences</span><span class="p">[</span><span class="nb">hash</span><span class="p">(</span><span class="n">atom</span><span class="p">)]</span> <span class="o">=</span> <span class="n">name</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_target_coordinates</span><span class="p">[</span><span class="nb">hash</span><span class="p">(</span><span class="n">atom</span><span class="p">)]</span> <span class="o">=</span> <span class="n">proyection</span>
+
+    <span class="k">def</span> <span class="nf">_find_closest_ref</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">targetatom</span><span class="p">:</span> <span class="n">Atom</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the name of the closest reference system to the atom</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">ref_pos</span><span class="p">(</span><span class="n">index</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_refmolecule</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">position</span>
+
+        <span class="n">distances</span> <span class="o">=</span> <span class="p">[(</span><span class="n">euclidean</span><span class="p">(</span><span class="n">targetatom</span><span class="o">.</span><span class="n">position</span><span class="p">,</span> <span class="n">ref_pos</span><span class="p">(</span><span class="n">index</span><span class="p">)),</span> <span class="n">index</span><span class="p">)</span>
+                     <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_refsystems</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">distances</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_restore_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atomref</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                       <span class="n">proyection</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given an atomref and a projection restores the coordinates of the</span>
+<span class="sd">        projected point.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">center</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_refsystems</span><span class="p">[</span><span class="n">atomref</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">vectores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_refsystems</span><span class="p">[</span><span class="n">atomref</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">center</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">proyection</span><span class="p">,</span> <span class="n">vectores</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_proyect_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atomref</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">atomtarget</span><span class="p">:</span> <span class="n">Atom</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="n">origen</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_refsystems</span><span class="p">[</span><span class="n">atomref</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">proyect</span> <span class="o">=</span> <span class="n">atomtarget</span><span class="o">.</span><span class="n">position</span> <span class="o">-</span> <span class="n">origen</span>
+        <span class="n">proyect</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_refsystems</span><span class="p">[</span><span class="n">atomref</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">proyect</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">proyect</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale_factor</span>
+
+    <span class="k">def</span> <span class="nf">_restore_molecule</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Molecule</span><span class="p">:</span>
+        <span class="n">new_mol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_targetmolecule</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">new_mol</span><span class="p">:</span>
+            <span class="n">refname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_equivalences</span><span class="p">[</span><span class="nb">hash</span><span class="p">(</span><span class="n">atom</span><span class="p">)]</span>
+            <span class="n">proyection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_target_coordinates</span><span class="p">[</span><span class="nb">hash</span><span class="p">(</span><span class="n">atom</span><span class="p">)]</span>
+            <span class="n">atom</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_restore_point</span><span class="p">(</span><span class="n">refname</span><span class="p">,</span> <span class="n">proyection</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_mol</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">refmolecule</span><span class="p">:</span> <span class="n">Molecule</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Molecule</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function takes as argument a molecule like the refmolecule, but</span>
+<span class="sd">        in other position and returns its targetmolecule equivalent as a new</span>
+<span class="sd">        molecule with the same res_number than the input.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">refmolecule</span><span class="p">,</span> <span class="n">Molecule</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Argument must be a Molecule&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_refmolecule</span> <span class="o">!=</span> <span class="n">refmolecule</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">((</span><span class="s2">&quot;refmolecule must be:</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span>
+                             <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_refmolecule</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_refsystems</span><span class="p">(</span><span class="n">refmolecule</span><span class="p">)</span>
+        <span class="n">new_mol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_restore_molecule</span><span class="p">()</span>
+        <span class="c1"># change the indexes</span>
+        <span class="n">new_mol</span><span class="o">.</span><span class="n">resids</span> <span class="o">=</span> <span class="n">refmolecule</span><span class="o">.</span><span class="n">resids</span>
+        <span class="k">return</span> <span class="n">new_mol</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">equivalences</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        dict of int to list of int : {r1_atom_index: [closest_r2_atoms_indexs]}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rev</span><span class="p">:</span>  <span class="n">DefaultDict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ind_r1</span><span class="p">,</span> <span class="n">ind_r2</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_equivalences</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">rev</span><span class="p">[</span><span class="n">ind_r2</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind_r1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">rev</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Gaddle Maps  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Jose Manuel Otero Mato, Hadrián Montes Campos.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+    </div>
+  </body>
+</html>

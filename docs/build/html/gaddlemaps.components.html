@@ -1,0 +1,1914 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>gaddlemaps.components package &#8212; Gaddle Maps  documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="gaddlemaps.parsers package" href="gaddlemaps.parsers.html" />
+    <link rel="prev" title="gaddlemaps package" href="gaddlemaps.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="gaddlemaps.parsers.html" title="gaddlemaps.parsers package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="gaddlemaps.html" title="gaddlemaps package"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Gaddle Maps  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="gaddlemaps.html" accesskey="U">gaddlemaps package</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="gaddlemaps-components-package">
+<h1>gaddlemaps.components package<a class="headerlink" href="#gaddlemaps-components-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-gaddlemaps.components">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-gaddlemaps.components" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="molecular-simulation-components">
+<h3>Molecular Simulation Components<a class="headerlink" href="#molecular-simulation-components" title="Permalink to this headline">¶</a></h3>
+<p>This submodule contains useful objects to workaround with components from
+molecular dynamics simulations (molecules, atoms…). You can load the
+information of these components just from the coordinates files (.gro) or add
+information about atom types or how they are bonded loading the topologies.</p>
+<p>To start, you can load an object with a .gro file of a simulation system with
+the class SystemGro. You can iterate through this object accessing the
+residues in the system which will be instances of Residue class. At the same
+time, you can iterate through the atoms (AtomGro instances) of a Residue
+instance.</p>
+<p>If you want to include the information from topology files (up to now, just .itp
+files with gromacs format are compatible) to the system you can
+initialize an instance of the System class. In this case, the System is
+formed by Molecule objects (which are combinations of Residue and
+MoleculeTop objects) and the Molecule is formed by Atom objects (combination of
+AtomGro and AtomTop).</p>
+<dl class="class">
+<dt id="gaddlemaps.components.AtomGro">
+<em class="property">class </em><code class="sig-prename descclassname">gaddlemaps.components.</code><code class="sig-name descname">AtomGro</code><span class="sig-paren">(</span><em class="sig-param">parsed_gro_line</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gaddlemaps/components/_residue.html#AtomGro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.components.AtomGro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>It contains the information of a .gro line corresponding to an atom.</p>
+<p>You can add atoms with the same residue name and number to form a Residue
+instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>parsed_gro_line</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a>) – A list returned by the GroFile.read_line method when a correct
+formatted .gro line is input.</p>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="gaddlemaps.components.AtomGro.resid">
+<code class="sig-name descname">resid</code><a class="headerlink" href="#gaddlemaps.components.AtomGro.resid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Residue number of the atom.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gaddlemaps.components.AtomGro.resname">
+<code class="sig-name descname">resname</code><a class="headerlink" href="#gaddlemaps.components.AtomGro.resname" title="Permalink to this definition">¶</a></dt>
+<dd><p>Residue name of the atom.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gaddlemaps.components.AtomGro.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#gaddlemaps.components.AtomGro.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of the atom.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gaddlemaps.components.AtomGro.atomid">
+<code class="sig-name descname">atomid</code><a class="headerlink" href="#gaddlemaps.components.AtomGro.atomid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Atom index in the .gro file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gaddlemaps.components.AtomGro.position">
+<code class="sig-name descname">position</code><a class="headerlink" href="#gaddlemaps.components.AtomGro.position" title="Permalink to this definition">¶</a></dt>
+<dd><p>The coordinates of the atom.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.ndarray(3)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gaddlemaps.components.AtomGro.velocity">
+<code class="sig-name descname">velocity</code><a class="headerlink" href="#gaddlemaps.components.AtomGro.velocity" title="Permalink to this definition">¶</a></dt>
+<dd><p>The velocity of the atom if it is specified in the .gro line. If not
+this attribute is set to None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.ndarray(3) or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)">None</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference internal" href="#gaddlemaps.components.AtomGro.element" title="gaddlemaps.components.AtomGro.element"><code class="xref py py-obj docutils literal notranslate"><span class="pre">element</span></code></a></dt><dd><p>string : The element of the atom. It is obtained removing the non</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.components.AtomGro.residname" title="gaddlemaps.components.AtomGro.residname"><code class="xref py py-obj docutils literal notranslate"><span class="pre">residname</span></code></a></dt><dd><p>string : An identifier that contains the residue name and number. This</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gaddlemaps.components.AtomGro.copy" title="gaddlemaps.components.AtomGro.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>(self)</p></td>
+<td><p>Returns a copy of the atom.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gaddlemaps.components.AtomGro.gro_line" title="gaddlemaps.components.AtomGro.gro_line"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gro_line</span></code></a>(self, parsed)</p></td>
+<td><p>Returns the gro line corresponding to the atom.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="gaddlemaps.components.AtomGro.copy">
+<code class="sig-name descname">copy</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span> &#x2192; 'AtomGro'<a class="reference internal" href="_modules/gaddlemaps/components/_residue.html#AtomGro.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.components.AtomGro.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a copy of the atom.</p>
+<p>You can safely change the attributes of the returned atom without
+changing the original one.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>new_atom</strong> – The copied atom.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gaddlemaps.components.AtomGro" title="gaddlemaps.components.AtomGro">AtomGro</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.AtomGro.element">
+<em class="property">property </em><code class="sig-name descname">element</code><a class="headerlink" href="#gaddlemaps.components.AtomGro.element" title="Permalink to this definition">¶</a></dt>
+<dd><p>The element of the atom. It is obtained removing the non
+alphabetic character in the atom name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.AtomGro.gro_line">
+<code class="sig-name descname">gro_line</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">parsed: bool = True</em><span class="sig-paren">)</span> &#x2192; Union[str, List[Union[str, int, float]]]<a class="reference internal" href="_modules/gaddlemaps/components/_residue.html#AtomGro.gro_line"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.components.AtomGro.gro_line" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the gro line corresponding to the atom.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>parsed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em>, </em><em>optional</em>) – If True (default), the line is returned as FileGro.read_line
+method output. Else, line with the correct .gro format is
+returned.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>gro_line</strong> – The corresponding .gro line.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List of (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a> or <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a>) or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.AtomGro.residname">
+<em class="property">property </em><code class="sig-name descname">residname</code><a class="headerlink" href="#gaddlemaps.components.AtomGro.residname" title="Permalink to this definition">¶</a></dt>
+<dd><p>An identifier that contains the residue name and number. This
+should be unique for ear Residue object in a simulation system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gaddlemaps.components.AtomTop">
+<em class="property">class </em><code class="sig-prename descclassname">gaddlemaps.components.</code><code class="sig-name descname">AtomTop</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">resname</em>, <em class="sig-param">resid</em>, <em class="sig-param">index</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gaddlemaps/components/_components_top.html#AtomTop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.components.AtomTop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Atom with information of its name, residue name and bonds.</p>
+<p>It is also needed the index of the atom in the molecule. The bonds are
+initialized as empty set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Atom name</p></li>
+<li><p><strong>resname</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Residue name of the atom.</p></li>
+<li><p><strong>resid</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – Residue index of the atom.</p></li>
+<li><p><strong>index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – Atom index in the molecule.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="gaddlemaps.components.AtomTop.bonds">
+<code class="sig-name descname">bonds</code><a class="headerlink" href="#gaddlemaps.components.AtomTop.bonds" title="Permalink to this definition">¶</a></dt>
+<dd><p>A set with the hash of the atoms that are connected to self.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>set of int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference internal" href="#gaddlemaps.components.AtomTop.residname" title="gaddlemaps.components.AtomTop.residname"><code class="xref py py-obj docutils literal notranslate"><span class="pre">residname</span></code></a></dt><dd><p>string: An identifier of the residue (resid+name)</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gaddlemaps.components.AtomTop.closest_atoms" title="gaddlemaps.components.AtomTop.closest_atoms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">closest_atoms</span></code></a>(self, natoms)</p></td>
+<td><p>Returns a list with natoms index of bonded atoms to self.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gaddlemaps.components.AtomTop.connect" title="gaddlemaps.components.AtomTop.connect"><code class="xref py py-obj docutils literal notranslate"><span class="pre">connect</span></code></a>(self, atom)</p></td>
+<td><p>Connects self with other atom setting the bond.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gaddlemaps.components.AtomTop.copy" title="gaddlemaps.components.AtomTop.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>(self)</p></td>
+<td><p>Returns a copy of the current atom.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="gaddlemaps.components.AtomTop.closest_atoms">
+<code class="sig-name descname">closest_atoms</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">natoms: int = 2</em><span class="sig-paren">)</span> &#x2192; List[int]<a class="reference internal" href="_modules/gaddlemaps/components/_components_top.html#AtomTop.closest_atoms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.components.AtomTop.closest_atoms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list with natoms index of bonded atoms to self.</p>
+<p>If more than natoms are bonded self, the natoms  with lower id_num are
+returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>natoms</strong> (<em>integer</em>) – The number of atoms to return.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>bonded_atoms</strong> – The list with the index of natoms atoms bonded self.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list of int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.AtomTop.connect">
+<code class="sig-name descname">connect</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">atom: 'AtomTop'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gaddlemaps/components/_components_top.html#AtomTop.connect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.components.AtomTop.connect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connects self with other atom setting the bond.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>atom</strong> (<a class="reference internal" href="#gaddlemaps.components.AtomTop" title="gaddlemaps.components.AtomTop"><em>AtomTop</em></a>) – Atom to connect.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.AtomTop.copy">
+<code class="sig-name descname">copy</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span> &#x2192; 'AtomTop'<a class="reference internal" href="_modules/gaddlemaps/components/_components_top.html#AtomTop.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.components.AtomTop.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a copy of the current atom.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>atom_top</strong> – The copy of the atom.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gaddlemaps.components.AtomTop" title="gaddlemaps.components.AtomTop">AtomTop</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.AtomTop.residname">
+<em class="property">property </em><code class="sig-name descname">residname</code><a class="headerlink" href="#gaddlemaps.components.AtomTop.residname" title="Permalink to this definition">¶</a></dt>
+<dd><p>An identifier of the residue (resid+name)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gaddlemaps.components.Atom">
+<em class="property">class </em><code class="sig-prename descclassname">gaddlemaps.components.</code><code class="sig-name descname">Atom</code><span class="sig-paren">(</span><em class="sig-param">atom_top</em>, <em class="sig-param">atom_gro</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gaddlemaps/components/_components.html#Atom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.components.Atom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>An atom class that wraps the AtomTop and AtomGro classes.</p>
+<p>You can access to the methods and attributes that both AtomGro and
+AtomItp have. To create the atom object, both input atoms should have the
+same resname and name attributes. On the other hand, only the attributes
+from the AtomGro can be changed (e.g. positions, velocities, …) excluding
+the resname and name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>atom_top</strong> (<a class="reference internal" href="#gaddlemaps.components.AtomTop" title="gaddlemaps.components.AtomTop"><em>AtomTop</em></a>) – The AtomTop object.</p></li>
+<li><p><strong>atom_gro</strong> (<a class="reference internal" href="#gaddlemaps.components.AtomGro" title="gaddlemaps.components.AtomGro"><em>AtomGro</em></a>) – The AtomGro object.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#IOError" title="(in Python v3.8)"><strong>IOError</strong></a> – If the atom_gro and atom_top do not correspond to the same atom.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.8)"><strong>TypeError</strong></a> – If the inputs are not instances of the corresponding classes.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference internal" href="#gaddlemaps.components.Atom.atom_gro" title="gaddlemaps.components.Atom.atom_gro"><code class="xref py py-obj docutils literal notranslate"><span class="pre">atom_gro</span></code></a></dt><dd><p>AtomGro : The input AtomGro object</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.components.Atom.atom_top" title="gaddlemaps.components.Atom.atom_top"><code class="xref py py-obj docutils literal notranslate"><span class="pre">atom_top</span></code></a></dt><dd><p>AtomTop : The input AtomTop object</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.components.Atom.gro_resid" title="gaddlemaps.components.Atom.gro_resid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gro_resid</span></code></a></dt><dd><p>Residue number for the gro part of the atom (atom_gro).</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.components.Atom.top_resid" title="gaddlemaps.components.Atom.top_resid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">top_resid</span></code></a></dt><dd><p>Residue number for the part of the atom with the topology (atom_top).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gaddlemaps.components.Atom.copy" title="gaddlemaps.components.Atom.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>(self)</p></td>
+<td><p>Returns a copy of self.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="gaddlemaps.components.Atom.atom_gro">
+<em class="property">property </em><code class="sig-name descname">atom_gro</code><a class="headerlink" href="#gaddlemaps.components.Atom.atom_gro" title="Permalink to this definition">¶</a></dt>
+<dd><p>The input AtomGro object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gaddlemaps.components.AtomGro" title="gaddlemaps.components.AtomGro">AtomGro</a></p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">AtomGro</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Atom.atom_top">
+<em class="property">property </em><code class="sig-name descname">atom_top</code><a class="headerlink" href="#gaddlemaps.components.Atom.atom_top" title="Permalink to this definition">¶</a></dt>
+<dd><p>The input AtomTop object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gaddlemaps.components.AtomTop" title="gaddlemaps.components.AtomTop">AtomTop</a></p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">AtomTop</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Atom.copy">
+<code class="sig-name descname">copy</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span> &#x2192; 'Atom'<a class="reference internal" href="_modules/gaddlemaps/components/_components.html#Atom.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.components.Atom.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a copy of self.</p>
+<p>Only the gro atom is copied. The atom_top remains the same.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>new_atom</strong> – The copied atom.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gaddlemaps.components.Atom" title="gaddlemaps.components.Atom">Atom</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Atom.gro_resid">
+<em class="property">property </em><code class="sig-name descname">gro_resid</code><a class="headerlink" href="#gaddlemaps.components.Atom.gro_resid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Residue number for the gro part of the atom (atom_gro).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Atom.top_resid">
+<em class="property">property </em><code class="sig-name descname">top_resid</code><a class="headerlink" href="#gaddlemaps.components.Atom.top_resid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Residue number for the part of the atom with the topology (atom_top).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gaddlemaps.components.Residue">
+<em class="property">class </em><code class="sig-prename descclassname">gaddlemaps.components.</code><code class="sig-name descname">Residue</code><span class="sig-paren">(</span><em class="sig-param">atoms</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gaddlemaps/components/_residue.html#Residue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.components.Residue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>A class with the information of a residue in a .gro file.</p>
+<p>This class creates objects that are enumerations of AtomGro instances. It
+has methods to manipulate atoms positions maintaining the shape of the
+residue. This class have to be initialized with non empty list of atoms.</p>
+<p>You can add two residues if the atoms from both residues have the same
+residue name and number. This can also be done with just one atom and the
+same check will be done.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>atoms</strong> (<em>list of AtomGro</em>) – A list with the atoms of the residue.</p>
+</dd>
+</dl>
+<p>:raises ValueError : If the the input list of atoms is empty or they have different: residue number or name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference internal" href="#gaddlemaps.components.Residue.atoms" title="gaddlemaps.components.Residue.atoms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">atoms</span></code></a></dt><dd><p>list of AtomGro: List with a copy of the atoms of the residue.</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.components.Residue.atoms_ids" title="gaddlemaps.components.Residue.atoms_ids"><code class="xref py py-obj docutils literal notranslate"><span class="pre">atoms_ids</span></code></a></dt><dd><p>list of int: A list with the ids of the atoms of the residue.</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.components.Residue.atoms_positions" title="gaddlemaps.components.Residue.atoms_positions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">atoms_positions</span></code></a></dt><dd><p>numpy.ndarray((N, 3)) : An array with the atoms positions.</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.components.Residue.atoms_velocities" title="gaddlemaps.components.Residue.atoms_velocities"><code class="xref py py-obj docutils literal notranslate"><span class="pre">atoms_velocities</span></code></a></dt><dd><p>numpy.ndarray((N, 3)) or None : An array with the atoms velocities.</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.components.Residue.distance_to_zero" title="gaddlemaps.components.Residue.distance_to_zero"><code class="xref py py-obj docutils literal notranslate"><span class="pre">distance_to_zero</span></code></a></dt><dd><p>float : The distance between the geometric_center and (0, 0, 0)</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.components.Residue.geometric_center" title="gaddlemaps.components.Residue.geometric_center"><code class="xref py py-obj docutils literal notranslate"><span class="pre">geometric_center</span></code></a></dt><dd><p>numpy.ndarray(3): Coordinates of the geometric center of the residue.</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.components.Residue.resid" title="gaddlemaps.components.Residue.resid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resid</span></code></a></dt><dd><p>int: Residue number of the residue.</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.components.Residue.residname" title="gaddlemaps.components.Residue.residname"><code class="xref py py-obj docutils literal notranslate"><span class="pre">residname</span></code></a></dt><dd><p>string: An identifier of the residue (resid+name)</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.components.Residue.resname" title="gaddlemaps.components.Residue.resname"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resname</span></code></a></dt><dd><p>string: Resname of the residue.</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.components.Residue.x" title="gaddlemaps.components.Residue.x"><code class="xref py py-obj docutils literal notranslate"><span class="pre">x</span></code></a></dt><dd><p>float: The x coordinate of the geometric center of the residue.</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.components.Residue.y" title="gaddlemaps.components.Residue.y"><code class="xref py py-obj docutils literal notranslate"><span class="pre">y</span></code></a></dt><dd><p>float: The y coordinate of the geometric center of the residue.</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.components.Residue.z" title="gaddlemaps.components.Residue.z"><code class="xref py py-obj docutils literal notranslate"><span class="pre">z</span></code></a></dt><dd><p>float: The z coordinate of the geometric center of the residue.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gaddlemaps.components.Residue.copy" title="gaddlemaps.components.Residue.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>(self)</p></td>
+<td><p>Returns a copy of the residue.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gaddlemaps.components.Residue.distance_to" title="gaddlemaps.components.Residue.distance_to"><code class="xref py py-obj docutils literal notranslate"><span class="pre">distance_to</span></code></a>(self, residue, numpy.ndarray], …)</p></td>
+<td><p>Returns the distance between self and residue.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gaddlemaps.components.Residue.move" title="gaddlemaps.components.Residue.move"><code class="xref py py-obj docutils literal notranslate"><span class="pre">move</span></code></a>(self, displacement)</p></td>
+<td><p>Moves the residue a given displacement vector.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gaddlemaps.components.Residue.move_to" title="gaddlemaps.components.Residue.move_to"><code class="xref py py-obj docutils literal notranslate"><span class="pre">move_to</span></code></a>(self, new_position)</p></td>
+<td><p>Moves the residue geometric_center to new_position.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gaddlemaps.components.Residue.remove_atom" title="gaddlemaps.components.Residue.remove_atom"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_atom</span></code></a>(self, atom)</p></td>
+<td><p>Removes a given atom from the residue.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gaddlemaps.components.Residue.rotate" title="gaddlemaps.components.Residue.rotate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotate</span></code></a>(self, rotation_matrix)</p></td>
+<td><p>Rotate the residue around its center of mass with a given rotation matrix.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gaddlemaps.components.Residue.update_from_molecule_top" title="gaddlemaps.components.Residue.update_from_molecule_top"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_from_molecule_top</span></code></a>(self, mtop)</p></td>
+<td><p>Modifies the Residue atoms name to match the mtop.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gaddlemaps.components.Residue.write_gro" title="gaddlemaps.components.Residue.write_gro"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_gro</span></code></a>(self, fout)</p></td>
+<td><p>Writes a .gro file with the residue conformation.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="gaddlemaps.components.Residue.atoms">
+<em class="property">property </em><code class="sig-name descname">atoms</code><a class="headerlink" href="#gaddlemaps.components.Residue.atoms" title="Permalink to this definition">¶</a></dt>
+<dd><p>List with a copy of the atoms of the residue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of AtomGro</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">AtomGro</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Residue.atoms_ids">
+<em class="property">property </em><code class="sig-name descname">atoms_ids</code><a class="headerlink" href="#gaddlemaps.components.Residue.atoms_ids" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list with the ids of the atoms of the residue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of int</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Residue.atoms_positions">
+<em class="property">property </em><code class="sig-name descname">atoms_positions</code><a class="headerlink" href="#gaddlemaps.components.Residue.atoms_positions" title="Permalink to this definition">¶</a></dt>
+<dd><p>An array with the atoms positions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)">numpy.ndarray</a>((N, 3))</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Residue.atoms_velocities">
+<em class="property">property </em><code class="sig-name descname">atoms_velocities</code><a class="headerlink" href="#gaddlemaps.components.Residue.atoms_velocities" title="Permalink to this definition">¶</a></dt>
+<dd><p>An array with the atoms velocities.
+If one of the atoms has no velocity this returns None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)">numpy.ndarray</a>((N, 3)) or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)">None</a></p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.8)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Residue.copy">
+<code class="sig-name descname">copy</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span> &#x2192; 'Residue'<a class="reference internal" href="_modules/gaddlemaps/components/_residue.html#Residue.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.components.Residue.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a copy of the residue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>residue</strong> – The copy of the residue.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gaddlemaps.components.Residue" title="gaddlemaps.components.Residue">Residue</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Residue.distance_to">
+<code class="sig-name descname">distance_to</code><span class="sig-paren">(</span><em class="sig-param">self, residue: Union[ForwardRef('Residue'), numpy.ndarray], box_vects: numpy.ndarray = None, inv: bool = False</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="_modules/gaddlemaps/components/_residue.html#Residue.distance_to"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.components.Residue.distance_to" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the distance between self and residue.</p>
+<p>residue can be a Residue instance or a 3D vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>residue</strong> (<a class="reference internal" href="#gaddlemaps.components.Residue" title="gaddlemaps.components.Residue"><em>Residue</em></a><em> or </em><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><em>numpy.ndarray</em></a>) – The residue or a point to compute the distance.</p></li>
+<li><p><strong>box_vects</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><em>numpy.ndarray</em></a>) – The box vectors to apply periodic boundary conditions.</p></li>
+<li><p><strong>inv</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – If it is True, box_vects are considered as the inverse matrix of
+the actual box_vects for a better performance.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>distance</strong> – The euclidean distance.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Residue.distance_to_zero">
+<em class="property">property </em><code class="sig-name descname">distance_to_zero</code><a class="headerlink" href="#gaddlemaps.components.Residue.distance_to_zero" title="Permalink to this definition">¶</a></dt>
+<dd><p>The distance between the geometric_center and (0, 0, 0)
+without applying periodic boundary conditions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a></p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Residue.geometric_center">
+<em class="property">property </em><code class="sig-name descname">geometric_center</code><a class="headerlink" href="#gaddlemaps.components.Residue.geometric_center" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coordinates of the geometric center of the residue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)">numpy.ndarray</a>(3)</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Residue.move">
+<code class="sig-name descname">move</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">displacement: numpy.ndarray</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gaddlemaps/components/_residue.html#Residue.move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.components.Residue.move" title="Permalink to this definition">¶</a></dt>
+<dd><p>Moves the residue a given displacement vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>displacement</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><em>numpy.ndarray</em></a><em>(</em><em>3</em><em>)</em>) – An array with the displacement vector.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Residue.move_to">
+<code class="sig-name descname">move_to</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">new_position: numpy.ndarray</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gaddlemaps/components/_residue.html#Residue.move_to"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.components.Residue.move_to" title="Permalink to this definition">¶</a></dt>
+<dd><p>Moves the residue geometric_center to new_position.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_position</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><em>numpy.ndarray</em></a><em>(</em><em>3</em><em>)</em>) – An array with the new position coordinates.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Residue.remove_atom">
+<code class="sig-name descname">remove_atom</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">atom: 'AtomGro'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gaddlemaps/components/_residue.html#Residue.remove_atom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.components.Residue.remove_atom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes a given atom from the residue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>atom</strong> (<a class="reference internal" href="#gaddlemaps.components.AtomGro" title="gaddlemaps.components.AtomGro"><em>AtomGro</em></a>) – The atom you want to remove from the residue.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Residue.resid">
+<em class="property">property </em><code class="sig-name descname">resid</code><a class="headerlink" href="#gaddlemaps.components.Residue.resid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Residue number of the residue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Residue.residname">
+<em class="property">property </em><code class="sig-name descname">residname</code><a class="headerlink" href="#gaddlemaps.components.Residue.residname" title="Permalink to this definition">¶</a></dt>
+<dd><p>An identifier of the residue (resid+name)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Residue.resname">
+<em class="property">property </em><code class="sig-name descname">resname</code><a class="headerlink" href="#gaddlemaps.components.Residue.resname" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resname of the residue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Residue.rotate">
+<code class="sig-name descname">rotate</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">rotation_matrix: numpy.ndarray</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gaddlemaps/components/_residue.html#Residue.rotate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.components.Residue.rotate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rotate the residue around its center of mass with a given rotation
+matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>rotation_matrix</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><em>numpy.ndarray</em></a>) – 3x3 array with the rotation matrix.
+ADVICE: create the matrix with the help of “rotation_matrix”
+function placed in the root of the package.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Residue.update_from_molecule_top">
+<code class="sig-name descname">update_from_molecule_top</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">mtop: 'MoleculeTop'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gaddlemaps/components/_residue.html#Residue.update_from_molecule_top"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.components.Residue.update_from_molecule_top" title="Permalink to this definition">¶</a></dt>
+<dd><p>Modifies the Residue atoms name to match the mtop.</p>
+<p>This method is very useful when you have a miss-match between the
+atom names in the topology and gro files. This will modify the Residue
+atoms names to match the names in the topology. Make sure that all the
+atoms in the topology are in the Residue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mtop</strong> (<a class="reference internal" href="#gaddlemaps.components.MoleculeTop" title="gaddlemaps.components.MoleculeTop"><em>MoleculeTop</em></a>) – The molecule to match.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.8)"><strong>ValueError</strong></a> – If number of atoms in self and in mtop does not match.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Residue.write_gro">
+<code class="sig-name descname">write_gro</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">fout: str</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gaddlemaps/components/_residue.html#Residue.write_gro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.components.Residue.write_gro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a .gro file with the residue conformation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fout</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The path with the file to write the information.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Residue.x">
+<em class="property">property </em><code class="sig-name descname">x</code><a class="headerlink" href="#gaddlemaps.components.Residue.x" title="Permalink to this definition">¶</a></dt>
+<dd><p>The x coordinate of the geometric center of the residue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a></p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Residue.y">
+<em class="property">property </em><code class="sig-name descname">y</code><a class="headerlink" href="#gaddlemaps.components.Residue.y" title="Permalink to this definition">¶</a></dt>
+<dd><p>The y coordinate of the geometric center of the residue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a></p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Residue.z">
+<em class="property">property </em><code class="sig-name descname">z</code><a class="headerlink" href="#gaddlemaps.components.Residue.z" title="Permalink to this definition">¶</a></dt>
+<dd><p>The z coordinate of the geometric center of the residue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a></p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gaddlemaps.components.MoleculeTop">
+<em class="property">class </em><code class="sig-prename descclassname">gaddlemaps.components.</code><code class="sig-name descname">MoleculeTop</code><span class="sig-paren">(</span><em class="sig-param">ftop</em>, <em class="sig-param">file_format=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gaddlemaps/components/_components_top.html#MoleculeTop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.components.MoleculeTop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Loads molecules from a topology file.</p>
+<p>This class behaves like a list of atoms which has bonds defined. The
+appropriate parser will be used based on the input file extension. The
+available parsers are summarized in the class attribute “PARSERS”. In this
+attribute, the keys are the files extensions and the values the
+corresponding functions that extracts the information from the files with
+that extensions. These functions should return:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The name of the molecule</p></li>
+<li><p>A list with tuples with the atoms and residues names in order of</p></li>
+</ul>
+<p>appearance in the file.
+- A list with tuples with atoms index (referred to the atoms_info
+indexes) that are bonded.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ftop</strong> (<em>string</em>) – The path to the file with the molecule name and bonds information.</p></li>
+<li><p><strong>file_format</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><em>Optional</em>) – The file extension of ftop. If it is None this will be taken from
+ftop.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.8)"><strong>ValueError</strong></a> – If the file format is not supported.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#IOError" title="(in Python v3.8)"><strong>IOError</strong></a> – If the input file misses information.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference internal" href="#gaddlemaps.components.MoleculeTop.resids" title="gaddlemaps.components.MoleculeTop.resids"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resids</span></code></a></dt><dd><p>list of str: Residue names of the atoms without consecutive</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.components.MoleculeTop.resname_len_list" title="gaddlemaps.components.MoleculeTop.resname_len_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resname_len_list</span></code></a></dt><dd><p>list of tuple(str, int) :</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.components.MoleculeTop.resnames" title="gaddlemaps.components.MoleculeTop.resnames"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resnames</span></code></a></dt><dd><p>list of str: Residue names of the atoms without consecutive</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gaddlemaps.components.MoleculeTop.copy" title="gaddlemaps.components.MoleculeTop.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>(self)</p></td>
+<td><p>Returns a copy of the molecule_top.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gaddlemaps.components.MoleculeTop.index" title="gaddlemaps.components.MoleculeTop.index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code></a>(self, atom)</p></td>
+<td><p>Returns the index of the atom in the molecule.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="gaddlemaps.components.MoleculeTop.PARSERS">
+<code class="sig-name descname">PARSERS</code><em class="property"> = {'.itp': &lt;function itp_top&gt;}</em><a class="headerlink" href="#gaddlemaps.components.MoleculeTop.PARSERS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.MoleculeTop.copy">
+<code class="sig-name descname">copy</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span> &#x2192; 'MoleculeTop'<a class="reference internal" href="_modules/gaddlemaps/components/_components_top.html#MoleculeTop.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.components.MoleculeTop.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a copy of the molecule_top.</p>
+<p>The atoms forming the copy are not the same objects as the original
+molecule so you do not have to worry about linked objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>molecule_top</strong> – The copy of the molecule.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gaddlemaps.components.MoleculeTop" title="gaddlemaps.components.MoleculeTop">MoleculeTop</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.MoleculeTop.index">
+<code class="sig-name descname">index</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">atom: 'AtomTop'</em><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="_modules/gaddlemaps/components/_components_top.html#MoleculeTop.index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.components.MoleculeTop.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the index of the atom in the molecule.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>atom</strong> (<a class="reference internal" href="#gaddlemaps.components.AtomTop" title="gaddlemaps.components.AtomTop"><em>AtomTop</em></a>) – The atom to find the index.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>index</strong> – The index of the atom in the molecule.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.MoleculeTop.resids">
+<em class="property">property </em><code class="sig-name descname">resids</code><a class="headerlink" href="#gaddlemaps.components.MoleculeTop.resids" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Residue names of the atoms without consecutive</dt><dd><p>repetitions.</p>
+</dd>
+</dl>
+<p>To set this property a list with the same length of residues must be
+passed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of str</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.MoleculeTop.resname_len_list">
+<em class="property">property </em><code class="sig-name descname">resname_len_list</code><a class="headerlink" href="#gaddlemaps.components.MoleculeTop.resname_len_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>list of tuple(str, int):
+[(resname_1, number_of_atoms_with_resname_1),
+(resname_2, number_of_atoms_with_resname_2), …]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.8)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.MoleculeTop.resnames">
+<em class="property">property </em><code class="sig-name descname">resnames</code><a class="headerlink" href="#gaddlemaps.components.MoleculeTop.resnames" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Residue names of the atoms without consecutive</dt><dd><p>repetitions.</p>
+</dd>
+</dl>
+<p>To set this property a list with the same length of residues must be
+passed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of str</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gaddlemaps.components.Molecule">
+<em class="property">class </em><code class="sig-prename descclassname">gaddlemaps.components.</code><code class="sig-name descname">Molecule</code><span class="sig-paren">(</span><em class="sig-param">molecule_top</em>, <em class="sig-param">residues</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gaddlemaps/components/_components.html#Molecule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.components.Molecule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">gaddlemaps.components._residue.Residue</span></code></p>
+<p>Loads a molecule combining a MoleculeTop and a list of Residue.</p>
+<p>This class wraps all the features of both MoleculeTop and Residues which
+conform the molecule. When an object is initialized a copy of the input
+residues is stored (to avoid undesired attribute changes). This class
+inherits from Residue so they have the same methods and properties
+(although most of them are reimplemented).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>molecule_top</strong> (<a class="reference internal" href="#gaddlemaps.components.MoleculeTop" title="gaddlemaps.components.MoleculeTop"><em>MoleculeTop</em></a>) – The object with the bonds information of the molecule.</p></li>
+<li><p><strong>residues</strong> (<em>List of Residue</em>) – An list with the residues that constitute the molecule.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.8)"><strong>TypeError</strong></a> – If the input are instances of wrong type.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#IOError" title="(in Python v3.8)"><strong>IOError</strong></a> – If residues do not constitute the molecule_top.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference internal" href="#gaddlemaps.components.Molecule.atoms" title="gaddlemaps.components.Molecule.atoms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">atoms</span></code></a></dt><dd><p>list of Atom: List with the copies of the atoms of the molecule.</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.components.Molecule.atoms_ids" title="gaddlemaps.components.Molecule.atoms_ids"><code class="xref py py-obj docutils literal notranslate"><span class="pre">atoms_ids</span></code></a></dt><dd><p>list of int: A list with the ids of the atoms in the residues.</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.components.Molecule.atoms_positions" title="gaddlemaps.components.Molecule.atoms_positions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">atoms_positions</span></code></a></dt><dd><p>numpy.ndarray((N, 3)) : An array with the atoms positions.</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.components.Molecule.atoms_velocities" title="gaddlemaps.components.Molecule.atoms_velocities"><code class="xref py py-obj docutils literal notranslate"><span class="pre">atoms_velocities</span></code></a></dt><dd><p>numpy.ndarray((N, 3)) or None : An array with the atoms velocities.</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.components.Molecule.bonds_distance" title="gaddlemaps.components.Molecule.bonds_distance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bonds_distance</span></code></a></dt><dd><p>dict of int to list of tuple(int, float): A complex data structure</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.components.Molecule.distance_to_zero" title="gaddlemaps.components.Molecule.distance_to_zero"><code class="xref py py-obj docutils literal notranslate"><span class="pre">distance_to_zero</span></code></a></dt><dd><p>float : The distance between the geometric_center and (0, 0, 0)</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.components.Molecule.geometric_center" title="gaddlemaps.components.Molecule.geometric_center"><code class="xref py py-obj docutils literal notranslate"><span class="pre">geometric_center</span></code></a></dt><dd><p>numpy.ndarray(3): Coordinates of the geometric center of the residue.</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.components.Molecule.molecule_top" title="gaddlemaps.components.Molecule.molecule_top"><code class="xref py py-obj docutils literal notranslate"><span class="pre">molecule_top</span></code></a></dt><dd><p>MoleculeTop : The object with the topology information of the molecule.</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.components.Molecule.resid" title="gaddlemaps.components.Molecule.resid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resid</span></code></a></dt><dd><p>int: Residue number of the residue.</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.components.Molecule.residname" title="gaddlemaps.components.Molecule.residname"><code class="xref py py-obj docutils literal notranslate"><span class="pre">residname</span></code></a></dt><dd><p>string: An identifier of the residue (resid+name)</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.components.Molecule.resids" title="gaddlemaps.components.Molecule.resids"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resids</span></code></a></dt><dd><p>List of int: A list with the residues ids of the residues constituting the molecule.</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.components.Molecule.residues" title="gaddlemaps.components.Molecule.residues"><code class="xref py py-obj docutils literal notranslate"><span class="pre">residues</span></code></a></dt><dd><p>List of Residue : a list with the Residue objects that constitute the molecule.</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.components.Molecule.resname" title="gaddlemaps.components.Molecule.resname"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resname</span></code></a></dt><dd><p>string: Resname of the residue.</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.components.Molecule.resnames" title="gaddlemaps.components.Molecule.resnames"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resnames</span></code></a></dt><dd><p>List of string: A list with the names of the residues constituting the molecule.</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.components.Molecule.x" title="gaddlemaps.components.Molecule.x"><code class="xref py py-obj docutils literal notranslate"><span class="pre">x</span></code></a></dt><dd><p>float: The x coordinate of the geometric center of the residue.</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.components.Molecule.y" title="gaddlemaps.components.Molecule.y"><code class="xref py py-obj docutils literal notranslate"><span class="pre">y</span></code></a></dt><dd><p>float: The y coordinate of the geometric center of the residue.</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.components.Molecule.z" title="gaddlemaps.components.Molecule.z"><code class="xref py py-obj docutils literal notranslate"><span class="pre">z</span></code></a></dt><dd><p>float: The z coordinate of the geometric center of the residue.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gaddlemaps.components.Molecule.copy" title="gaddlemaps.components.Molecule.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>(self, new_residues)</p></td>
+<td><p>Returns a copy of the molecule.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gaddlemaps.components.Molecule.deep_copy" title="gaddlemaps.components.Molecule.deep_copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">deep_copy</span></code></a>(self, new_residues)</p></td>
+<td><p>Returns a deep copy of the molecule.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gaddlemaps.components.Molecule.distance_to" title="gaddlemaps.components.Molecule.distance_to"><code class="xref py py-obj docutils literal notranslate"><span class="pre">distance_to</span></code></a>(self, residue, numpy.ndarray], …)</p></td>
+<td><p>Returns the distance between self and residue.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gaddlemaps.components.Molecule.from_files" title="gaddlemaps.components.Molecule.from_files"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_files</span></code></a>(fgro, ftop)</p></td>
+<td><p>Loads the molecule from gro and a compatible topology file.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gaddlemaps.components.Molecule.index" title="gaddlemaps.components.Molecule.index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code></a>(self, atom)</p></td>
+<td><p>Returns the index of the atom in the molecule.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gaddlemaps.components.Molecule.move" title="gaddlemaps.components.Molecule.move"><code class="xref py py-obj docutils literal notranslate"><span class="pre">move</span></code></a>(self, displacement)</p></td>
+<td><p>Moves the residue a given displacement vector.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gaddlemaps.components.Molecule.move_to" title="gaddlemaps.components.Molecule.move_to"><code class="xref py py-obj docutils literal notranslate"><span class="pre">move_to</span></code></a>(self, new_position)</p></td>
+<td><p>Moves the residue geometric_center to new_position.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gaddlemaps.components.Molecule.remove_atom" title="gaddlemaps.components.Molecule.remove_atom"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_atom</span></code></a>(self, atom)</p></td>
+<td><p>Removes a given atom from the residue.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gaddlemaps.components.Molecule.rotate" title="gaddlemaps.components.Molecule.rotate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotate</span></code></a>(self, rotation_matrix)</p></td>
+<td><p>Rotate the residue around its center of mass with a given rotation matrix.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gaddlemaps.components.Molecule.update_from_molecule_top" title="gaddlemaps.components.Molecule.update_from_molecule_top"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_from_molecule_top</span></code></a>(self, mtop)</p></td>
+<td><p>Modifies the Residue atoms name to match the mtop.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gaddlemaps.components.Molecule.write_gro" title="gaddlemaps.components.Molecule.write_gro"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_gro</span></code></a>(self, fout)</p></td>
+<td><p>Writes a .gro file with the residue conformation.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="gaddlemaps.components.Molecule.atoms">
+<em class="property">property </em><code class="sig-name descname">atoms</code><a class="headerlink" href="#gaddlemaps.components.Molecule.atoms" title="Permalink to this definition">¶</a></dt>
+<dd><p>List with the copies of the atoms of the molecule.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of Atom</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Atom</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Molecule.atoms_ids">
+<em class="property">property </em><code class="sig-name descname">atoms_ids</code><a class="headerlink" href="#gaddlemaps.components.Molecule.atoms_ids" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list with the ids of the atoms in the residues.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of int</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Molecule.atoms_positions">
+<em class="property">property </em><code class="sig-name descname">atoms_positions</code><a class="headerlink" href="#gaddlemaps.components.Molecule.atoms_positions" title="Permalink to this definition">¶</a></dt>
+<dd><p>An array with the atoms positions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)">numpy.ndarray</a>((N, 3))</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Molecule.atoms_velocities">
+<em class="property">property </em><code class="sig-name descname">atoms_velocities</code><a class="headerlink" href="#gaddlemaps.components.Molecule.atoms_velocities" title="Permalink to this definition">¶</a></dt>
+<dd><p>An array with the atoms velocities.
+If one of the atoms has no velocity this returns None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)">numpy.ndarray</a>((N, 3)) or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)">None</a></p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.8)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Molecule.bonds_distance">
+<em class="property">property </em><code class="sig-name descname">bonds_distance</code><a class="headerlink" href="#gaddlemaps.components.Molecule.bonds_distance" title="Permalink to this definition">¶</a></dt>
+<dd><p>A complex data structure
+that collect the information of the bond distances. The key of the
+property corresponds to the atom index in the molecule. The value
+is a list with tuples. For each tuple, the first value corresponds
+with the index of the bonded atom and the second is the length of
+the bond. This property is used in the alignment process in gaddle
+maps.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict of int to list of tuple(<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a>)</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.8)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Molecule.copy">
+<code class="sig-name descname">copy</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">new_residues: List[gaddlemaps.components._residue.Residue] = None</em><span class="sig-paren">)</span> &#x2192; 'Molecule'<a class="reference internal" href="_modules/gaddlemaps/components/_components.html#Molecule.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.components.Molecule.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a copy of the molecule.</p>
+<p>If new_molecule_gro is passed, the old residues will be replaced
+to update the positions. This is used in the extrapolation step.</p>
+<p>NOTE: With this method, the molecule_top used for the Molecule
+initialization remains the same. This means that future changes in
+copied molecules may affect other parts of you code. If you want a
+completely independent new molecule use “deep_copy” method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_residues</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.8)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Residue</span></code>]]) – List of residues to replace the original positions.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>molecule</strong> – The copy of the molecule.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gaddlemaps.components.Molecule" title="gaddlemaps.components.Molecule">Molecule</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Molecule.deep_copy">
+<code class="sig-name descname">deep_copy</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">new_residues: List[gaddlemaps.components._residue.Residue] = None</em><span class="sig-paren">)</span> &#x2192; 'Molecule'<a class="reference internal" href="_modules/gaddlemaps/components/_components.html#Molecule.deep_copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.components.Molecule.deep_copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a deep copy of the molecule.</p>
+<p>If new_molecule_gro is passed, the old residues will be replaced
+to update the positions. This is used in the extrapolation step. This
+method generates a new molecule that is not linked to any attribute of
+the original one.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_residues</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.8)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Residue</span></code>]]) – List of residues to replace the original positions.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>molecule</strong> – The deep copy of the molecule.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gaddlemaps.components.Molecule" title="gaddlemaps.components.Molecule">Molecule</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Molecule.distance_to">
+<code class="sig-name descname">distance_to</code><span class="sig-paren">(</span><em class="sig-param">self, residue: Union[ForwardRef('Residue'), numpy.ndarray], box_vects: numpy.ndarray = None, inv: bool = False</em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#gaddlemaps.components.Molecule.distance_to" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the distance between self and residue.</p>
+<p>residue can be a Residue instance or a 3D vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>residue</strong> (<a class="reference internal" href="#gaddlemaps.components.Residue" title="gaddlemaps.components.Residue"><em>Residue</em></a><em> or </em><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><em>numpy.ndarray</em></a>) – The residue or a point to compute the distance.</p></li>
+<li><p><strong>box_vects</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><em>numpy.ndarray</em></a>) – The box vectors to apply periodic boundary conditions.</p></li>
+<li><p><strong>inv</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – If it is True, box_vects are considered as the inverse matrix of
+the actual box_vects for a better performance.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>distance</strong> – The euclidean distance.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Molecule.distance_to_zero">
+<em class="property">property </em><code class="sig-name descname">distance_to_zero</code><a class="headerlink" href="#gaddlemaps.components.Molecule.distance_to_zero" title="Permalink to this definition">¶</a></dt>
+<dd><p>The distance between the geometric_center and (0, 0, 0)
+without applying periodic boundary conditions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a></p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Molecule.from_files">
+<em class="property">classmethod </em><code class="sig-name descname">from_files</code><span class="sig-paren">(</span><em class="sig-param">fgro: str</em>, <em class="sig-param">ftop: str</em><span class="sig-paren">)</span> &#x2192; 'Molecule'<a class="reference internal" href="_modules/gaddlemaps/components/_components.html#Molecule.from_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.components.Molecule.from_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads the molecule from gro and a compatible topology file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fgro</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The file name with the gro.</p></li>
+<li><p><strong>ftop</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The file name with the top.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>molecule</strong> – The initialized molecule.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gaddlemaps.components.Molecule" title="gaddlemaps.components.Molecule">Molecule</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Molecule.geometric_center">
+<em class="property">property </em><code class="sig-name descname">geometric_center</code><a class="headerlink" href="#gaddlemaps.components.Molecule.geometric_center" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coordinates of the geometric center of the residue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)">numpy.ndarray</a>(3)</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Molecule.index">
+<code class="sig-name descname">index</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">atom: 'Atom'</em><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="_modules/gaddlemaps/components/_components.html#Molecule.index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.components.Molecule.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the index of the atom in the molecule.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>atom</strong> (<a class="reference internal" href="#gaddlemaps.components.Atom" title="gaddlemaps.components.Atom"><em>Atom</em></a>) – The atom to find the index.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>index</strong> – The index of the atom in the molecule.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Molecule.molecule_top">
+<em class="property">property </em><code class="sig-name descname">molecule_top</code><a class="headerlink" href="#gaddlemaps.components.Molecule.molecule_top" title="Permalink to this definition">¶</a></dt>
+<dd><p>The object with the topology information of the molecule.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gaddlemaps.components.MoleculeTop" title="gaddlemaps.components.MoleculeTop">MoleculeTop</a></p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">MoleculeTop</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Molecule.move">
+<code class="sig-name descname">move</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">displacement: numpy.ndarray</em><span class="sig-paren">)</span><a class="headerlink" href="#gaddlemaps.components.Molecule.move" title="Permalink to this definition">¶</a></dt>
+<dd><p>Moves the residue a given displacement vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>displacement</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><em>numpy.ndarray</em></a><em>(</em><em>3</em><em>)</em>) – An array with the displacement vector.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Molecule.move_to">
+<code class="sig-name descname">move_to</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">new_position: numpy.ndarray</em><span class="sig-paren">)</span><a class="headerlink" href="#gaddlemaps.components.Molecule.move_to" title="Permalink to this definition">¶</a></dt>
+<dd><p>Moves the residue geometric_center to new_position.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_position</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><em>numpy.ndarray</em></a><em>(</em><em>3</em><em>)</em>) – An array with the new position coordinates.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Molecule.remove_atom">
+<code class="sig-name descname">remove_atom</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">atom: 'AtomGro'</em><span class="sig-paren">)</span><a class="headerlink" href="#gaddlemaps.components.Molecule.remove_atom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes a given atom from the residue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>atom</strong> (<a class="reference internal" href="#gaddlemaps.components.AtomGro" title="gaddlemaps.components.AtomGro"><em>AtomGro</em></a>) – The atom you want to remove from the residue.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Molecule.resid">
+<em class="property">property </em><code class="sig-name descname">resid</code><a class="headerlink" href="#gaddlemaps.components.Molecule.resid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Residue number of the residue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Molecule.residname">
+<em class="property">property </em><code class="sig-name descname">residname</code><a class="headerlink" href="#gaddlemaps.components.Molecule.residname" title="Permalink to this definition">¶</a></dt>
+<dd><p>An identifier of the residue (resid+name)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Molecule.resids">
+<em class="property">property </em><code class="sig-name descname">resids</code><a class="headerlink" href="#gaddlemaps.components.Molecule.resids" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>A list with the residues ids of the residues</dt><dd><p>constituting the molecule.</p>
+</dd>
+</dl>
+<p>To set this property, a list of int with the same length as the
+original must be passed. This will change each residue id. You can
+also pass just an int and this will set all the residue ids to the
+same value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>List of int</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Molecule.residues">
+<em class="property">property </em><code class="sig-name descname">residues</code><a class="headerlink" href="#gaddlemaps.components.Molecule.residues" title="Permalink to this definition">¶</a></dt>
+<dd><p>a list with the Residue objects that constitute the
+molecule.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>List of Residue</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Residue</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Molecule.resname">
+<em class="property">property </em><code class="sig-name descname">resname</code><a class="headerlink" href="#gaddlemaps.components.Molecule.resname" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resname of the residue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Molecule.resnames">
+<em class="property">property </em><code class="sig-name descname">resnames</code><a class="headerlink" href="#gaddlemaps.components.Molecule.resnames" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>A list with the names of the residues constituting the</dt><dd><p>molecule.</p>
+</dd>
+</dl>
+<p>To set this property, a list of strings with the same length as the
+original must be passed. This will change each residue name. You can
+also pass just a string and this will set all the residue names to the
+same value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>List of string</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Molecule.rotate">
+<code class="sig-name descname">rotate</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">rotation_matrix: numpy.ndarray</em><span class="sig-paren">)</span><a class="headerlink" href="#gaddlemaps.components.Molecule.rotate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rotate the residue around its center of mass with a given rotation
+matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>rotation_matrix</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><em>numpy.ndarray</em></a>) – 3x3 array with the rotation matrix.
+ADVICE: create the matrix with the help of “rotation_matrix”
+function placed in the root of the package.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Molecule.update_from_molecule_top">
+<code class="sig-name descname">update_from_molecule_top</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">mtop: 'MoleculeTop'</em><span class="sig-paren">)</span><a class="headerlink" href="#gaddlemaps.components.Molecule.update_from_molecule_top" title="Permalink to this definition">¶</a></dt>
+<dd><p>Modifies the Residue atoms name to match the mtop.</p>
+<p>This method is very useful when you have a miss-match between the
+atom names in the topology and gro files. This will modify the Residue
+atoms names to match the names in the topology. Make sure that all the
+atoms in the topology are in the Residue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mtop</strong> (<a class="reference internal" href="#gaddlemaps.components.MoleculeTop" title="gaddlemaps.components.MoleculeTop"><em>MoleculeTop</em></a>) – The molecule to match.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.8)"><strong>ValueError</strong></a> – If number of atoms in self and in mtop does not match.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Molecule.write_gro">
+<code class="sig-name descname">write_gro</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">fout: str</em><span class="sig-paren">)</span><a class="headerlink" href="#gaddlemaps.components.Molecule.write_gro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a .gro file with the residue conformation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fout</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The path with the file to write the information.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Molecule.x">
+<em class="property">property </em><code class="sig-name descname">x</code><a class="headerlink" href="#gaddlemaps.components.Molecule.x" title="Permalink to this definition">¶</a></dt>
+<dd><p>The x coordinate of the geometric center of the residue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a></p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Molecule.y">
+<em class="property">property </em><code class="sig-name descname">y</code><a class="headerlink" href="#gaddlemaps.components.Molecule.y" title="Permalink to this definition">¶</a></dt>
+<dd><p>The y coordinate of the geometric center of the residue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a></p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.Molecule.z">
+<em class="property">property </em><code class="sig-name descname">z</code><a class="headerlink" href="#gaddlemaps.components.Molecule.z" title="Permalink to this definition">¶</a></dt>
+<dd><p>The z coordinate of the geometric center of the residue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a></p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gaddlemaps.components.SystemGro">
+<em class="property">class </em><code class="sig-prename descclassname">gaddlemaps.components.</code><code class="sig-name descname">SystemGro</code><span class="sig-paren">(</span><em class="sig-param">fgro</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gaddlemaps/components/_system.html#SystemGro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.components.SystemGro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Class to work with the information in gro files.</p>
+<p>Basically this class acts like a list of Residue objects. Only one Residue
+instance of each type is loaded to afford memory for large systems. The
+positions of the rest of the residues are storage and they are generated
+when requested.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fgro</strong> (<em>string</em>) – Gromacs file with the system information.</p>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference internal" href="#gaddlemaps.components.SystemGro.box_matrix" title="gaddlemaps.components.SystemGro.box_matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">box_matrix</span></code></a></dt><dd><p>numpy.ndarray (3,3) : the 3 lattice vectors of the box.</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.components.SystemGro.comment_line" title="gaddlemaps.components.SystemGro.comment_line"><code class="xref py py-obj docutils literal notranslate"><span class="pre">comment_line</span></code></a></dt><dd><p>str: The comment line in the gro file.</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.components.SystemGro.composition" title="gaddlemaps.components.SystemGro.composition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">composition</span></code></a></dt><dd><p>Counter of str: int : For each resname (key), how many molecules there are (value).</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.components.SystemGro.molecules_info_ordered_all" title="gaddlemaps.components.SystemGro.molecules_info_ordered_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">molecules_info_ordered_all</span></code></a></dt><dd><p>generator of int: Returns the index of the molecules in the</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.components.SystemGro.molecules_resname_len_index" title="gaddlemaps.components.SystemGro.molecules_resname_len_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">molecules_resname_len_index</span></code></a></dt><dd><p>dict of tuple (string, int) to int: The keys of the dictionary are</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.components.SystemGro.n_atoms" title="gaddlemaps.components.SystemGro.n_atoms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_atoms</span></code></a></dt><dd><p>int : The number of atoms in the system.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="method">
+<dt id="gaddlemaps.components.SystemGro.box_matrix">
+<em class="property">property </em><code class="sig-name descname">box_matrix</code><a class="headerlink" href="#gaddlemaps.components.SystemGro.box_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>the 3 lattice vectors of the box.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)">numpy.ndarray</a> (3,3)</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.SystemGro.comment_line">
+<em class="property">property </em><code class="sig-name descname">comment_line</code><a class="headerlink" href="#gaddlemaps.components.SystemGro.comment_line" title="Permalink to this definition">¶</a></dt>
+<dd><p>The comment line in the gro file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.SystemGro.composition">
+<em class="property">property </em><code class="sig-name descname">composition</code><a class="headerlink" href="#gaddlemaps.components.SystemGro.composition" title="Permalink to this definition">¶</a></dt>
+<dd><p>For each resname (key), how many molecules
+there are (value).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Counter of str</p>
+</dd>
+<dt class="field-even">Type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.SystemGro.molecules_info_ordered_all">
+<em class="property">property </em><code class="sig-name descname">molecules_info_ordered_all</code><a class="headerlink" href="#gaddlemaps.components.SystemGro.molecules_info_ordered_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the index of the molecules in the
+different_molecules attribute in order of appearance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>generator of int</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generator" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <code class="docutils literal notranslate"><span class="pre">None</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.SystemGro.molecules_resname_len_index">
+<em class="property">property </em><code class="sig-name descname">molecules_resname_len_index</code><a class="headerlink" href="#gaddlemaps.components.SystemGro.molecules_resname_len_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>The keys of the dictionary are
+tuples with the residue name and the number of atoms of the
+different residues in the system and the values are its index in
+the list of different molecules.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict of tuple (string, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a>) to int</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.8)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>], <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.SystemGro.n_atoms">
+<em class="property">property </em><code class="sig-name descname">n_atoms</code><a class="headerlink" href="#gaddlemaps.components.SystemGro.n_atoms" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of atoms in the system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gaddlemaps.components.System">
+<em class="property">class </em><code class="sig-prename descclassname">gaddlemaps.components.</code><code class="sig-name descname">System</code><span class="sig-paren">(</span><em class="sig-param">fgro</em>, <em class="sig-param">*ftops</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gaddlemaps/components/_system.html#System"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.components.System" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Class to manage simulation systems.</p>
+<p>A System object is formed by Molecule objects. Only the molecules
+corresponding to the input ftops will be loaded.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fgro</strong> (<em>string</em>) – Gromacs file with the system information.</p></li>
+<li><p><strong>*ftops</strong> (<em>string</em>) – Paths with the files with the bonds information to load molecules.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#IOError" title="(in Python v3.8)"><strong>IOError</strong></a> – If one of the topology files do not match with any molecule in the
+system.</p>
+</dd>
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference internal" href="#gaddlemaps.components.System.composition" title="gaddlemaps.components.System.composition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">composition</span></code></a></dt><dd><p>Counter of str: int : For each molecule name (key), how many molecules there are (value).</p>
+</dd>
+<dt><strong>fgro</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gaddlemaps.components.System.add_ftop" title="gaddlemaps.components.System.add_ftop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_ftop</span></code></a>(self, ftop)</p></td>
+<td><p>Adds and identifies the molecule from the ftop to the system.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gaddlemaps.components.System.add_molecule_top" title="gaddlemaps.components.System.add_molecule_top"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_molecule_top</span></code></a>(self, mol_top)</p></td>
+<td><p>Adds a molecule to the system and find it in the gro file.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="gaddlemaps.components.System.add_ftop">
+<code class="sig-name descname">add_ftop</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">ftop: str</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gaddlemaps/components/_system.html#System.add_ftop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.components.System.add_ftop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds and identifies the molecule from the ftop to the system.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.System.add_molecule_top">
+<code class="sig-name descname">add_molecule_top</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">mol_top: gaddlemaps.components._components_top.MoleculeTop</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gaddlemaps/components/_system.html#System.add_molecule_top"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.components.System.add_molecule_top" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a molecule to the system and find it in the gro file.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.System.composition">
+<em class="property">property </em><code class="sig-name descname">composition</code><a class="headerlink" href="#gaddlemaps.components.System.composition" title="Permalink to this definition">¶</a></dt>
+<dd><p>For each molecule name (key), how many
+molecules there are (value).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Counter of str</p>
+</dd>
+<dt class="field-even">Type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Counter" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Counter</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.components.System.fgro">
+<em class="property">property </em><code class="sig-name descname">fgro</code><a class="headerlink" href="#gaddlemaps.components.System.fgro" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="gaddlemaps.components.are_connected">
+<code class="sig-prename descclassname">gaddlemaps.components.</code><code class="sig-name descname">are_connected</code><span class="sig-paren">(</span><em class="sig-param">atoms: Union[List[gaddlemaps.components._components.Atom], List[gaddlemaps.components._components_top.AtomTop]]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/gaddlemaps/components.html#are_connected"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.components.are_connected" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the input atoms are connected.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>atoms</strong> (<em>List of AtomTop</em><em> or </em><a class="reference internal" href="#gaddlemaps.components.Atom" title="gaddlemaps.components.Atom"><em>Atom</em></a>) – The list of atoms to compute if they are connected.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>connected</strong> – True if the atoms are connected, else False.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">gaddlemaps.components package</a><ul>
+<li><a class="reference internal" href="#module-gaddlemaps.components">Module contents</a><ul>
+<li><a class="reference internal" href="#molecular-simulation-components">Molecular Simulation Components</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gaddlemaps.html"
+                        title="previous chapter">gaddlemaps package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="gaddlemaps.parsers.html"
+                        title="next chapter">gaddlemaps.parsers package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/gaddlemaps.components.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="gaddlemaps.parsers.html" title="gaddlemaps.parsers package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="gaddlemaps.html" title="gaddlemaps package"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Gaddle Maps  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="gaddlemaps.html" >gaddlemaps package</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Jose Manuel Otero Mato, Hadrián Montes Campos.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,152 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>gaddlemaps._auxilliary &#8212; Gaddle Maps  documentation</title>
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Gaddle Maps  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for gaddlemaps._auxilliary</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This submodule contains some useful functions that are used in other parts of</span>
+<span class="sd">the package.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="rotation_matrix"><a class="viewcode-back" href="../../gaddlemaps.html#gaddlemaps.rotation_matrix">[docs]</a><span class="k">def</span> <span class="nf">rotation_matrix</span><span class="p">(</span><span class="n">axis</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">theta</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the rotation matrix associated to an angle and an axis.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    axis : list or numpy.ndarray</span>
+<span class="sd">        A vector in 3D space that defines the axis of rotation</span>
+<span class="sd">    theta : float</span>
+<span class="sd">        The angle to rotate in radians in counter clockwise.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">norm_ax</span> <span class="o">=</span> <span class="n">axis</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span>
+
+    <span class="n">eye</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="n">ddt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">norm_ax</span><span class="p">,</span> <span class="n">norm_ax</span><span class="p">)</span>
+    <span class="n">skew</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="n">norm_ax</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="o">-</span><span class="n">norm_ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span>
+                     <span class="p">[</span><span class="o">-</span><span class="n">norm_ax</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="n">norm_ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span>
+                     <span class="p">[</span><span class="n">norm_ax</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="o">-</span><span class="n">norm_ax</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="n">mtx</span> <span class="o">=</span> <span class="n">ddt</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">eye</span> <span class="o">-</span> <span class="n">ddt</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">*</span> <span class="n">skew</span>
+    <span class="k">return</span> <span class="n">mtx</span></div>
+
+
+<div class="viewcode-block" id="calcule_base"><a class="viewcode-back" href="../../gaddlemaps.html#gaddlemaps.calcule_base">[docs]</a><span class="k">def</span> <span class="nf">calcule_base</span><span class="p">(</span><span class="n">pos</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
+                                                 <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates a orthonormal base from a list of 3 atoms.</span>
+
+<span class="sd">    Given a list of three vectors with the position of three atoms, this</span>
+<span class="sd">    function returns a vector basis and the application point. The first</span>
+<span class="sd">    vector goes from the application point to the last atom. The second one</span>
+<span class="sd">    is normal to the plane which contains the three atoms and perpendicular</span>
+<span class="sd">    to the first vector. The last is perpendicular to the others. All are</span>
+<span class="sd">    unitary forming an orthonormal basis. In case of collinear points, the</span>
+<span class="sd">    second vector is set to ([vec1[1], -vec1[0], 0]).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pos : list</span>
+<span class="sd">        List with three vectors (numpy.ndarray) with the position of the</span>
+<span class="sd">        atoms.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    base : tuple of numpy.ndarray</span>
+<span class="sd">        A tuple with the three vectors of the base.</span>
+<span class="sd">    app_point : float</span>
+<span class="sd">        The application point of the base. It corresponds to pos[0]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">pos0</span><span class="p">,</span> <span class="n">pos1</span><span class="p">,</span> <span class="n">pos2</span> <span class="o">=</span> <span class="n">pos</span>
+    <span class="n">vec1</span> <span class="o">=</span> <span class="n">pos2</span><span class="o">-</span><span class="n">pos0</span>
+    <span class="n">vec1</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">vec1</span><span class="p">)</span>
+    <span class="n">vec3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">vec1</span><span class="p">,</span> <span class="n">pos1</span><span class="o">-</span><span class="n">pos0</span><span class="p">)</span>
+    <span class="c1"># Consider the aligned vector case</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">vec3</span><span class="p">):</span>
+        <span class="n">v10</span><span class="p">,</span> <span class="n">v11</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">vec1</span>
+        <span class="n">vec3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">v11</span><span class="p">,</span> <span class="o">-</span><span class="n">v10</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">v10</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">v11</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">vec3</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">vec3</span><span class="p">)</span>
+    <span class="n">vec2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">vec3</span><span class="p">,</span> <span class="n">vec1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">vec1</span><span class="p">,</span> <span class="n">vec2</span><span class="p">,</span> <span class="n">vec3</span><span class="p">),</span> <span class="n">pos0</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Gaddle Maps  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Jose Manuel Otero Mato, Hadrián Montes Campos.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,844 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>gaddlemaps.parsers &#8212; Gaddle Maps  documentation</title>
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Gaddle Maps  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for gaddlemaps.parsers</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Simulation Files Parsers</span>
+<span class="sd">========================</span>
+
+<span class="sd">This submodule contains some useful functionalities to read and extract</span>
+<span class="sd">information from files coming from molecular simulation programs. Up to now,</span>
+<span class="sd">only files in the format used by GROMACS are contemplated (.gro and .itp</span>
+<span class="sd">formats).</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">from</span> <span class="nn">._itp_parse</span> <span class="k">import</span> <span class="p">(</span><span class="n">ItpFile</span><span class="p">,</span> <span class="n">ItpLine</span><span class="p">,</span> <span class="n">ItpLineAtom</span><span class="p">,</span> <span class="n">ItpLineBonds</span><span class="p">,</span>
+                         <span class="n">ItpLineMoleculetype</span><span class="p">,</span> <span class="n">ItpSection</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">._top_parsers</span> <span class="k">import</span> <span class="n">itp_top</span>
+
+
+<span class="n">GroLine</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+                <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span>
+
+
+<div class="viewcode-block" id="GroFile"><a class="viewcode-back" href="../../gaddlemaps.parsers.html#gaddlemaps.parsers.GroFile">[docs]</a><span class="k">class</span> <span class="nc">GroFile</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Implements a file object for opening and writing .gro files</span>
+
+<span class="sd">    Grofile verifies the gromacs format, and autodetects the correct</span>
+<span class="sd">    way to read the file. It modifies the methods read and write of a</span>
+<span class="sd">    common file with methods that take as input lists with all the info</span>
+<span class="sd">    of an atom. The readlines and writelines are modified to take</span>
+<span class="sd">    (return) lists with the info of an atom in lists (as returned by</span>
+<span class="sd">    the read function).</span>
+
+<span class="sd">    This class can also be initiated with an already opened file.</span>
+
+<span class="sd">    Note</span>
+<span class="sd">    ----</span>
+<span class="sd">    The &quot;+&quot; modifier for the open mode is not allowed right now</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path: str</span>
+<span class="sd">        The path to the file to be opened. </span>
+<span class="sd">    mode: str</span>
+<span class="sd">        &quot;r&quot; to open the file in read mode and &quot;w&quot; to open it in write mode.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    IOError</span>
+<span class="sd">        If the gro file has not the correct format</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">DEFAULT_POSTION_FORMAT</span> <span class="o">=</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="n">DEFAULT_COMMENT</span> <span class="o">=</span> <span class="s2">&quot;Gro file genereted with &#39;Gromacs Tools&#39; python module.&quot;</span>
+    <span class="n">COORD_START</span> <span class="o">=</span> <span class="mi">20</span>
+    <span class="n">NUMBER_FIGURES</span> <span class="o">=</span> <span class="mi">7</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;r&quot;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GroFile</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="n">mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_correct_mode</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_comment</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_natoms</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_position</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atomline_bytesize</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_format</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;velocities&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_box_matrix</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_atom</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">if</span> <span class="s2">&quot;r&quot;</span> <span class="ow">in</span> <span class="n">mode</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_load_and_verify</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        str: The filename of the open file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="o">.</span><span class="n">name</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">natoms</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        integer: The number of atoms in the system.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_natoms</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The system was not fully initialized&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_natoms</span>
+
+    <span class="nd">@natoms</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">natoms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s2">&quot;w&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="o">.</span><span class="n">mode</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_natoms</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t set atributte in read mode&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">comment</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        string: The comment of the .gro file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_comment</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEFAULT_COMMENT</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_comment</span>
+
+    <span class="nd">@comment</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">comment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s2">&quot;w&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="o">.</span><span class="n">mode</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">value</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_comment</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t set atributte in read mode&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">position_format</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        tuple of int : the number of total figures and decimal places for the</span>
+<span class="sd">            positions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEFAULT_POSTION_FORMAT</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">]</span>
+
+    <span class="nd">@position_format</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">position_format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="s2">&quot;w&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="o">.</span><span class="n">mode</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_format</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t set atributte in read mode&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">box_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        numpy.ndarray(3,3): the 3 lattice vectors of the box.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_box_matrix</span>
+
+    <span class="nd">@box_matrix</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">box_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s2">&quot;r&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="o">.</span><span class="n">mode</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t set atributte in read mode&quot;</span><span class="p">)</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="n">shape</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">shape</span>
+        <span class="k">if</span> <span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">3</span><span class="p">,):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;The input array have </span><span class="si">{}</span><span class="s2"> dimension. Input arrays must be a &quot;</span>
+                    <span class="s2">&quot;3x3 array or a vector with 3 elements.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_box_matrix</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">_load_and_verify</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Verify if the file can be a grofile and determine the info in it</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_comment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_readline</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_comment</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s2">&quot;First line of a gro line must not be empty&quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_natoms</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_readline</span><span class="p">())</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">((</span><span class="s2">&quot;Second line of a gro file should contain only &quot;</span>
+                           <span class="s2">&quot;the number of atoms and blank spaces&quot;</span><span class="p">))</span>
+
+        <span class="c1"># Save this position to ve able to return later</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
+
+        <span class="c1"># read the first line of atoms</span>
+        <span class="n">first_line</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_readline</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_format</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">determine_format</span><span class="p">(</span><span class="n">first_line</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atomline_bytesize</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_position</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_box_matrix</span><span class="p">()</span>
+        <span class="c1"># Return to the beggining of the atoms</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">seek_atom</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_load_box_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Seek after the last atom and loads the box info&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">seek_atom</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_natoms</span><span class="p">)</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_readline</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="p">:</span>
+            <span class="n">error_text</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;The number of atoms at the top of the file does not &quot;</span>
+                          <span class="s2">&quot;correspond to the actual number of atoms or the &quot;</span>
+                          <span class="s2">&quot;simulation box line is missing from the file&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="n">error_text</span><span class="p">)</span>
+        <span class="c1"># Try to load the simulation box</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_box_matrix</span> <span class="o">=</span> <span class="n">extract_lattice_gro</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">error_text</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;The number of atoms at the top of the file does not &quot;</span>
+                          <span class="s2">&quot;correspond to the actual number of atoms or the &quot;</span>
+                          <span class="s2">&quot;simulation box line has the wrong fomat&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="n">error_text</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GroFile.seek_atom"><a class="viewcode-back" href="../../gaddlemaps.parsers.html#gaddlemaps.parsers.GroFile.seek_atom">[docs]</a>    <span class="k">def</span> <span class="nf">seek_atom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Displaces the position of the &#39;cursor&#39; to an atom line</span>
+
+<span class="sd">        Displaces the position of the &#39;cursor&#39; to the beginning of the</span>
+<span class="sd">        line of the &#39;index&#39; atom, where the first atom index is 0. If</span>
+<span class="sd">        the index is equal to the number of atoms the beginning of the</span>
+<span class="sd">        box lattice line is found.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of the atom to found</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_atom</span> <span class="o">=</span> <span class="n">index</span>
+        <span class="k">if</span> <span class="n">index</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">natoms</span><span class="p">:</span>
+            <span class="n">error_text</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Index </span><span class="si">{}</span><span class="s2"> is greater than the number of atoms in the &quot;</span>
+                          <span class="s2">&quot;grofile&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="n">error_text</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_position</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atomline_bytesize</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Error in initalizaiton&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_init_position</span> <span class="o">+</span> <span class="n">index</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atomline_bytesize</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_readline</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+
+<div class="viewcode-block" id="GroFile.writelines"><a class="viewcode-back" href="../../gaddlemaps.parsers.html#gaddlemaps.parsers.GroFile.writelines">[docs]</a>    <span class="k">def</span> <span class="nf">writelines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_atomlist</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">GroLine</span><span class="p">]):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Writes several lines of atoms</span>
+
+<span class="sd">        If there was no content written in the file it creates the</span>
+<span class="sd">        header and the number of atoms. If the number of atoms was not</span>
+<span class="sd">        provided it will kept empty and the number will be written just</span>
+<span class="sd">        before closing the file. This possibility is only compatible</span>
+<span class="sd">        with a number of atoms smaller than 1000000.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        list_atomlist : list of list of str or int or float</span>
+<span class="sd">            A list of lists with all the info of the atom, just like</span>
+<span class="sd">            the one returned by readline</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">list_atomlist</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">writeline</span><span class="p">(</span><span class="n">line</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GroFile.writeline"><a class="viewcode-back" href="../../gaddlemaps.parsers.html#gaddlemaps.parsers.GroFile.writeline">[docs]</a>    <span class="k">def</span> <span class="nf">writeline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atomlist</span><span class="p">:</span> <span class="n">GroLine</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Writes a line of atom information</span>
+
+<span class="sd">        If there was no content written in the file it creates the</span>
+<span class="sd">        header and the number of atoms. If the number of atoms was not</span>
+<span class="sd">        provided it will kept empty and the number will be written just</span>
+<span class="sd">        before closing the file. This possibility is only compatible</span>
+<span class="sd">        with a number of atoms smaller than 1000000.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        atomlist : list or string</span>
+<span class="sd">            A list with all the info of the atom, just like the one returned by</span>
+<span class="sd">            readline. If it is a string, it will be written directly without</span>
+<span class="sd">            parsing.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_position</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_setup_write_file</span><span class="p">(</span><span class="n">atomlist</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">atomlist</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+            <span class="n">to_write</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_atomlist</span><span class="p">(</span><span class="n">atomlist</span><span class="p">,</span> <span class="n">format_dict</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_format</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">to_write</span> <span class="o">=</span> <span class="n">atomlist</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">to_write</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_atom</span> <span class="o">+=</span> <span class="mi">1</span></div>
+
+    <span class="k">def</span> <span class="nf">_setup_write_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atomlist</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">GroLine</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">atomlist</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">atomlist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_atomline</span><span class="p">(</span><span class="n">atomlist</span><span class="p">)</span>
+        <span class="c1"># setupt the format_dict</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_format</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEFAULT_POSTION_FORMAT</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_format</span><span class="p">[</span><span class="s2">&quot;velocities&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">atomlist</span><span class="p">)</span> <span class="o">==</span> <span class="mi">10</span>
+
+        <span class="c1"># There is no content writen to the file</span>
+        <span class="n">comment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comment</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">comment</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">comment</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Write the number of atoms if possible</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_natoms</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">NUMBER_FIGURES</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{:d}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_natoms</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">writeline</span><span class="p">(</span><span class="n">atomlist</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atomline_bytesize</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_position</span>
+
+<div class="viewcode-block" id="GroFile.readline"><a class="viewcode-back" href="../../gaddlemaps.parsers.html#gaddlemaps.parsers.GroFile.readline">[docs]</a>    <span class="k">def</span> <span class="nf">readline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parsed</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">GroLine</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the next line of the gro file.</span>
+
+<span class="sd">        If parsed=True (default) the data on the atom line is parsed</span>
+<span class="sd">        and returned in a list. If false the line is returned as an</span>
+<span class="sd">        string (just like if it were opened as a common file.)</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        parsed : bool (optional)</span>
+<span class="sd">            Wether the data of the line should be parsed or not.</span>
+<span class="sd">            Default: True</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        info : str or list</span>
+<span class="sd">            Returns the info of the line, i alist if it was parsed or</span>
+<span class="sd">            in a string if not</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_readline</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">parsed</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">info</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_atom</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">natoms</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">StopIteration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_atom</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_atomline</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GroFile.readlines"><a class="viewcode-back" href="../../gaddlemaps.parsers.html#gaddlemaps.parsers.GroFile.readlines">[docs]</a>    <span class="k">def</span> <span class="nf">readlines</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">GroLine</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns all the lines of a grofile parsed in lists.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        info : list(list)</span>
+<span class="sd">            Returns a list with the info of all the atom lines in lists</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># self.seek_atom(0)</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">info</span></div>
+
+<div class="viewcode-block" id="GroFile.next"><a class="viewcode-back" href="../../gaddlemaps.parsers.html#gaddlemaps.parsers.GroFile.next">[docs]</a>    <span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GroLine</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns next atomline formatted</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>  <span class="c1">#type: ignore</span></div>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_correct_mode</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if the &#39;+&#39; modifier is set and removes it because it is</span>
+<span class="sd">        not compatible yet</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;+&quot;</span> <span class="ow">in</span> <span class="n">mode</span><span class="p">:</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+            <span class="n">warn_text</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;&#39;+&#39; modifier for open mode is not implemented, the&quot;</span>
+                         <span class="s2">&quot; file will be opened in </span><span class="si">{}</span><span class="s2"> mode&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">warn_text</span><span class="p">,</span> <span class="ne">RuntimeWarning</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">mode</span>
+
+<div class="viewcode-block" id="GroFile.parse_atomlist"><a class="viewcode-back" href="../../gaddlemaps.parsers.html#gaddlemaps.parsers.GroFile.parse_atomlist">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">parse_atomlist</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">atomlist</span><span class="p">:</span> <span class="n">GroLine</span><span class="p">,</span>
+                       <span class="n">format_dict</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert a list of atom info to string with the appropriate format</span>
+
+<span class="sd">        Parses a list with the atom information and returns its content in a</span>
+<span class="sd">        string with the correct format to write in a .gro file. In its default</span>
+<span class="sd">        behaviour the input line is analyzed and the number of decimals are</span>
+<span class="sd">        guessed. It is also possible to insert the format in a format</span>
+<span class="sd">        dictionary. This is a dictionary with 2 keys, &quot;position&quot; and</span>
+<span class="sd">        &quot;velocities&quot;. The position key leads to a tuple with 2 ints. The</span>
+<span class="sd">        first is the number of characters in the float format (C) and the</span>
+<span class="sd">        second is the number of decimal places in the float (D), i.e.</span>
+<span class="sd">        corresponds to the &#39;%C.Df&#39; format.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        atomlist: list</span>
+<span class="sd">            A list with the following information:</span>
+<span class="sd">                + mol_index(integer)</span>
+<span class="sd">                + resname (string)</span>
+<span class="sd">                + name (string)</span>
+<span class="sd">                + global_index (integer)</span>
+<span class="sd">                + x, y, z (floats)</span>
+<span class="sd">                + vx, vy ,vz (floats) [optional]]</span>
+
+<span class="sd">        format_dict: dict (optional)</span>
+<span class="sd">            None or dictionary with 2 keys, &quot;position&quot; and &quot;velocities&quot;. The</span>
+<span class="sd">            position key leads to a tuple with 2 ints. THe first in is</span>
+<span class="sd">            the number of characters in the float format (C) and the</span>
+<span class="sd">            second is the number of decimal places in the float (D),</span>
+<span class="sd">            i.e. corresponds to the &#39;%C.Df&#39; format. If None the format</span>
+<span class="sd">            will be automatically guessed.</span>
+<span class="sd">            Default None.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        atomline : str</span>
+<span class="sd">            An string with a line from a .gro file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">format_dict</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">float_format</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">DEFAULT_POSTION_FORMAT</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">float_format</span> <span class="o">=</span> <span class="n">format_dict</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">]</span>
+
+        <span class="n">float_format_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;figures&quot;</span><span class="p">:</span> <span class="n">float_format</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="s2">&quot;decimals&quot;</span><span class="p">:</span> <span class="n">float_format</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">atomlist</span><span class="p">)</span> <span class="o">==</span> <span class="mi">10</span><span class="p">:</span>
+            <span class="n">velocities</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">float_format_dict</span><span class="p">[</span><span class="s2">&quot;velocities&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">float_format_dict</span><span class="p">[</span><span class="s2">&quot;decimals&quot;</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">atomlist</span><span class="p">)</span> <span class="o">==</span> <span class="mi">7</span><span class="p">:</span>
+            <span class="n">velocities</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">atomlist</span><span class="p">)</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Atomlist must have len 7 or 10, found </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">length</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+        <span class="c1"># If an external format was set check if the velocities</span>
+        <span class="c1"># requirement is met</span>
+
+        <span class="k">if</span> <span class="n">format_dict</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">velocities</span> <span class="o">==</span> <span class="n">format_dict</span><span class="p">[</span><span class="s2">&quot;velocities&quot;</span><span class="p">]:</span>
+                <span class="k">pass</span>
+            <span class="k">elif</span> <span class="n">velocities</span><span class="p">:</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Error while parsing </span><span class="si">{}</span><span class="s2">. The atom information has &quot;</span>
+                        <span class="s2">&quot;velocities, but the first atom of the GroFile has not.&quot;</span>
+                        <span class="s2">&quot; All the atoms must have the number of fields&quot;</span>
+                        <span class="s2">&quot; to write.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">atomlist</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Error while parsing </span><span class="si">{}</span><span class="s2">. The atom information has not&quot;</span>
+                        <span class="s2">&quot;velocities, but the first atom of the GroFile has.&quot;</span>
+                        <span class="s2">&quot; All the atoms must have the number of fields&quot;</span>
+                        <span class="s2">&quot; to write.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">atomlist</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+        <span class="n">atominfo</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">atomlist</span><span class="p">)</span>
+        <span class="c1"># Wrap the numbers if greater than 99999</span>
+        <span class="n">atominfo</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">atomlist</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">%</span> <span class="mi">99999</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">atomlist</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">99999</span><span class="p">)</span>
+        <span class="n">atominfo</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">atomlist</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">%</span> <span class="mi">99999</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">atomlist</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">99999</span><span class="p">)</span>
+
+        <span class="c1"># Validate the name and resname</span>
+        <span class="n">atominfo</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">validate_string</span><span class="p">(</span><span class="n">atomlist</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">atominfo</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">validate_string</span><span class="p">(</span><span class="n">atomlist</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+        <span class="n">format_list</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;</span><span class="si">{:5d}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;</span><span class="si">{:5s}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;</span><span class="si">{:&gt;5s}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;</span><span class="si">{:5d}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;{:</span><span class="si">{figures}</span><span class="s2">.</span><span class="si">{decimals}</span><span class="s2">f}&quot;</span><span class="o">*</span><span class="mi">3</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="n">velocities</span><span class="p">:</span>
+            <span class="n">format_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;{:</span><span class="si">{figures}</span><span class="s2">.</span><span class="si">{velocities}</span><span class="s2">f}&quot;</span><span class="o">*</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">format_list</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">atomlist</span><span class="p">,</span> <span class="o">**</span><span class="n">float_format_dict</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+
+<div class="viewcode-block" id="GroFile.parse_atomline"><a class="viewcode-back" href="../../gaddlemaps.parsers.html#gaddlemaps.parsers.GroFile.parse_atomline">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">parse_atomline</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">atomline</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
+                       <span class="n">format_dict</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GroLine</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parses an atom line and returns its content in a list.</span>
+
+<span class="sd">        Parses an atom line and returns its content in a list. In its default</span>
+<span class="sd">        behaviour the input line is analyzed and the number of decimals are</span>
+<span class="sd">        guessed. It is also possible to insert the format in a format</span>
+<span class="sd">        dictionary. This is a dictionary with 2 keys, &quot;position&quot; and</span>
+<span class="sd">        &quot;velocities&quot;. The position key leads to a tuple with 2 ints. The</span>
+<span class="sd">        first in is the number of characters in the float format (C) and the</span>
+<span class="sd">        second is the number of decimal places in the float (D), i.e.</span>
+<span class="sd">        corresponds to the &#39;%C.Df&#39; format.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        atomline : str</span>
+<span class="sd">            An string with a line from a grofile</span>
+<span class="sd">        format_dict : dict_format (optional)</span>
+<span class="sd">            None or dictionary with 2 keys, &quot;position&quot; and &quot;velocities&quot;. The</span>
+<span class="sd">            position key leads to a tuple with 2 ints. THe first in is</span>
+<span class="sd">            the number of characters in the float format (C) and the</span>
+<span class="sd">            second is the number of decimal places in the float (D),</span>
+<span class="sd">            i.e. corresponds to the &#39;%C.Df&#39; format. If None the format</span>
+<span class="sd">            will be automatically guessed.</span>
+<span class="sd">            Default None.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        info : list</span>
+<span class="sd">            A list with the following information:</span>
+<span class="sd">                + mol_index(integer)</span>
+<span class="sd">                + resname (string)</span>
+<span class="sd">                + name (string)</span>
+<span class="sd">                + global_index (integer)</span>
+<span class="sd">                + x, y, z (floats)</span>
+<span class="sd">                + vx, vy ,vz (floats) [optional]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">format_dict</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">format_dict</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">determine_format</span><span class="p">(</span><span class="n">atomline</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">atomline</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">:</span>
+            <span class="n">atomline</span> <span class="o">=</span> <span class="n">atomline</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">atomline</span><span class="p">)</span>
+        <span class="n">space</span> <span class="o">=</span> <span class="n">format_dict</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">expected_length</span> <span class="o">=</span> <span class="mi">20</span><span class="o">+</span><span class="n">space</span><span class="o">*</span><span class="mi">3</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">format_dict</span><span class="p">[</span><span class="s2">&quot;velocities&quot;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">length</span> <span class="o">!=</span> <span class="n">expected_length</span><span class="p">:</span>
+            <span class="n">texterr</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Found an atom line with </span><span class="si">{}</span><span class="s2"> characters, when </span><span class="si">{}</span><span class="s2"> were &quot;</span>
+                       <span class="s2">&quot;expected. Check your file.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">length</span><span class="p">,</span>
+                                                            <span class="n">expected_length</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="n">texterr</span><span class="p">)</span>
+
+        <span class="n">res_num</span><span class="p">,</span> <span class="n">atom_num</span> <span class="o">=</span> <span class="n">_validate_res_atom_numbers</span><span class="p">(</span><span class="n">atomline</span><span class="p">)</span>
+
+        <span class="n">info</span><span class="p">:</span> <span class="n">GroLine</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">res_num</span><span class="p">,</span>
+                <span class="n">atomline</span><span class="p">[</span><span class="mi">5</span><span class="p">:</span><span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
+                <span class="n">atomline</span><span class="p">[</span><span class="mi">10</span><span class="p">:</span><span class="mi">15</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
+                <span class="n">atom_num</span><span class="p">,</span>
+                <span class="nb">float</span><span class="p">(</span><span class="n">atomline</span><span class="p">[</span><span class="mi">20</span><span class="p">:</span><span class="mi">20</span><span class="o">+</span><span class="n">space</span><span class="p">]),</span>
+                <span class="nb">float</span><span class="p">(</span><span class="n">atomline</span><span class="p">[</span><span class="mi">20</span><span class="o">+</span><span class="n">space</span><span class="p">:</span><span class="mi">20</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">space</span><span class="p">]),</span>
+                <span class="nb">float</span><span class="p">(</span><span class="n">atomline</span><span class="p">[</span><span class="mi">20</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">space</span><span class="p">:</span><span class="mi">20</span><span class="o">+</span><span class="mi">3</span><span class="o">*</span><span class="n">space</span><span class="p">])</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">format_dict</span><span class="p">[</span><span class="s2">&quot;velocities&quot;</span><span class="p">]:</span>
+            <span class="n">aux_info</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="nb">float</span><span class="p">(</span><span class="n">atomline</span><span class="p">[</span><span class="mi">20</span><span class="o">+</span><span class="mi">3</span><span class="o">*</span><span class="n">space</span><span class="p">:</span><span class="mi">20</span><span class="o">+</span><span class="mi">4</span><span class="o">*</span><span class="n">space</span><span class="p">]),</span>
+                <span class="nb">float</span><span class="p">(</span><span class="n">atomline</span><span class="p">[</span><span class="mi">20</span><span class="o">+</span><span class="mi">4</span><span class="o">*</span><span class="n">space</span><span class="p">:</span><span class="mi">20</span><span class="o">+</span><span class="mi">5</span><span class="o">*</span><span class="n">space</span><span class="p">]),</span>
+                <span class="nb">float</span><span class="p">(</span><span class="n">atomline</span><span class="p">[</span><span class="mi">20</span><span class="o">+</span><span class="mi">5</span><span class="o">*</span><span class="n">space</span><span class="p">:</span><span class="mi">20</span><span class="o">+</span><span class="mi">6</span><span class="o">*</span><span class="n">space</span><span class="p">]),</span>
+            <span class="p">)</span>
+            <span class="n">info</span> <span class="o">+=</span> <span class="n">aux_info</span>  <span class="c1">#type: ignore</span>
+
+        <span class="k">return</span> <span class="n">info</span></div>
+
+    <span class="k">def</span> <span class="nf">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+                <span class="k">return</span>
+
+<div class="viewcode-block" id="GroFile.close"><a class="viewcode-back" href="../../gaddlemaps.parsers.html#gaddlemaps.parsers.GroFile.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Closes the file</span>
+
+<span class="sd">        If the file is in write mode it will write al the remaining</span>
+<span class="sd">        information.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;w&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="o">.</span><span class="n">mode</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_closing_info</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_write_closing_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Writes alll the necesary info when the file is in write mode</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_natoms</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_atom</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Closing an empty file&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="c1"># If no number of atoms was given at the begining fill the value</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_natoms</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_init_position</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">NUMBER_FIGURES</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_natoms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_atom</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;{:</span><span class="si">{figures}</span><span class="s2">d}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_current_atom</span><span class="p">,</span>
+                                                      <span class="n">figures</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">NUMBER_FIGURES</span><span class="p">))</span>
+
+        <span class="c1"># If there was a number, check that it is the correct one</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_natoms</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_atom</span><span class="p">:</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> Atoms were writen but </span><span class="si">{}</span><span class="s2"> were expected.&quot;</span><span class="p">)</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_current_atom</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_natoms</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">seek_atom</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_natoms</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">dump_lattice_gro</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_box_matrix</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<div class="viewcode-block" id="GroFile.determine_format"><a class="viewcode-back" href="../../gaddlemaps.parsers.html#gaddlemaps.parsers.GroFile.determine_format">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">determine_format</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">atomline</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the format of the postion coordinates and whether or</span>
+<span class="sd">        not the .gro file has velocities</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        atomline : str</span>
+<span class="sd">            An atom line from the .gro file</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        form : dict</span>
+<span class="sd">            Dictionary with 2 keys, &quot;position&quot; and &quot;velocities&quot;. The</span>
+<span class="sd">            position key leads to a tuple with 2 ints. THe first in is</span>
+<span class="sd">            the number of characters in the float format (C) and the</span>
+<span class="sd">            second is the number of decimal places in the float (D),</span>
+<span class="sd">            i.e. corresponds to the &#39;%C.Df&#39; format.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># remove \n at the end if present</span>
+        <span class="k">if</span> <span class="n">atomline</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">:</span>
+            <span class="n">atomline</span> <span class="o">=</span> <span class="n">atomline</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">atomline</span><span class="p">)</span>
+
+        <span class="c1"># Check that thereb are not more &quot;\n&quot; if the atomline</span>
+        <span class="k">if</span> <span class="n">atomline</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The input must correspond to only 1 line&quot;</span><span class="p">)</span>
+
+        <span class="c1"># count the number of &quot;.&quot; fater the coordinate start</span>
+        <span class="n">ndots</span> <span class="o">=</span> <span class="n">atomline</span><span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">COORD_START</span><span class="p">:]</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ndots</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">velocities</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="n">ndots</span> <span class="o">==</span> <span class="mi">6</span><span class="p">:</span>
+            <span class="n">velocities</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">errortext</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Found </span><span class="si">{}</span><span class="s2"> &#39;.&#39; after the 20 first characters. This is &quot;</span>
+                         <span class="s2">&quot;not compatible with the gro format. &quot;</span>
+                         <span class="s2">&quot;Check the input file&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ndots</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="n">errortext</span><span class="p">)</span>
+
+        <span class="n">nfigures</span> <span class="o">=</span> <span class="p">(</span><span class="n">size</span> <span class="o">-</span> <span class="bp">cls</span><span class="o">.</span><span class="n">COORD_START</span><span class="p">)</span> <span class="o">//</span> <span class="n">ndots</span>
+
+        <span class="k">if</span> <span class="n">size</span> <span class="o">!=</span> <span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">COORD_START</span> <span class="o">+</span> <span class="n">ndots</span> <span class="o">*</span> <span class="n">nfigures</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">((</span><span class="s2">&quot;Some of the coordinates/velocities values has &quot;</span>
+                           <span class="s2">&quot;different number of characters. &quot;</span>
+                           <span class="s2">&quot;This is not allowed&quot;</span><span class="p">))</span>
+        <span class="n">ndecimals</span> <span class="o">=</span> <span class="n">nfigures</span> <span class="o">-</span> <span class="mi">5</span>
+
+        <span class="n">form</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">nfigures</span><span class="p">,</span> <span class="n">ndecimals</span><span class="p">),</span>
+            <span class="s2">&quot;velocities&quot;</span> <span class="p">:</span> <span class="n">velocities</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">form</span></div>
+
+<div class="viewcode-block" id="GroFile.validate_string"><a class="viewcode-back" href="../../gaddlemaps.parsers.html#gaddlemaps.parsers.GroFile.validate_string">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">validate_string</span><span class="p">(</span><span class="n">string</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validates a string to be valid as resname or as name.</span>
+
+<span class="sd">        If the input name has more than 5 characters, new name is returned</span>
+<span class="sd">        cutting the input one.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        string : str</span>
+<span class="sd">            The string to validate.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        new_string : str</span>
+<span class="sd">            The properly formatted string.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">string</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="n">old_string</span> <span class="o">=</span> <span class="n">string</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="n">string</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span>
+            <span class="n">warn_text</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;The input resname has more than 5 character (</span><span class="si">{}</span><span class="s1">)&#39;</span>
+                         <span class="s1">&#39;, this is modified to be </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">old_string</span><span class="p">,</span>
+                                                                <span class="n">string</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">warn_text</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">string</span></div></div>
+
+
+<span class="k">def</span> <span class="nf">_validate_res_atom_numbers</span><span class="p">(</span><span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Validates the residue and number atom in a gro atom_line.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">num_err</span> <span class="o">=</span> <span class="s2">&quot;Invalid </span><span class="si">{}</span><span class="s2"> number (</span><span class="si">{}</span><span class="s2">), check the file format.&quot;</span>
+    <span class="n">res_num_str</span> <span class="o">=</span> <span class="n">line</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span>
+    <span class="n">atom_num_str</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">15</span><span class="p">:</span><span class="mi">20</span><span class="p">]</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">res_num</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">res_num_str</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="n">num_err</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;residue&#39;</span><span class="p">,</span> <span class="n">res_num_str</span><span class="p">))</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">atom_num</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">atom_num_str</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="n">num_err</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;atom&#39;</span><span class="p">,</span> <span class="n">atom_num_str</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">res_num</span><span class="p">,</span> <span class="n">atom_num</span>
+
+
+<div class="viewcode-block" id="extract_lattice_gro"><a class="viewcode-back" href="../../gaddlemaps.parsers.html#gaddlemaps.parsers.extract_lattice_gro">[docs]</a><span class="k">def</span> <span class="nf">extract_lattice_gro</span><span class="p">(</span><span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extracts the lattice vectors for pbc from the final line of a .gro file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    line : string</span>
+<span class="sd">        The final line of a .gro file.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    vectors : numpy.ndarray((3,3))</span>
+<span class="sd">        An array with a lattice vector in each row.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">vectors</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">9</span><span class="p">)</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+    <span class="n">nums</span> <span class="o">=</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">num</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">nums</span><span class="p">):</span>
+        <span class="n">vectors</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">num</span>
+    <span class="k">return</span> <span class="n">vectors</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="dump_lattice_gro"><a class="viewcode-back" href="../../gaddlemaps.parsers.html#gaddlemaps.parsers.dump_lattice_gro">[docs]</a><span class="k">def</span> <span class="nf">dump_lattice_gro</span><span class="p">(</span><span class="n">vectors</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extracts final line of a .gro file from the lattice vectors for pbc.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    vectors : numpy.ndarray((3,3))</span>
+<span class="sd">        An array with a lattice vector in each row.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    line : string</span>
+<span class="sd">        The final line of a .gro file.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Reorder the vectors comps</span>
+    <span class="n">vectors</span> <span class="o">=</span> <span class="n">vectors</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+    <span class="n">new_vector</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">vectors</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">index</span><span class="p">):</span>
+        <span class="n">new_vector</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">vectors</span><span class="p">[</span><span class="n">val</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">numpy</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">new_vector</span><span class="p">[</span><span class="mi">3</span><span class="p">:]):</span>
+        <span class="n">lim</span> <span class="o">=</span> <span class="mi">9</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">lim</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="k">return</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">{:9.5f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">new_vector</span><span class="p">[:</span><span class="n">lim</span><span class="p">]])</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Gaddle Maps  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Jose Manuel Otero Mato, Hadrián Montes Campos.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+    </div>
+  </body>
+</html>

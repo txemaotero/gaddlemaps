@@ -1,0 +1,214 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>gaddlemaps._transform_molecule &#8212; Gaddle Maps  documentation</title>
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Gaddle Maps  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for gaddlemaps._transform_molecule</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">This module contains functions that change the molecules conformation.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">deque</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Deque</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="move_mol_atom"><a class="viewcode-back" href="../../gaddlemaps.html#gaddlemaps.move_mol_atom">[docs]</a><span class="k">def</span> <span class="nf">move_mol_atom</span><span class="p">(</span><span class="n">atoms_pos</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                  <span class="n">bonds_info</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]],</span>
+                  <span class="n">atom_index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                  <span class="n">displ</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                  <span class="n">sigma_scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Moves an atom of a molecule respecting almost all bond distances.</span>
+
+<span class="sd">    By default, a random atom is picked from atom_pos and moved randomly in a</span>
+<span class="sd">    certain direction (see the published article for a better description of</span>
+<span class="sd">    this step).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    atoms_pos : numpy.ndarray</span>
+<span class="sd">        An array with the positions of the molecule atoms in rows.</span>
+<span class="sd">    bonds_info : dictionary</span>
+<span class="sd">        A dict with the information of the bonds. Example:</span>
+<span class="sd">            bonds_info = {0:[(1, 5.4), (2, 6.4)], 1:[(0, 5.4), ], ...}</span>
+<span class="sd">        The keys refers to atom index and values are lists with tuples. Each</span>
+<span class="sd">        tuple contains the bonded atom index and the bond length.</span>
+<span class="sd">    atom_index : integer (Optional)</span>
+<span class="sd">        The index of the atom to move (respecting the index of atoms_pos). If</span>
+<span class="sd">        None is given a random one is taken.</span>
+<span class="sd">    displ : numpy.ndarray (Optional)</span>
+<span class="sd">        The displacement vector. If None is given a random displacement is</span>
+<span class="sd">        calculated in the normal plane to the line jointing most nearest atoms.</span>
+<span class="sd">    sigma_scale : float</span>
+<span class="sd">        A factor to scale the sigma of the distribution of the</span>
+<span class="sd">        displacement module.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    modified_atoms_pos : numpy.ndarray</span>
+<span class="sd">        An array with the modified positions of the atoms in rows.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">atoms_pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">atoms_pos</span><span class="p">)</span>
+    <span class="n">n_atoms</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">atoms_pos</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">atom_index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">atom_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">n_atoms</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">displ</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">displ</span> <span class="o">=</span> <span class="n">find_atom_random_displ</span><span class="p">(</span><span class="n">atoms_pos</span><span class="p">,</span> <span class="n">bonds_info</span><span class="p">,</span> <span class="n">atom_index</span><span class="p">,</span>
+                                       <span class="n">sigma_scale</span><span class="o">=</span><span class="n">sigma_scale</span><span class="p">)</span>
+    <span class="c1"># Create a queue with the atoms to move to restore the bonds</span>
+    <span class="n">wait_queue</span> <span class="o">=</span> <span class="n">deque</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n_atoms</span><span class="p">))</span>
+    <span class="c1"># Remove an atom index if it was already moved</span>
+    <span class="n">atoms_pos</span><span class="p">[</span><span class="n">atom_index</span><span class="p">]</span> <span class="o">+=</span> <span class="n">displ</span>
+    <span class="n">wait_queue</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">atom_index</span><span class="p">)</span>
+
+    <span class="n">queue</span><span class="p">:</span> <span class="n">Deque</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">bonds_info</span><span class="p">[</span><span class="n">atom_index</span><span class="p">]:</span>
+        <span class="n">queue</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">atom_index</span><span class="p">,</span> <span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>  <span class="c1"># type: ignore</span>
+        <span class="n">wait_queue</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">while</span> <span class="n">queue</span><span class="p">:</span>
+        <span class="n">ind1</span><span class="p">,</span> <span class="n">ind2</span><span class="p">,</span> <span class="n">bond</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="n">diferencia</span> <span class="o">=</span> <span class="n">atoms_pos</span><span class="p">[</span><span class="n">ind1</span><span class="p">]</span> <span class="o">-</span> <span class="n">atoms_pos</span><span class="p">[</span><span class="n">ind2</span><span class="p">]</span>
+        <span class="n">modulo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">diferencia</span><span class="p">)</span>
+        <span class="n">unit</span> <span class="o">=</span> <span class="n">diferencia</span><span class="o">/</span><span class="n">modulo</span>
+        <span class="n">atoms_pos</span><span class="p">[</span><span class="n">ind2</span><span class="p">]</span> <span class="o">=</span> <span class="n">atoms_pos</span><span class="p">[</span><span class="n">ind2</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">modulo</span> <span class="o">-</span> <span class="n">bond</span><span class="p">)</span> <span class="o">*</span> <span class="n">unit</span>
+        <span class="k">for</span> <span class="n">bonds</span> <span class="ow">in</span> <span class="n">bonds_info</span><span class="p">[</span><span class="n">ind2</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">bonds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">wait_queue</span><span class="p">:</span>
+                <span class="n">queue</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">ind2</span><span class="p">,</span> <span class="n">bonds</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">bonds</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>  <span class="c1"># type: ignore</span>
+                <span class="n">wait_queue</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">bonds</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">atoms_pos</span></div>
+
+
+<div class="viewcode-block" id="find_atom_random_displ"><a class="viewcode-back" href="../../gaddlemaps.html#gaddlemaps.find_atom_random_displ">[docs]</a><span class="k">def</span> <span class="nf">find_atom_random_displ</span><span class="p">(</span><span class="n">atoms_pos</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                           <span class="n">bonds_info</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]],</span>
+                           <span class="n">atom_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                           <span class="n">sigma_scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Finds a random displacement for the atom with a given index.</span>
+
+<span class="sd">    This displacement is chosen in a perpendicular direction according to the</span>
+<span class="sd">    number of bonded atoms.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    atoms_pos : numpy.ndarray</span>
+<span class="sd">        An array with the positions of the molecule atoms in rows.</span>
+<span class="sd">    bonds_info : dictionary</span>
+<span class="sd">        A dict with the information of the bonds. Example:</span>
+<span class="sd">            bonds_info = {0:[(1, 5.4), (2, 6.4)], 1:[(0, 5.4), ], ...}</span>
+<span class="sd">        The keys refers to atom index and values are lists with tuples. Each</span>
+<span class="sd">        tuple contains the bonded atom index and the bond length.</span>
+<span class="sd">    atom_index : integer (Optional)</span>
+<span class="sd">        The index of the atom to move (respecting the index of atoms_pos). If</span>
+<span class="sd">        None is given a random one is taken.</span>
+<span class="sd">    sigma_scale : float</span>
+<span class="sd">        A factor to scale the sigma of the distribution of the displacement</span>
+<span class="sd">        module.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    displ : numpy.ndarray</span>
+<span class="sd">        The displacement vector to sum to the position of the interest atom.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n_bonded_ref</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">bonds_info</span><span class="p">[</span><span class="n">atom_index</span><span class="p">])</span>
+    <span class="c1"># Calc the width of the displacements distribution</span>
+    <span class="n">sigma</span> <span class="o">=</span> <span class="n">bonds_info</span><span class="p">[</span><span class="n">atom_index</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">sigma_scale</span>
+
+    <span class="k">if</span> <span class="n">n_bonded_ref</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">direction</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span>
+                             <span class="n">atoms_pos</span><span class="p">[</span><span class="n">bonds_info</span><span class="p">[</span><span class="n">atom_index</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span> <span class="o">-</span>
+                             <span class="n">atoms_pos</span><span class="p">[</span><span class="n">atom_index</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">n_bonded_ref</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">direction</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span>
+                             <span class="n">atoms_pos</span><span class="p">[</span><span class="n">bonds_info</span><span class="p">[</span><span class="n">atom_index</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span> <span class="o">-</span>
+                             <span class="n">atoms_pos</span><span class="p">[</span><span class="n">bonds_info</span><span class="p">[</span><span class="n">atom_index</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]])</span>
+    <span class="k">elif</span> <span class="n">n_bonded_ref</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="n">direction</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">atoms_pos</span><span class="p">[</span><span class="n">bonds_info</span><span class="p">[</span><span class="n">atom_index</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span> <span class="o">-</span>
+                             <span class="n">atoms_pos</span><span class="p">[</span><span class="n">bonds_info</span><span class="p">[</span><span class="n">atom_index</span><span class="p">][</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]],</span>
+                             <span class="n">atoms_pos</span><span class="p">[</span><span class="n">bonds_info</span><span class="p">[</span><span class="n">atom_index</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span> <span class="o">-</span>
+                             <span class="n">atoms_pos</span><span class="p">[</span><span class="n">bonds_info</span><span class="p">[</span><span class="n">atom_index</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]])</span>
+        <span class="n">direction</span> <span class="o">*=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+    <span class="n">direction</span> <span class="o">=</span> <span class="n">direction</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span>
+    <span class="n">displ</span> <span class="o">=</span> <span class="n">direction</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">sigma</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">displ</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Gaddle Maps  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Jose Manuel Otero Mato, Hadrián Montes Campos.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+    </div>
+  </body>
+</html>

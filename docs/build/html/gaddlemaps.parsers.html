@@ -1,0 +1,577 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>gaddlemaps.parsers package &#8212; Gaddle Maps  documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="gaddlemaps.components package" href="gaddlemaps.components.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="gaddlemaps.components.html" title="gaddlemaps.components package"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Gaddle Maps  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="gaddlemaps.html" accesskey="U">gaddlemaps package</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="gaddlemaps-parsers-package">
+<h1>gaddlemaps.parsers package<a class="headerlink" href="#gaddlemaps-parsers-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-gaddlemaps.parsers">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-gaddlemaps.parsers" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="simulation-files-parsers">
+<h3>Simulation Files Parsers<a class="headerlink" href="#simulation-files-parsers" title="Permalink to this headline">¶</a></h3>
+<p>This submodule contains some useful functionalities to read and extract
+information from files coming from molecular simulation programs. Up to now,
+only files in the format used by GROMACS are contemplated (.gro and .itp
+formats).</p>
+<dl class="class">
+<dt id="gaddlemaps.parsers.GroFile">
+<em class="property">class </em><code class="sig-prename descclassname">gaddlemaps.parsers.</code><code class="sig-name descname">GroFile</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">mode='r'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gaddlemaps/parsers.html#GroFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.parsers.GroFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Implements a file object for opening and writing .gro files</p>
+<p>Grofile verifies the gromacs format, and autodetects the correct
+way to read the file. It modifies the methods read and write of a
+common file with methods that take as input lists with all the info
+of an atom. The readlines and writelines are modified to take
+(return) lists with the info of an atom in lists (as returned by
+the read function).</p>
+<p>This class can also be initiated with an already opened file.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The “+” modifier for the open mode is not allowed right now</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The path to the file to be opened.</p></li>
+<li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – “r” to open the file in read mode and “w” to open it in write mode.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#IOError" title="(in Python v3.8)"><strong>IOError</strong></a> – If the gro file has not the correct format</p>
+</dd>
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference internal" href="#gaddlemaps.parsers.GroFile.box_matrix" title="gaddlemaps.parsers.GroFile.box_matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">box_matrix</span></code></a></dt><dd><p>numpy.ndarray(3,3): the 3 lattice vectors of the box.</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.parsers.GroFile.comment" title="gaddlemaps.parsers.GroFile.comment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">comment</span></code></a></dt><dd><p>string: The comment of the .gro file.</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.parsers.GroFile.name" title="gaddlemaps.parsers.GroFile.name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></a></dt><dd><p>str: The filename of the open file</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.parsers.GroFile.natoms" title="gaddlemaps.parsers.GroFile.natoms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">natoms</span></code></a></dt><dd><p>integer: The number of atoms in the system.</p>
+</dd>
+<dt><a class="reference internal" href="#gaddlemaps.parsers.GroFile.position_format" title="gaddlemaps.parsers.GroFile.position_format"><code class="xref py py-obj docutils literal notranslate"><span class="pre">position_format</span></code></a></dt><dd><p>tuple of int : the number of total figures and decimal places for the</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gaddlemaps.parsers.GroFile.close" title="gaddlemaps.parsers.GroFile.close"><code class="xref py py-obj docutils literal notranslate"><span class="pre">close</span></code></a>(self)</p></td>
+<td><p>Closes the file</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gaddlemaps.parsers.GroFile.determine_format" title="gaddlemaps.parsers.GroFile.determine_format"><code class="xref py py-obj docutils literal notranslate"><span class="pre">determine_format</span></code></a>(atomline)</p></td>
+<td><p>Returns the format of the postion coordinates and whether or not the .gro file has velocities</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gaddlemaps.parsers.GroFile.next" title="gaddlemaps.parsers.GroFile.next"><code class="xref py py-obj docutils literal notranslate"><span class="pre">next</span></code></a>(self)</p></td>
+<td><p>Returns next atomline formatted</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gaddlemaps.parsers.GroFile.parse_atomline" title="gaddlemaps.parsers.GroFile.parse_atomline"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_atomline</span></code></a>(atomline, format_dict, …)</p></td>
+<td><p>Parses an atom line and returns its content in a list.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gaddlemaps.parsers.GroFile.parse_atomlist" title="gaddlemaps.parsers.GroFile.parse_atomlist"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_atomlist</span></code></a>(atomlist, str, str, int, …)</p></td>
+<td><p>Convert a list of atom info to string with the appropriate format</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gaddlemaps.parsers.GroFile.readline" title="gaddlemaps.parsers.GroFile.readline"><code class="xref py py-obj docutils literal notranslate"><span class="pre">readline</span></code></a>(self, parsed)</p></td>
+<td><p>Returns the next line of the gro file.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gaddlemaps.parsers.GroFile.readlines" title="gaddlemaps.parsers.GroFile.readlines"><code class="xref py py-obj docutils literal notranslate"><span class="pre">readlines</span></code></a>(self)</p></td>
+<td><p>Returns all the lines of a grofile parsed in lists.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gaddlemaps.parsers.GroFile.seek_atom" title="gaddlemaps.parsers.GroFile.seek_atom"><code class="xref py py-obj docutils literal notranslate"><span class="pre">seek_atom</span></code></a>(self, index)</p></td>
+<td><p>Displaces the position of the ‘cursor’ to an atom line</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gaddlemaps.parsers.GroFile.validate_string" title="gaddlemaps.parsers.GroFile.validate_string"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_string</span></code></a>(string)</p></td>
+<td><p>Validates a string to be valid as resname or as name.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gaddlemaps.parsers.GroFile.writeline" title="gaddlemaps.parsers.GroFile.writeline"><code class="xref py py-obj docutils literal notranslate"><span class="pre">writeline</span></code></a>(self, atomlist, str, str, int, …)</p></td>
+<td><p>Writes a line of atom information</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gaddlemaps.parsers.GroFile.writelines" title="gaddlemaps.parsers.GroFile.writelines"><code class="xref py py-obj docutils literal notranslate"><span class="pre">writelines</span></code></a>(self, list_atomlist, str, str, …)</p></td>
+<td><p>Writes several lines of atoms</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="gaddlemaps.parsers.GroFile.COORD_START">
+<code class="sig-name descname">COORD_START</code><em class="property"> = 20</em><a class="headerlink" href="#gaddlemaps.parsers.GroFile.COORD_START" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gaddlemaps.parsers.GroFile.DEFAULT_COMMENT">
+<code class="sig-name descname">DEFAULT_COMMENT</code><em class="property"> = &quot;Gro file genereted with 'Gromacs Tools' python module.&quot;</em><a class="headerlink" href="#gaddlemaps.parsers.GroFile.DEFAULT_COMMENT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gaddlemaps.parsers.GroFile.DEFAULT_POSTION_FORMAT">
+<code class="sig-name descname">DEFAULT_POSTION_FORMAT</code><em class="property"> = (8, 3)</em><a class="headerlink" href="#gaddlemaps.parsers.GroFile.DEFAULT_POSTION_FORMAT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="gaddlemaps.parsers.GroFile.NUMBER_FIGURES">
+<code class="sig-name descname">NUMBER_FIGURES</code><em class="property"> = 7</em><a class="headerlink" href="#gaddlemaps.parsers.GroFile.NUMBER_FIGURES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.parsers.GroFile.box_matrix">
+<em class="property">property </em><code class="sig-name descname">box_matrix</code><a class="headerlink" href="#gaddlemaps.parsers.GroFile.box_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>the 3 lattice vectors of the box.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)">numpy.ndarray</a>(3,3)</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.parsers.GroFile.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gaddlemaps/parsers.html#GroFile.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.parsers.GroFile.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Closes the file</p>
+<p>If the file is in write mode it will write al the remaining
+information.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.parsers.GroFile.comment">
+<em class="property">property </em><code class="sig-name descname">comment</code><a class="headerlink" href="#gaddlemaps.parsers.GroFile.comment" title="Permalink to this definition">¶</a></dt>
+<dd><p>The comment of the .gro file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.parsers.GroFile.determine_format">
+<em class="property">classmethod </em><code class="sig-name descname">determine_format</code><span class="sig-paren">(</span><em class="sig-param">atomline: str</em><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="_modules/gaddlemaps/parsers.html#GroFile.determine_format"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.parsers.GroFile.determine_format" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the format of the postion coordinates and whether or
+not the .gro file has velocities</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>atomline</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – An atom line from the .gro file</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>form</strong> – Dictionary with 2 keys, “position” and “velocities”. The
+position key leads to a tuple with 2 ints. THe first in is
+the number of characters in the float format (C) and the
+second is the number of decimal places in the float (D),
+i.e. corresponds to the ‘%C.Df’ format.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.parsers.GroFile.name">
+<em class="property">property </em><code class="sig-name descname">name</code><a class="headerlink" href="#gaddlemaps.parsers.GroFile.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The filename of the open file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.parsers.GroFile.natoms">
+<em class="property">property </em><code class="sig-name descname">natoms</code><a class="headerlink" href="#gaddlemaps.parsers.GroFile.natoms" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of atoms in the system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>integer</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.parsers.GroFile.next">
+<code class="sig-name descname">next</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span> &#x2192; Union[Tuple[int, str, str, int, float, float, float], Tuple[int, str, str, int, float, float, float, float, float, float]]<a class="reference internal" href="_modules/gaddlemaps/parsers.html#GroFile.next"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.parsers.GroFile.next" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns next atomline formatted</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.8)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.8)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>], <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.8)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.parsers.GroFile.parse_atomline">
+<em class="property">classmethod </em><code class="sig-name descname">parse_atomline</code><span class="sig-paren">(</span><em class="sig-param">atomline: str</em>, <em class="sig-param">format_dict: Union[Dict</em>, <em class="sig-param">NoneType] = None</em><span class="sig-paren">)</span> &#x2192; Union[Tuple[int, str, str, int, float, float, float], Tuple[int, str, str, int, float, float, float, float, float, float]]<a class="reference internal" href="_modules/gaddlemaps/parsers.html#GroFile.parse_atomline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.parsers.GroFile.parse_atomline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parses an atom line and returns its content in a list.</p>
+<p>Parses an atom line and returns its content in a list. In its default
+behaviour the input line is analyzed and the number of decimals are
+guessed. It is also possible to insert the format in a format
+dictionary. This is a dictionary with 2 keys, “position” and
+“velocities”. The position key leads to a tuple with 2 ints. The
+first in is the number of characters in the float format (C) and the
+second is the number of decimal places in the float (D), i.e.
+corresponds to the ‘%C.Df’ format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>atomline</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – An string with a line from a grofile</p></li>
+<li><p><strong>format_dict</strong> (<em>dict_format</em><em> (</em><em>optional</em><em>)</em>) – None or dictionary with 2 keys, “position” and “velocities”. The
+position key leads to a tuple with 2 ints. THe first in is
+the number of characters in the float format (C) and the
+second is the number of decimal places in the float (D),
+i.e. corresponds to the ‘%C.Df’ format. If None the format
+will be automatically guessed.
+Default None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><strong>info</strong> –</p>
+<dl class="simple">
+<dt>A list with the following information:</dt><dd><ul class="simple">
+<li><p>mol_index(integer)</p></li>
+<li><p>resname (string)</p></li>
+<li><p>name (string)</p></li>
+<li><p>global_index (integer)</p></li>
+<li><p>x, y, z (floats)</p></li>
+<li><p>vx, vy ,vz (floats) [optional]</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.parsers.GroFile.parse_atomlist">
+<em class="property">classmethod </em><code class="sig-name descname">parse_atomlist</code><span class="sig-paren">(</span><em class="sig-param">atomlist: Union[Tuple[int, str, str, int, float, float, float], Tuple[int, str, str, int, float, float, float, float, float, float]], format_dict: Dict = None</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/gaddlemaps/parsers.html#GroFile.parse_atomlist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.parsers.GroFile.parse_atomlist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a list of atom info to string with the appropriate format</p>
+<p>Parses a list with the atom information and returns its content in a
+string with the correct format to write in a .gro file. In its default
+behaviour the input line is analyzed and the number of decimals are
+guessed. It is also possible to insert the format in a format
+dictionary. This is a dictionary with 2 keys, “position” and
+“velocities”. The position key leads to a tuple with 2 ints. The
+first is the number of characters in the float format (C) and the
+second is the number of decimal places in the float (D), i.e.
+corresponds to the ‘%C.Df’ format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>atomlist</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a>) – <dl class="simple">
+<dt>A list with the following information:</dt><dd><ul>
+<li><p>mol_index(integer)</p></li>
+<li><p>resname (string)</p></li>
+<li><p>name (string)</p></li>
+<li><p>global_index (integer)</p></li>
+<li><p>x, y, z (floats)</p></li>
+<li><p>vx, vy ,vz (floats) [optional]]</p></li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>format_dict</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a><em> (</em><em>optional</em><em>)</em>) – None or dictionary with 2 keys, “position” and “velocities”. The
+position key leads to a tuple with 2 ints. THe first in is
+the number of characters in the float format (C) and the
+second is the number of decimal places in the float (D),
+i.e. corresponds to the ‘%C.Df’ format. If None the format
+will be automatically guessed.
+Default None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>atomline</strong> – An string with a line from a .gro file</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.parsers.GroFile.position_format">
+<em class="property">property </em><code class="sig-name descname">position_format</code><a class="headerlink" href="#gaddlemaps.parsers.GroFile.position_format" title="Permalink to this definition">¶</a></dt>
+<dd><p>the number of total figures and decimal places for the
+positions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>tuple of int</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.8)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.parsers.GroFile.readline">
+<code class="sig-name descname">readline</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">parsed: bool = True</em><span class="sig-paren">)</span> &#x2192; Union[Tuple[int, str, str, int, float, float, float], Tuple[int, str, str, int, float, float, float, float, float, float], str]<a class="reference internal" href="_modules/gaddlemaps/parsers.html#GroFile.readline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.parsers.GroFile.readline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the next line of the gro file.</p>
+<p>If parsed=True (default) the data on the atom line is parsed
+and returned in a list. If false the line is returned as an
+string (just like if it were opened as a common file.)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>parsed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em> (</em><em>optional</em><em>)</em>) – Wether the data of the line should be parsed or not.
+Default: True</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>info</strong> – Returns the info of the line, i alist if it was parsed or
+in a string if not</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.parsers.GroFile.readlines">
+<code class="sig-name descname">readlines</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span> &#x2192; List[Union[Tuple[int, str, str, int, float, float, float], Tuple[int, str, str, int, float, float, float, float, float, float]]]<a class="reference internal" href="_modules/gaddlemaps/parsers.html#GroFile.readlines"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.parsers.GroFile.readlines" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns all the lines of a grofile parsed in lists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>info</strong> – Returns a list with the info of all the atom lines in lists</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)">list</a>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)">list</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.parsers.GroFile.seek_atom">
+<code class="sig-name descname">seek_atom</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">index: int</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gaddlemaps/parsers.html#GroFile.seek_atom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.parsers.GroFile.seek_atom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Displaces the position of the ‘cursor’ to an atom line</p>
+<p>Displaces the position of the ‘cursor’ to the beginning of the
+line of the ‘index’ atom, where the first atom index is 0. If
+the index is equal to the number of atoms the beginning of the
+box lattice line is found.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – The index of the atom to found</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.parsers.GroFile.validate_string">
+<em class="property">static </em><code class="sig-name descname">validate_string</code><span class="sig-paren">(</span><em class="sig-param">string: str</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/gaddlemaps/parsers.html#GroFile.validate_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.parsers.GroFile.validate_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validates a string to be valid as resname or as name.</p>
+<p>If the input name has more than 5 characters, new name is returned
+cutting the input one.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>string</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The string to validate.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>new_string</strong> – The properly formatted string.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.parsers.GroFile.writeline">
+<code class="sig-name descname">writeline</code><span class="sig-paren">(</span><em class="sig-param">self, atomlist: Union[Tuple[int, str, str, int, float, float, float], Tuple[int, str, str, int, float, float, float, float, float, float]]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gaddlemaps/parsers.html#GroFile.writeline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.parsers.GroFile.writeline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a line of atom information</p>
+<p>If there was no content written in the file it creates the
+header and the number of atoms. If the number of atoms was not
+provided it will kept empty and the number will be written just
+before closing the file. This possibility is only compatible
+with a number of atoms smaller than 1000000.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>atomlist</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em> or </em><em>string</em>) – A list with all the info of the atom, just like the one returned by
+readline. If it is a string, it will be written directly without
+parsing.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gaddlemaps.parsers.GroFile.writelines">
+<code class="sig-name descname">writelines</code><span class="sig-paren">(</span><em class="sig-param">self, list_atomlist: List[Union[Tuple[int, str, str, int, float, float, float], Tuple[int, str, str, int, float, float, float, float, float, float]]]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gaddlemaps/parsers.html#GroFile.writelines"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.parsers.GroFile.writelines" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes several lines of atoms</p>
+<p>If there was no content written in the file it creates the
+header and the number of atoms. If the number of atoms was not
+provided it will kept empty and the number will be written just
+before closing the file. This possibility is only compatible
+with a number of atoms smaller than 1000000.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>list_atomlist</strong> (<em>list of list of str</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – A list of lists with all the info of the atom, just like
+the one returned by readline</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="gaddlemaps.parsers.dump_lattice_gro">
+<code class="sig-prename descclassname">gaddlemaps.parsers.</code><code class="sig-name descname">dump_lattice_gro</code><span class="sig-paren">(</span><em class="sig-param">vectors: numpy.ndarray</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/gaddlemaps/parsers.html#dump_lattice_gro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.parsers.dump_lattice_gro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts final line of a .gro file from the lattice vectors for pbc.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>vectors</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><em>numpy.ndarray</em></a><em>(</em><em>(</em><em>3</em><em>,</em><em>3</em><em>)</em><em>)</em>) – An array with a lattice vector in each row.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>line</strong> – The final line of a .gro file.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="gaddlemaps.parsers.extract_lattice_gro">
+<code class="sig-prename descclassname">gaddlemaps.parsers.</code><code class="sig-name descname">extract_lattice_gro</code><span class="sig-paren">(</span><em class="sig-param">line: str</em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="reference internal" href="_modules/gaddlemaps/parsers.html#extract_lattice_gro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gaddlemaps.parsers.extract_lattice_gro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts the lattice vectors for pbc from the final line of a .gro file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>line</strong> (<em>string</em>) – The final line of a .gro file.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>vectors</strong> – An array with a lattice vector in each row.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)">numpy.ndarray</a>((3,3))</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">gaddlemaps.parsers package</a><ul>
+<li><a class="reference internal" href="#module-gaddlemaps.parsers">Module contents</a><ul>
+<li><a class="reference internal" href="#simulation-files-parsers">Simulation Files Parsers</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gaddlemaps.components.html"
+                        title="previous chapter">gaddlemaps.components package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/gaddlemaps.parsers.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="gaddlemaps.components.html" title="gaddlemaps.components package"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Gaddle Maps  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="gaddlemaps.html" >gaddlemaps package</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Jose Manuel Otero Mato, Hadrián Montes Campos.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+    </div>
+  </body>
+</html>
