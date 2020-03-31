@@ -11,15 +11,19 @@ Basic Classes
     :noindex:
     :undoc-members:
     :members:
+    :inherited-members:
 
 .. autoclass:: gaddlemaps.components.System
     :noindex:
     :undoc-members:
     :members:
+    :inherited-members:
 
 
 .. autoclass:: gaddlemaps.components.Molecule
     :noindex:
     :undoc-members:
     :members:
+    :inherited-members:
+
 
