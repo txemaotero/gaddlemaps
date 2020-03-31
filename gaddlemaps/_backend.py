@@ -80,11 +80,12 @@ def minimize_molecules(mol1_positions: np.ndarray,
         and mol2 atoms molecules. The align will be performed privileging
         configurations where those atoms are close.
 
-        Example:
+        Example
+        -------
         >>> restrictions = [(1, 3), (4, 5)]
 
-        IMPORTANT: INDEX ARE REFERENCED TO THE ATOM INDEX IN THE MOLECULE
-        (STARTS IN 0).
+        **IMPORTANT: INDEX ARE REFERENCED TO THE ATOM INDEX IN THE MOLECULE
+        (STARTS IN 0).**
 
     mol2_bonds_info : defaultdict of int: list of tuple(int, float)
         A complex data structure that collect the information of the bond
@@ -233,10 +234,11 @@ class Chi2Calculator:
         and mol2 atoms molecules. The align will be performed privileging
         configurations where those atoms are close. By default is set to [].
 
-        Example:
+        Example
+        -------
         >>> restrictions = [(1, 3), (4, 5)]
 
-        IMPORTANT: INDEX ARE REFERENCED TO THE ATOM INDEX IN THE MOLECULE
+        **IMPORTANT: INDEX ARE REFERENCED TO THE ATOM INDEX IN THE MOLECULE**
 
     """
 

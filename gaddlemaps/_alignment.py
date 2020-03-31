@@ -167,8 +167,8 @@ class Alignment:
             Example:
             >>> restrictions = [(1, 3), (4, 5)]
 
-            IMPORTANT: INDEX ARE REFERENCED TO THE ATOM INDEX IN THE MOLECULE
-            (STARTS IN 0).
+            **IMPORTANT INDEX ARE REFERENCED TO THE ATOM INDEX IN THE MOLECULE
+            (STARTS IN 0).**
 
         deformation_types : tuple of int, optional
             Specifies the type of the minimization. Possible options:
@@ -316,10 +316,11 @@ def remove_hydrogens(molecule: Molecule,
         and end atoms molecules. The align will be performed privileging
         configurations where those atoms are close. By default is set to [].
 
-        Example:
+        Example
+        -------
         >>> restrictions = [(1, 3), (4, 5)]
 
-        IMPORTANT: INDEX ARE REFERENCED TO THE ATOM INDEX IN THE MOLECULE
+        **IMPORTANT: INDEX ARE REFERENCED TO THE ATOM INDEX IN THE MOLECULE**
 
     Returns
     -------
@@ -365,11 +366,12 @@ def guess_protein_restrains(mol1: Molecule,
         and end atoms molecules. The align will be performed privileging
         configurations where those atoms are close. By default is set to [].
 
-        Example:
+        Example
+        -------
         >>> restrictions = [(1, 3), (4, 5)]
 
-        IMPORTANT: INDEX ARE REFERENCED TO THE ATOM INDEX IN THE MOLECULE
-        (STARTS IN 0).
+        **IMPORTANT: INDEX ARE REFERENCED TO THE ATOM INDEX IN THE MOLECULE
+        (STARTS IN 0).**
 
     Raises
     ------
@@ -421,11 +423,12 @@ def guess_residue_restrains(res1: Residue, res2: Residue, offset1: int = 0,
         and end atoms residues. The align will be performed privileging
         configurations where those atoms are close. By default is set to [].
 
-        Example:
+        Example
+        -------
         >>> restrictions = [(1, 3), (4, 5)]
 
-        IMPORTANT: INDEX ARE REFERENCED TO THE ATOM INDEX IN THE MOLECULE
-        (STARTS IN 0).
+        **IMPORTANT: INDEX ARE REFERENCED TO THE ATOM INDEX IN THE MOLECULE
+        (STARTS IN 0).**
     """
     n_parts = min(len(res1), len(res2))
     mol1_ids_groups = _split_list(list(range(len(res1))), n_parts)

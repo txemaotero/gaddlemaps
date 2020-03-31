@@ -296,7 +296,7 @@ def comparate_alignment(manager: Manager, radius: float=None):
     
     Parameters
     ----------
-    manager: Manger
+    manager: Manager
         The manager of the alignment.
     radius: Optional[float]
         The radius of the atoms in the low resolution representation. Default

@@ -266,10 +266,11 @@ class Manager:
             where those atoms are close. By default, restrictions will be set
             to [] for every molecule.
 
-            Example:
+            Example
+            -------
             >>> restrictions = [(1, 3), (4, 5)]
 
-            IMPORTANT: INDEX ARE REFERENCED TO THE ATOM NUMBER IN THE .itp FILE
+            **IMPORTANT:** INDEX ARE REFERENCED TO THE ATOM NUMBER IN THE .itp FILE
             (IT USUALLY STARTS IN 1).
         guess_proteins : bool, optional
             If True, restriction for proteins with more than 3 residues will be
@@ -281,8 +282,8 @@ class Manager:
         new_restrictions : dict of str: list of tuple of int.
             The validated restrictions.
 
-            IMPORTANT: INDEX ARE REFERENCED TO THE ATOM INDEX IN THE MOLECULE
-            (STARTS IN 0).
+            **IMPORTANT: INDEX ARE REFERENCED TO THE ATOM INDEX IN THE MOLECULE
+            (STARTS IN 0).**
 
         Raises
         ------
