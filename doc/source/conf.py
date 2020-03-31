@@ -75,7 +75,9 @@ html_static_path = ['_static']
 intersphinx_mapping = {'https://docs.python.org/': None,
                        'numpy': ('http://docs.scipy.org/doc/numpy/', None),
                        'matplotlib': ('http://matplotlib.org', None),
-                       'scipy': ('http://docs.scipy.org/doc/scipy/reference', None)}
+                       'scipy': ('http://docs.scipy.org/doc/scipy/reference', None),
+                       "ipywidgets": ('http://ipywidgets.readthedocs.io/en/latest', None),
+                       }
 
 # -- Options for todo extension ----------------------------------------------
 
