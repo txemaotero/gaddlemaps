@@ -44,8 +44,8 @@ def calcule_base(pos: List[np.ndarray]) -> Tuple[Tuple[np.ndarray, ...],
     unitary forming an orthonormal basis. In case of collinear points, the
     second vector is set to ([vec1[1], -vec1[0], 0]).
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     pos : list
         List with three vectors (numpy.ndarray) with the position of the
         atoms.
