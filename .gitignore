@@ -95,7 +95,7 @@ pytest.ini
 
 # Sphinx documentation
 docs/_build/
-!docs/buld/html
+!docs/build/html
 
 # PyBuilder
 target/
