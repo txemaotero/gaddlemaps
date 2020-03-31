@@ -209,14 +209,16 @@ class Manager:
             where those atoms are close. By default, restrictions will be set
             to [] for every molecule.
 
-            Example:
+            Example
+            -------
+
             >>> restrictions = [(1, 3), (4, 5)]
+            
+            **IMPORTANT:** INDEX ARE REFERENCED TO THE ATOM NUMBER IN THE .itp FILE
 
-            IMPORTANT: INDEX ARE REFERENCED TO THE ATOM NUMBER IN THE .itp FILE
-
-            NOTE: If the restrictions were previously parsed, the
-            parse_restrictions option must be set to False to avoid to parse
-            the restrictions two times.
+            .. note:: If the restrictions were previously parsed, the
+                parse_restrictions option must be set to False to avoid to parse
+                the restrictions two times.
 
         deformation_types : dict of str: tuple of int, optional
             A dictionary with the molecules names as keys and the value

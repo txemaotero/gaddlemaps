@@ -7,7 +7,7 @@ Welcome to Gaddle Maps's documentation!
 =======================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents:
 
    overview.rst
