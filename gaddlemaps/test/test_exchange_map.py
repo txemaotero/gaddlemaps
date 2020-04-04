@@ -128,6 +128,9 @@ def test_exchange_map(molecule_cg: Molecule, molecule_aa: Molecule):
     assert map_mol is not molecule_cg
     for at1, at2 in zip(map_mol, molecule_cg):
         assert np.allclose(at1.position, at2.position)
+    equiv = emap.equivalences
+    assert equiv == {1: [0], 5: [2], 12: [3], 19: [4], 23: [5], 27: [7],
+                     29: [6], 36: [1]}
 
 
 def test_bf4_map(bf4_cg: Molecule, bf4_aa: Molecule):
@@ -136,7 +139,7 @@ def test_bf4_map(bf4_cg: Molecule, bf4_aa: Molecule):
     """
     emap = ExchangeMap(bf4_cg, bf4_aa, scale_factor=1)
     with pytest.raises(TypeError, match='.*Argument.*'):
-        emap(2)
+        emap(2)  # type: ignore
     with pytest.raises(TypeError, match='.*refmolecule.*'):
         emap(bf4_aa)
     map_mol = emap(bf4_cg)
@@ -155,6 +158,8 @@ def test_bf4_map(bf4_cg: Molecule, bf4_aa: Molecule):
     assert map_mol is not bf4_cg
     assert np.allclose(map_mol.geometric_center, bf4_cg.geometric_center,
                        rtol=1.e-3, atol=1.e-3)
+    equiv = emap.equivalences
+    assert equiv == {0: [0]}
 
 
 def test_vte_map(vte_aa: Molecule, vte_cg: Molecule, vte_map_cg: Molecule):

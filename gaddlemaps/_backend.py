@@ -46,7 +46,6 @@ def check_backend_installed(warn_missing=False) -> bool:
                     "the compiled backed.")
             warnings.warn(text)
         return False
-    
 
 
 def minimize_molecules(mol1_positions: np.ndarray,
@@ -113,6 +112,22 @@ def minimize_molecules(mol1_positions: np.ndarray,
                                           sim_type)
         return np.array(positions)        
 
+    mol2_positions = _minimize_molecules(mol1_positions, mol2_positions,
+                                         mol2_com, sigma_scale, n_steps,
+                                         restriction, mol2_bonds_info,
+                                         displacement_module, sim_type)
+    return mol2_positions
+
+
+def _minimize_molecules(mol1_positions: np.ndarray,
+                        mol2_positions: np.ndarray,
+                        mol2_com: np.ndarray,
+                        sigma_scale: float,
+                        n_steps: int,
+                        restriction: List[Tuple[int, int]],
+                        mol2_bonds_info: Dict[int, List[Tuple[int, float]]],
+                        displacement_module: float,
+                        sim_type: Tuple[int, ...]):
     # Performance stuffs
     _chi2_molecules = Chi2Calculator(mol1_positions, mol2_positions,
                                      restriction)
