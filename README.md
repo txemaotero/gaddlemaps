@@ -46,6 +46,11 @@ the module. `gaddlemaps` will automatically use the c++ port if available and wi
 fallback to the python implementation if not present. Therefore the installation
 of this c++ port is completely **optional** but highly recommended.
 
+### Content
+* [Installation](#installation)
+* [Quick Start](#quick-start)
+* [Frequently asked questions](#FAQs)
+
 ## Installation
 
 Here we will describe the installation of the reference implementation of
@@ -75,6 +80,7 @@ In order to build from source the following prerequisites are needed:
 * [Numpy](https://numpy.org)
 * [Scipy](https://www.scipy.org)
 * [Jupyter Notebook](https://jupyter.org)
+* [nglview](https://github.com/arose/nglview) (optional)
 
 #### Installation of prerequisites
 
@@ -101,6 +107,20 @@ sudo apt install python3-numpy python3-scipy python3-notebook
 If using a different operative system or if the previous instructions did not
 work please refer to the installation instructions in the documentation of each
 module.
+
+**Nglview** is completely optional, it is used only when representing the system
+inside jupyter notebooks. If you do not want this functionality you can skip
+this step. Moreover this module **can be installed after installing
+gaddlemaps**. The easiest way to install the module is through pip
+
+```bash
+pip install nglview
+jupyter nbextension enable --py --sys-prefix widgetsnbextension
+jupyter-nbextension enable nglview --py --sys-prefix
+```
+
+for other options and problems with the installation check the documentation for
+[nglview](https://github.com/arose/nglview).
 
 #### Cloning and installing
 
@@ -252,8 +272,14 @@ fully atomistic resolutions can be seen in the example
 
 For a more visual representation there is a jupyter notebook that works as
 example and can be easily modified to transform interactively any system. The
-notebook is located in [examples/notebook/Interactive-example.ipynb](examples/notebook/Interactive-example.ipynb)
+notebook is located in
+[examples/notebook/Interactive-example.ipynb](examples/notebook/Interactive-example.ipynb).
+In order to use this notebook the [nglview](https://github.com/arose/nglview)
+module is required. In order to run the notebook run the following command:
 
+```bash
+jupyter notebook examples/notebook/Interactive-example.ipynb --NotebookApp.iopub_data_rate_limit=10000000
+```
 
 ## FAQs
 
