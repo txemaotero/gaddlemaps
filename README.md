@@ -53,7 +53,8 @@ Here we will describe the installation of the reference implementation of
 backend please read the section [configuring the c++
 backend](#configuring-the-c++-backend) first.
 
-The installation can be done using [pip](#pip-installation) or building from source. For any of the
+The installation can be done using [pip](#pip-installation) or [building from
+source](#building-from-source). For any of the
 methods gaddlemaps needs [Python](http://pythonhosted.org) 3.6 or greater.
 
 ### pip installation
@@ -75,7 +76,9 @@ In order to build from source the following prerequisites are needed:
 * [Scipy](https://www.scipy.org)
 * [Jupyter Notebook](https://jupyter.org)
 
-This requisites can installed using pip by running:
+#### Installation of prerequisites
+
+This requisites can installed using **pip** by running:
 
 ```bash
 pip install numpy scipy jupyter
@@ -99,7 +102,7 @@ If using a different operative system or if the previous instructions did not
 work please refer to the installation instructions in the documentation of each
 module.
 
-### Cloning and installing
+#### Cloning and installing
 
 The first step is cloning or downloading the git repository
 
@@ -237,6 +240,61 @@ documentation for [cython](https://cython.org).
 After finishing the installation of the prerequisites please follow the steps in
 the [installation](#installation) section.
 
-
 ## Quick Start
 
+### Files needed to map the system
+
+### Perform the mapping
+
+The basic usage of the module to transform systems between coarse grained and
+fully atomistic resolutions can be seen in the example
+[examples/bmim_bf4/map_bmim_bf4.py](examples/bmim_bf4/map_bmim_bf4.py).
+
+For a more visual representation there is a jupyter notebook that works as
+example and can be easily modified to transform interactively any system. The
+notebook is located in [examples/notebook/Interactive-example.ipynb](examples/notebook/Interactive-example.ipynb)
+
+
+## FAQs
+
+### What are those restraints? Wasn't gaddlemaps an automatic algorithm?
+
+GADDLE Maps is an algorithm that does not need any external input. However for
+molecules that are very symmetrical (for example molecules that are completely
+linear) the algorithm may need a "hint" to know which extreme is which. When
+the molecule have ramification these hints are not usually needed. These hints
+are what we call restraints. They can be also used in order to have a faster aligment.
+
+### How do I know if gaddle maps is using the c++ backend?
+
+There is a function that returns wether the c++ backend is available or not. In
+order to check it run:
+
+```python
+from gaddlemaps import check_backend_installed
+if check_backend_installed():
+    print("The backend is correctly installed")
+else:
+    print("The backend is not accessible")
+```
+
+If it is not installed refer to the section [Configuring the c++ backend](#Configuring-the-c++-backend).
+
+### I have a big protein and it takes ages to align. Is this behavior normal?
+
+First of all check wether you are using or not the c++ backend [How do I know if
+gaddlemaps is using the c++
+backend?](#How-do-I-know-if-gaddle-maps-is-using-the-c++-backend?). However even
+without the c++ backend the mapping should not take more than a day even for
+really big molecules.
+
+The time that takes to align a molecule greatly increase with the number of
+atoms. However, for proteins an approximation is done. Instead of aligning all
+the atoms of the protein the overlapping is only calculated between atoms in
+residues  with the same name. If the alignment is taken too long chances are
+that the residues in both resolutions have different names or are in different
+order.
+
+This problem can be solved by adding restraints between all the atoms of the
+molecule but by far the easiest way to accelerate the alignment is to set the
+same sequence of residues in both files.
