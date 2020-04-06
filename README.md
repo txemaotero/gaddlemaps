@@ -5,6 +5,8 @@
 [**Quick Start**](#quick-start)
 |
 [**Features**](#features)
+|
+[**FAQs**](#faqs)
 
 ## What is GADDLE Maps?
 
@@ -79,14 +81,14 @@ This requisites can installed using pip by running:
 pip install numpy scipy jupyter
 ```
 
-If using mac the dependencies can be installed using [brew](https://brew.sh) by
+If using **Mac OS** the dependencies can be installed using [brew](https://brew.sh) by
 running:
 
 ```bash
 brew install numpy scipy jupyter
 ```
 
-In Ubuntu and other Debian based Linux distribution they can be installed using
+In **Ubuntu** and other Debian based Linux distribution they can be installed using
 the *apt* package manager:
 
 ```bash
@@ -138,15 +140,17 @@ needed:
 * [Armadillo](http://arma.sourceforge.net)
 * [Cython](https://cython.org)
 
+#### C++ compiler
+
 The installation of a c++ compiler (for example g++ or clang++) is needed. This
-can be done in Ubuntu and other Debian-like Linux distribution using the apt package
+can be done in **Ubuntu** and other Debian-like Linux distribution using the apt package
 manager:
 
 ```bash
 sudo apt install g++
 ```
 
-If using Mac the compiler can be installed by installing the *developer command
+If using **Mac OS** the compiler can be installed by installing the *developer command
 line tools*. These tools can be installed by running the following command in a
 terminal:
 
@@ -155,6 +159,8 @@ xcode-select --install
 ```
 
 and following the instructions on the screen.
+
+#### Armadillo
 
 For the installation of the Armadillo library please refer to their
 [installation documentation](http://arma.sourceforge.net/download.html).
@@ -167,7 +173,7 @@ In order to check if the installation is in the path create a file
 #include <iostream>
 
 int main(){
-    arma::Mat<double> A(4,4, arma::fill::eye);
+    arma::Mat<double> A(3,3, arma::fill::eye);
     std::cout << "A:\n" << A << "\n";
     return 0;
 }
@@ -176,5 +182,61 @@ int main(){
 And try to compile and run it:
 
 ```bash
-g++ armadillo_test.cpp -larmadillo && ./a.out
+g++ armadillo_test.cpp -larmadillo -I/usr/local/include -L/usr/local/lib && ./a.out
 ```
+
+If a 3⨉3 identity matrix is printed the armadillo library is installed and in a
+location where gaddlemaps will be able to find it. If the compiler is not able
+to find the armadillo library update the environment variables in your
+*.bashrc* (if using Linux or Mac OS prior to Catalina) or *.zshrc* (if using zsh instead of bash or if using Mac OS Catalina).
+
+In general adding the following lines at the end of the file will de the trick:
+
+```bash
+export CPLUS_INCLUDE_PATH="folder where armadillo.h is located"
+export LD_LIBRARY_PATH="folder where libarmadillo.so  or libarmadillo.dylib"
+export LIBRARY_PATH="folder where libarmadillo.so  or libarmadillo.dylib"
+```
+
+If armadillo was installed in Mac OS using [macports](https://www.macports.org)
+the following lines should work:
+
+```bash
+export CPLUS_INCLUDE_PATH="/opt/local/include"
+export LIBRARY_PATH="/opt/local/lib"
+export LD_LIBRARY_PATH="/opt/local/lib"
+```
+
+#### Cython
+
+##### Using pip
+
+The easiest and preferred way to install cython is by using pip
+
+```bash
+sudo pip install cython
+```
+
+##### Without pip
+
+In **Mac OS** can be installed using brew
+
+```bash
+brew install cython
+```
+
+In **Ubuntu** can be installed using apt
+
+```bash
+sudo apt install cython3
+```
+
+For other platforms and other installation method check the official
+documentation for [cython](https://cython.org).
+
+After finishing the installation of the prerequisites please follow the steps in
+the [installation](#installation) section.
+
+
+## Quick Start
+
