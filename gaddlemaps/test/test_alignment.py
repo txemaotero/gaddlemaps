@@ -139,10 +139,21 @@ class TestAlignment:
         ali = Alignment()
         assert ali.start is None
         assert ali.end is None
+        # Some raises
+        with pytest.raises(ValueError):
+            ali.align_molecules()
+        with pytest.raises(ValueError):
+            ali.init_exchange_map()
+        with pytest.raises(ValueError):
+            ali.write_comparative_gro()
         ali.start = molecule_aa
         assert ali.exchange_map is None
         assert ali.start == molecule_aa
         ali.end = molecule_cg
+        assert ali.end == molecule_cg
+        # Reset
+        ali.end = molecule_cg
+
         with pytest.raises(ValueError):
             ali.start = molecule_cg
         with pytest.raises(ValueError):
@@ -223,6 +234,17 @@ class TestAlignment:
         new = ali.exchange_map(vte_cg)
         assert np.allclose(new.geometric_center,
                            vte_cg.geometric_center, rtol=0.5, atol=0.5)
+
+    def test_different_molecules(self, protein_cg: Molecule,
+                                 molecule_aa: Molecule):
+        """
+        Tests alignment with different molecules.
+        """
+        ali = Alignment(protein_cg, molecule_aa)
+        with pytest.raises(IOError):
+            ali.align_molecules(auto_guess_protein_restrictions=True)
+        ali = Alignment(molecule_aa, protein_cg)
+        ali.align_molecules()
 
 
 def test_gess_residue_restrains(vte_cg: Molecule, vte_aa: Molecule):

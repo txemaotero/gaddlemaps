@@ -2,9 +2,38 @@
 Test for the functions defined in the _backend submodule.
 '''
 
+import os
+
+import pytest
 import numpy as np
 
-from gaddlemaps import Chi2Calculator, accept_metropolis
+from gaddlemaps.components import System, Molecule
+from gaddlemaps import (Chi2Calculator, accept_metropolis,
+                        check_backend_installed)
+from gaddlemaps._backend import _minimize_molecules
+
+
+ACTUAL_PATH = os.path.split(os.path.join(os.path.abspath(__file__)))[0]
+
+
+@pytest.fixture
+def molecule_aa() -> Molecule:
+    """
+    Molecule instance of curcumine all atom.
+    """
+    fgro = os.path.join(ACTUAL_PATH, '../data/CUR_AA.gro')
+    fitp = os.path.join(ACTUAL_PATH, '../data/CUR_AA.itp')
+    return System(fgro, fitp)[0]
+
+
+@pytest.fixture
+def molecule_cg() -> Molecule:
+    """
+    Molecule instance of curcumine coarse-grained.
+    """
+    fgro = os.path.join(ACTUAL_PATH, '../data/CUR_map.gro')
+    fitp = os.path.join(ACTUAL_PATH, '../data/CUR_CG.itp')
+    return System(fgro, fitp)[0]
 
 
 def test_chi2_molecules():
@@ -55,6 +84,38 @@ def test_chi2_molecules_inv():
     restr = np.array([(0, 0), (1, 1), (2, 1)])
     chi2_molecules = Chi2Calculator(mol2, mol1, restr)
     assert chi2_molecules(mol1) == 7
+
+
+def test_minimize_molecules(molecule_aa: Molecule,
+                            molecule_cg: Molecule):
+    """
+    Test the molecule minimization backend
+    """
+    molecules = [molecule_aa, molecule_cg]
+    mol1_positions = molecules[0].atoms_positions
+    mol2_positions = molecules[1].atoms_positions
+    mol2_bonds_info = molecules[1].bonds_distance
+    mol2_com = molecules[1].geometric_center
+    n_steps = 5000*len(molecules[1])
+    mol1_bonds_info = molecules[0].bonds_distance.values()
+    translation_width = 2*min(t[1] for l in mol1_bonds_info for t in l)
+    deformation_types = (0, 1, 2)
+    mol2_positions_new = _minimize_molecules(mol1_positions, mol2_positions,
+                                             mol2_com, .5,
+                                             n_steps, [(0, 0)],
+                                             mol2_bonds_info, translation_width,
+                                             deformation_types)
+    assert mol2_positions_new.shape == mol2_positions.shape
+    if check_backend_installed():
+        from cython_backend._backend import py_minimize_molecules
+        positions = py_minimize_molecules(mol1_positions, mol2_positions,
+                                          mol2_com, .5,
+                                          n_steps, [(0, 0)],
+                                          mol2_bonds_info, translation_width,
+                                          deformation_types)
+        mol2_positions_new_cpp = np.array(positions)        
+        assert np.all(np.isclose(mol2_positions_new, mol2_positions_new_cpp,
+                                 rtol=1, atol=1))
 
 
 def test_accept_metropolis():
