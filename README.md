@@ -36,19 +36,19 @@ with a series of helper classes and functions for an easy usage of the
 algorithm. Moreover a command line interface and a jupyter notebook is provided
 for an easy and visual way of performing the transformation.
 
-Moreover a port of the algorithm to c++ with an interface with python using
-[cython](https://cython.org). This port allows for an boosted performance,
+Besides a port of the algorithm to c++ with an interface with python using
+[cython](https://cython.org). This port allows for a boosted performance,
 specially for large molecules such as proteins, but the results are the same
-than using the reference implementation. This  port can be installed alongside
-the module. gaddlemaps will automatically use the c++ port if available and will
-fallback to the python implementation if not resent. Therefore the installation
-fo this c++ port is completely **optional**.
+than as the reference implementation. This port can be installed alongside
+the module. `gaddlemaps` will automatically use the c++ port if available and will
+fallback to the python implementation if not present. Therefore the installation
+of this c++ port is completely **optional** but highly recommended.
 
 ## Installation
 
 Here we will describe the installation of the reference implementation of
-gaddlemaps (*i.e.* without the c++ backend). In order to install the backend
-please read the section [configuring the c++
+`gaddlemaps` (*i.e.* without the c++ backend). In order to install the
+backend please read the section [configuring the c++
 backend](#configuring-the-c++-backend) first.
 
 The installation can be done using [pip](#pip-installation) or building from source. For any of the
@@ -67,7 +67,7 @@ pip install gaddlempas --upgrade
 ### Building from source
 #### Prerequisites
 
-In order to build from source the following prerequisites are needeed:
+In order to build from source the following prerequisites are needed:
 
 * [Numpy](https://numpy.org)
 * [Scipy](https://www.scipy.org)
@@ -154,13 +154,13 @@ terminal:
 xcode-select --install
 ```
 
-and following the on screen instructions.
+and following the instructions on the screen.
 
 For the installation of the Armadillo library please refer to their
-[installation documentation](http://arma.sourceforge.net/download.html)
+[installation documentation](http://arma.sourceforge.net/download.html).
 
 In order to check if the installation is in the path create a file
-*armadillo_test.cpp* with the folllowing content:
+*armadillo_test.cpp* with the following content:
 
 ```c++
 #include <armadillo>
