@@ -324,3 +324,11 @@ order.
 This problem can be solved by adding restraints between all the atoms of the
 molecule but by far the easiest way to accelerate the alignment is to set the
 same sequence of residues in both files.
+
+### I have some other problem or an expected behavior of the code. How should I report it?
+
+If you find that the code does not work as expected please check if there is an
+[issue in github](https://github.com/txemaotero/gaddlemaps/issues) with the same
+problem. If there is not, [open a new
+issue](https://github.com/txemaotero/gaddlemaps/issues/new/choose) and we will
+address it as soon as possible.
