@@ -11,6 +11,8 @@ formats).
 
 import warnings
 import numpy
+import abc
+import os.path
 
 from typing import Tuple, List, Union, Dict, Optional
 
@@ -22,8 +24,91 @@ from ._top_parsers import itp_top
 GroLine = Union[Tuple[int, str, str, int, float, float, float],
                 Tuple[int, str, str, int, float, float, float, float, float, float]]
 
+class CoordinatesParser(abc.ABC):
+    
+    @abc.abstractmethod
+    def __init__(self, path: str):
+        super().__init__()
+        
+    @abc.abstractmethod
+    def seek_atom(self, index: int):
+        """
+        Displaces the position of the 'cursor' to an atom line
 
-class GroFile:
+        Displaces the position of the 'cursor' to the beginning of the
+        line of the 'index' atom, where the first atom index is 0. If
+        the index is equal to the number of atoms the beginning of the
+        box lattice line is found.
+
+        Parameters
+        ----------
+        index : int
+            The index of the atom to found
+
+        """
+        return
+    
+    @abc.abstractmethod
+    def next(self) -> GroLine:
+        """
+        Returns next atomline formatted
+        """
+        residue_index = 1
+        residue_name = "mol"
+        atom_name = "C"        
+        atom_index = 1
+        x_position = 0
+        y_position = 0
+        z_position = 0
+        
+        return (residue_index, residue_name, atom_name, atom_index,
+                x_position, y_position, z_position)
+    
+    @abc.abstractmethod
+    def close(self):
+        """
+        Closes the file
+        """
+        return
+    
+    @property
+    @abc.abstractmethod
+    def natoms(self) -> int:
+        """
+        Number of atoms in the file
+        """
+        return 0
+    
+    @property
+    @abc.abstractmethod
+    def box_matrix(self) -> numpy.ndarray:
+        """
+        Return a 3x3 matrix with the 3 lattice vectors
+        """
+        return numpy.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+
+    @property
+    @abc.abstractmethod
+    def comment(self) -> str:
+        """
+        A comment/name of the system
+        """
+        return "Generic system"
+    
+    def __next__(self):
+        return self.next()
+
+    def __iter__(self):
+        while True:
+            try:
+                yield next(self)
+            except StopIteration:
+                return
+
+    
+
+
+class GroFile(CoordinatesParser):
     """
     Implements a file object for opening and writing .gro files
 
@@ -60,8 +145,6 @@ class GroFile:
     NUMBER_FIGURES = 7
 
     def __init__(self, path: str, mode: str = "r"):
-        super(GroFile, self).__init__()
-
         mode = self._correct_mode(mode)
         self._file = open(path, mode)
         self._comment: Optional[str] = None
@@ -553,16 +636,6 @@ class GroFile:
 
         return info
 
-    def __next__(self):
-        return self.next()
-
-    def __iter__(self):
-        while True:
-            try:
-                yield next(self)
-            except StopIteration:
-                return
-
     def close(self):
         """
         Closes the file
@@ -763,3 +836,18 @@ def dump_lattice_gro(vectors: numpy.ndarray) -> str:
     else:
         lim = 3
     return ' '.join(['{:9.5f}'.format(i) for i in new_vector[:lim]])
+
+
+PARSERS = {
+    "gro": GroFile
+}
+
+def open_coordinate_file(filename) -> CoordinatesParser:
+    name = os.path.basename(filename)
+    extension = name.split(".")[-1]
+    
+    if extension in PARSERS:
+        return PARSERS[extension](filename)
+    else:
+        raise ValueError(f"No parser available for extension {extension}")
+    

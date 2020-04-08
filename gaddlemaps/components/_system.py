@@ -9,7 +9,7 @@ from typing import Dict, Generator, List, Mapping, Tuple, overload
 
 import numpy as np
 
-from ..parsers import GroFile
+from ..parsers import GroFile, open_coordinate_file
 from . import AtomGro, Molecule, MoleculeTop, Residue
 
 
@@ -200,7 +200,7 @@ class SystemGro:
     """
     def __init__(self, fgro: str):
         self.fgro = fgro
-        self._open_fgro = GroFile(fgro)
+        self._open_fgro = open_coordinate_file(fgro)
         self.different_molecules: List[Residue] = []
         self._molecules_pk: Dict[Tuple[str, int], int] = {}   # Dictionary with {(resname, len(mol)): index}
         self._molecules_ordered: List[int] = []
