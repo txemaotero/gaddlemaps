@@ -9,7 +9,7 @@ from typing import Dict, Generator, List, Mapping, Tuple, overload
 
 import numpy as np
 
-from ..parsers import GroFile, open_coordinate_file
+from ..parsers import open_coordinate_file
 from . import AtomGro, Molecule, MoleculeTop, Residue
 
 

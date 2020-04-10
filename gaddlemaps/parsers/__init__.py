@@ -27,7 +27,36 @@ GroLine = Union[Tuple[int, str, str, int, float, float, float],
 class CoordinatesParser(abc.ABC):
     
     @abc.abstractmethod
-    def __init__(self, path: str):
+    def __init__(self, path: str, mode: str="r"):
+        """
+        Implements a file object for opening and writing coordinate files
+
+        Grofile verifies the gromacs format, and autodetects the correct
+        way to read the file. It modifies the methods read and write of a
+        common file with methods that take as input lists with all the info
+        of an atom. The readlines and writelines are modified to take
+        (return) lists with the info of an atom in lists (as returned by
+        the read function).
+
+        This class can also be initiated with an already opened file.
+
+        Note
+        ----
+        The "+" modifier for the open mode is not allowed right now
+
+        Parameters
+        ----------
+        path: str
+            The path to the file to be opened. 
+        mode: str
+            "r" to open the file in read mode and "w" to open it in write mode.
+
+        Raises
+        ------
+        IOError
+            If the file has not the correct format
+        """
+
         super().__init__()
         
     @abc.abstractmethod
@@ -36,9 +65,9 @@ class CoordinatesParser(abc.ABC):
         Displaces the position of the 'cursor' to an atom line
 
         Displaces the position of the 'cursor' to the beginning of the
-        line of the 'index' atom, where the first atom index is 0. If
-        the index is equal to the number of atoms the beginning of the
-        box lattice line is found.
+        line of the 'index' atom, where the first atom index is 0. This function
+        warrants that calling the "next" function the information about atom
+        "index" will be returned.
 
         Parameters
         ----------
@@ -46,6 +75,7 @@ class CoordinatesParser(abc.ABC):
             The index of the atom to found
 
         """
+        
         return
     
     @abc.abstractmethod
@@ -63,6 +93,27 @@ class CoordinatesParser(abc.ABC):
         
         return (residue_index, residue_name, atom_name, atom_index,
                 x_position, y_position, z_position)
+        
+    @abc.abstractmethod
+    def writeline(self, atomlist: GroLine):
+        """
+        Writes a line of atom information
+
+        If there was no content written in the file it creates the
+        header and the number of atoms. If the number of atoms was not
+        provided it will kept empty and the number will be written just
+        before closing the file. This possibility is only compatible
+        with a number of atoms smaller than 1000000.
+
+        Parameters
+        ----------
+        atomlist : list or string
+            A list with all the info of the atom, just like the one returned by
+            readline. If it is a string, it will be written directly without
+            parsing.
+
+        """
+        return
     
     @abc.abstractmethod
     def close(self):
@@ -79,21 +130,52 @@ class CoordinatesParser(abc.ABC):
         """
         return 0
     
-    @property
+    @property  #type: ignore
     @abc.abstractmethod
     def box_matrix(self) -> numpy.ndarray:
         """
         Return a 3x3 matrix with the 3 lattice vectors
         """
         return numpy.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+    
+    @box_matrix.setter  # type: ignore
+    @abc.abstractmethod
+    def box_matrix(self, new_box: numpy.ndarray):
+        """
+        This function does no need to work in "r" mode
+        """
+        return
 
-    @property
+    @property  #type: ignore
     @abc.abstractmethod
     def comment(self) -> str:
         """
         A comment/name of the system
         """
         return "Generic system"
+    
+    @comment.setter  # type: ignore
+    @abc.abstractmethod
+    def comment(self, new_comment: str):
+        """
+        This function does not need to work in "r" mode
+        """
+        return
+    
+    def writelines(self, list_atomlist: List[GroLine]):
+        """
+        Writes several lines of atoms
+
+        Parameters
+        ----------
+        list_atomlist : list of list of str or int or float
+            A list of lists with all the info of the atom, just like
+            the one returned by readline
+
+        """
+
+        for line in list_atomlist:
+            self.writeline(line)
     
     def __next__(self):
         return self.next()
@@ -104,6 +186,12 @@ class CoordinatesParser(abc.ABC):
                 yield next(self)
             except StopIteration:
                 return
+    
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        self.close()
 
     
 
@@ -142,6 +230,8 @@ class GroFile(CoordinatesParser):
     DEFAULT_POSTION_FORMAT = (8, 3)
     DEFAULT_COMMENT = "Gro file genereted with 'Gromacs Tools' python module."
     COORD_START = 20
+
+    # Defines the maximum number of atoms in the file 10**NUMBER_FIGURES
     NUMBER_FIGURES = 7
 
     def __init__(self, path: str, mode: str = "r"):
@@ -674,11 +764,7 @@ class GroFile(CoordinatesParser):
         self._file.write(dump_lattice_gro(self._box_matrix))
         self._file.write("\n")
 
-    def __enter__(self):
-        return self
 
-    def __exit__(self, *args):
-        self.close()
 
     @classmethod
     def determine_format(cls, atomline: str) -> Dict:
@@ -842,12 +928,12 @@ PARSERS = {
     "gro": GroFile
 }
 
-def open_coordinate_file(filename) -> CoordinatesParser:
+def open_coordinate_file(filename: str, mode: str="r") -> CoordinatesParser:
     name = os.path.basename(filename)
     extension = name.split(".")[-1]
     
     if extension in PARSERS:
-        return PARSERS[extension](filename)
+        return PARSERS[extension](filename, mode=mode)
     else:
         raise ValueError(f"No parser available for extension {extension}")
     

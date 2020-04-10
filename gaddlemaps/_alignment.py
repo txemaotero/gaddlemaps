@@ -9,7 +9,7 @@ import numpy as np
 
 from . import ExchangeMap, minimize_molecules
 from .components import Molecule, are_connected, Residue
-from .parsers import GroFile
+from .parsers import open_coordinate_file
 
 
 class Alignment:
@@ -294,7 +294,7 @@ class Alignment:
         end.resids = 2  # type: ignore
         start.atoms_velocities = None
         end.atoms_velocities = None
-        with GroFile(fname, 'w') as fgro:
+        with open_coordinate_file(fname, 'w') as fgro:
             for atom in start:
                 fgro.writeline(atom.gro_line())
             for atom in end:

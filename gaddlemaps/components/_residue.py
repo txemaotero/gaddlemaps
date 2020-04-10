@@ -9,7 +9,7 @@ from typing import (TYPE_CHECKING, Any, Generator, List, Optional, Union,
 
 import numpy as np
 
-from ..parsers import GroFile, GroLine
+from ..parsers import open_coordinate_file, GroLine, GroFile
 
 if TYPE_CHECKING:
     from . import MoleculeTop
@@ -316,7 +316,7 @@ class Residue:
             The path with the file to write the information.
 
         """
-        with GroFile(fout, 'w') as fgro:
+        with open_coordinate_file(fout, 'w') as fgro:
             for atom in self:
                 fgro.writeline(atom.gro_line())
 

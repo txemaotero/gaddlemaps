@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from . import Alignment, guess_protein_restrains
 from .components import Molecule, System
-from .parsers import GroFile
+from .parsers import open_coordinate_file
 
 Deformations = Dict[str, Optional[Tuple[int, ...]]]
 Restrictions = Dict[str, Optional[List[Tuple[int, int]]]]
@@ -117,7 +117,7 @@ class Manager:
                                    'calculate_exchange_maps method must be '
                                    'called.'))
 
-        with GroFile(fgro_out, 'w') as fgro:
+        with open_coordinate_file(fgro_out, 'w') as fgro:
             fgro.comment = self.system.system_gro.comment_line
             fgro.box_matrix = self.system.system_gro.box_matrix
             atom_index = 1
