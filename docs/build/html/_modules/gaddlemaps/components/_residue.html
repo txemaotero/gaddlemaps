@@ -49,7 +49,7 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">..parsers</span> <span class="k">import</span> <span class="n">GroFile</span><span class="p">,</span> <span class="n">GroLine</span>
+<span class="kn">from</span> <span class="nn">..parsers</span> <span class="k">import</span> <span class="n">open_coordinate_file</span><span class="p">,</span> <span class="n">GroLine</span><span class="p">,</span> <span class="n">GroFile</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">MoleculeTop</span>
@@ -356,7 +356,7 @@
 <span class="sd">            The path with the file to write the information.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">with</span> <span class="n">GroFile</span><span class="p">(</span><span class="n">fout</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fgro</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">open_coordinate_file</span><span class="p">(</span><span class="n">fout</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fgro</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
                 <span class="n">fgro</span><span class="o">.</span><span class="n">writeline</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">gro_line</span><span class="p">())</span></div>
 

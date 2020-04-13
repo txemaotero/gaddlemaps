@@ -1000,8 +1000,6 @@ that extensions. These functions should return:
                                                                                                                                               |
 <!-- !! processed by numpydoc !! -->
 
-#### PARSERS( = {'.itp': <function itp_top>})
-
 #### copy(self)
 Returns a copy of the molecule_top.
 

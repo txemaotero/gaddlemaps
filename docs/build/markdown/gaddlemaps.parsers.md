@@ -11,8 +11,156 @@ formats).
 
 <!-- !! processed by numpydoc !! -->
 
-### class gaddlemaps.parsers.GroFile(path, mode='r')
+### class gaddlemaps.parsers.CoordinatesParser(path, mode='r')
 Bases: [`object`](https://docs.python.org/3/library/functions.html#object)
+
+
+* **Attributes**
+
+    **EXTENSIONS**
+
+    `box_matrix`
+
+        Return a 3x3 matrix with the 3 lattice vectors
+
+    `comment`
+
+        A comment/name of the system
+
+    `natoms`
+
+        Number of atoms in the file
+
+
+### Methods
+
+| `close`(self)
+
+ | Closes the file
+
+ |
+| `next`(self)
+
+                                    | Returns next atomline formatted
+
+                                                                                                                                                             |
+| `seek_atom`(self, index)
+
+                        | Displaces the position of the ‘cursor’ to an atom line
+
+                                                                                                                                      |
+| `writeline`(self, atomlist, str, str, int, …)
+
+   | Writes a line of atom information
+
+                                                                                                                                                           |
+| `writelines`(self, list_atomlist, str, str, …)
+
+  | Writes several lines of atoms
+
+                                                                                                                                                               |
+<!-- !! processed by numpydoc !! -->
+
+#### EXTENSIONS(: Optional[Tuple[str, ...]] = None)
+
+#### abstract property box_matrix()
+Return a 3x3 matrix with the 3 lattice vectors
+
+<!-- !! processed by numpydoc !! -->
+
+* **Return type**
+
+    [`ndarray`](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)
+
+
+
+#### abstract close(self)
+Closes the file
+
+<!-- !! processed by numpydoc !! -->
+
+#### abstract property comment()
+A comment/name of the system
+
+<!-- !! processed by numpydoc !! -->
+
+* **Return type**
+
+    [`str`](https://docs.python.org/3/library/stdtypes.html#str)
+
+
+
+#### abstract property natoms()
+Number of atoms in the file
+
+<!-- !! processed by numpydoc !! -->
+
+* **Return type**
+
+    [`int`](https://docs.python.org/3/library/functions.html#int)
+
+
+
+#### abstract next(self)
+Returns next atomline formatted
+
+<!-- !! processed by numpydoc !! -->
+
+* **Return type**
+
+    [`Union`](https://docs.python.org/3/library/typing.html#typing.Union)[[`Tuple`](https://docs.python.org/3/library/typing.html#typing.Tuple)[[`int`](https://docs.python.org/3/library/functions.html#int), [`str`](https://docs.python.org/3/library/stdtypes.html#str), [`str`](https://docs.python.org/3/library/stdtypes.html#str), [`int`](https://docs.python.org/3/library/functions.html#int), [`float`](https://docs.python.org/3/library/functions.html#float), [`float`](https://docs.python.org/3/library/functions.html#float), [`float`](https://docs.python.org/3/library/functions.html#float)], [`Tuple`](https://docs.python.org/3/library/typing.html#typing.Tuple)[[`int`](https://docs.python.org/3/library/functions.html#int), [`str`](https://docs.python.org/3/library/stdtypes.html#str), [`str`](https://docs.python.org/3/library/stdtypes.html#str), [`int`](https://docs.python.org/3/library/functions.html#int), [`float`](https://docs.python.org/3/library/functions.html#float), [`float`](https://docs.python.org/3/library/functions.html#float), [`float`](https://docs.python.org/3/library/functions.html#float), [`float`](https://docs.python.org/3/library/functions.html#float), [`float`](https://docs.python.org/3/library/functions.html#float), [`float`](https://docs.python.org/3/library/functions.html#float)]]
+
+
+
+#### abstract seek_atom(self, index: int)
+Displaces the position of the ‘cursor’ to an atom line
+
+Displaces the position of the ‘cursor’ to the beginning of the
+line of the ‘index’ atom, where the first atom index is 0. This function
+warrants that calling the “next” function the information about atom
+“index” will be returned.
+
+
+* **Parameters**
+
+    **index** ([*int*](https://docs.python.org/3/library/functions.html#int)) – The index of the atom to found
+
+
+<!-- !! processed by numpydoc !! -->
+
+#### abstract writeline(self, atomlist: Union[Tuple[int, str, str, int, float, float, float], Tuple[int, str, str, int, float, float, float, float, float, float]])
+Writes a line of atom information
+
+If there was no content written in the file it creates the
+header and the number of atoms. If the number of atoms was not
+provided it will kept empty and the number will be written just
+before closing the file. This possibility is only compatible
+with a number of atoms smaller than 1000000.
+
+
+* **Parameters**
+
+    **atomlist** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)* or **string*) – A list with all the info of the atom, just like the one returned by
+    readline. If it is a string, it will be written directly without
+    parsing.
+
+
+<!-- !! processed by numpydoc !! -->
+
+#### writelines(self, list_atomlist: List[Union[Tuple[int, str, str, int, float, float, float], Tuple[int, str, str, int, float, float, float, float, float, float]]])
+Writes several lines of atoms
+
+
+* **Parameters**
+
+    **list_atomlist** (*list of list of str** or *[*int*](https://docs.python.org/3/library/functions.html#int)* or *[*float*](https://docs.python.org/3/library/functions.html#float)) – A list of lists with all the info of the atom, just like
+    the one returned by readline
+
+
+<!-- !! processed by numpydoc !! -->
+
+### class gaddlemaps.parsers.GroFile(path, mode='r')
+Bases: `gaddlemaps.parsers.CoordinatesParser`
 
 Implements a file object for opening and writing .gro files
 
@@ -71,9 +219,9 @@ This class can also be initiated with an already opened file.
 
 | `close`(self)
 
- | Closes the file
+                                   | Closes the file
 
- |
+                                                                                                                                                                             |
 | `determine_format`(atomline)
 
                     | Returns the format of the postion coordinates and whether or not the .gro file has velocities
@@ -131,6 +279,8 @@ This class can also be initiated with an already opened file.
 #### DEFAULT_COMMENT( = "Gro file genereted with 'Gromacs Tools' python module.")
 
 #### DEFAULT_POSTION_FORMAT( = (8, 3))
+
+#### EXTENSIONS(: Optional[Tuple[str, ...]] = ('gro', 'GRO'))
 
 #### NUMBER_FIGURES( = 7)
 
@@ -517,6 +667,55 @@ with a number of atoms smaller than 1000000.
 
 <!-- !! processed by numpydoc !! -->
 
+### class gaddlemaps.parsers.ParserManager()
+Bases: [`object`](https://docs.python.org/3/library/functions.html#object)
+
+### Methods
+
+| **register**
+
+                                      |                                                                                                                                                                                             |
+<!-- !! processed by numpydoc !! -->
+
+#### parsers(: Dict[str, Type[CoordinatesParser]] = {'GRO': <class 'gaddlemaps.parsers.GroFile'>, 'gro': <class 'gaddlemaps.parsers.GroFile'>})
+
+#### classmethod register(parser: Type[ForwardRef('CoordinatesParser')])
+<!-- !! processed by numpydoc !! -->
+
+### class gaddlemaps.parsers.ParserRegistered(name, bases, attrs)
+Bases: [`abc.ABCMeta`](https://docs.python.org/3/library/abc.html#abc.ABCMeta)
+
+### Methods
+
+| `__call__`(self, /, \\\*args, \\\*\\\*kwargs)
+
+         | Call self as a function.
+
+                                                                                                                                                                    |
+| `mro`(self, /)
+
+                                  | Return a type’s method resolution order.
+
+                                                                                                                                                    |
+| `register`(cls, subclass)
+
+                       | Register a virtual subclass of an ABC.
+
+                                                                                                                                                      |
+<!-- !! processed by numpydoc !! -->
+
+#### mro(self, /)
+Return a type’s method resolution order.
+
+<!-- !! processed by numpydoc !! -->
+
+#### register(cls, subclass)
+Register a virtual subclass of an ABC.
+
+Returns the subclass, to allow usage as a class decorator.
+
+<!-- !! processed by numpydoc !! -->
+
 ### gaddlemaps.parsers.dump_lattice_gro(vectors: numpy.ndarray)
 Extracts final line of a .gro file from the lattice vectors for pbc.
 
@@ -562,3 +761,10 @@ Extracts the lattice vectors for pbc from the final line of a .gro file.
 
 
 <!-- !! processed by numpydoc !! -->
+
+### gaddlemaps.parsers.open_coordinate_file(filename: str, mode: str = 'r')
+<!-- !! processed by numpydoc !! -->
+
+* **Return type**
+
+    `CoordinatesParser`

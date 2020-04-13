@@ -46,7 +46,7 @@
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">Alignment</span><span class="p">,</span> <span class="n">guess_protein_restrains</span>
 <span class="kn">from</span> <span class="nn">.components</span> <span class="k">import</span> <span class="n">Molecule</span><span class="p">,</span> <span class="n">System</span>
-<span class="kn">from</span> <span class="nn">.parsers</span> <span class="k">import</span> <span class="n">GroFile</span>
+<span class="kn">from</span> <span class="nn">.parsers</span> <span class="k">import</span> <span class="n">open_coordinate_file</span>
 
 <span class="n">Deformations</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span>
 <span class="n">Restrictions</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]]]</span>
@@ -156,7 +156,7 @@
                                    <span class="s1">&#39;calculate_exchange_maps method must be &#39;</span>
                                    <span class="s1">&#39;called.&#39;</span><span class="p">))</span>
 
-        <span class="k">with</span> <span class="n">GroFile</span><span class="p">(</span><span class="n">fgro_out</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fgro</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">open_coordinate_file</span><span class="p">(</span><span class="n">fgro_out</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fgro</span><span class="p">:</span>
             <span class="n">fgro</span><span class="o">.</span><span class="n">comment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">system_gro</span><span class="o">.</span><span class="n">comment_line</span>
             <span class="n">fgro</span><span class="o">.</span><span class="n">box_matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">system_gro</span><span class="o">.</span><span class="n">box_matrix</span>
             <span class="n">atom_index</span> <span class="o">=</span> <span class="mi">1</span>

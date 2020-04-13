@@ -50,19 +50,227 @@
 
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">abc</span>
+<span class="kn">import</span> <span class="nn">os.path</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Type</span>
 
 <span class="kn">from</span> <span class="nn">._itp_parse</span> <span class="k">import</span> <span class="p">(</span><span class="n">ItpFile</span><span class="p">,</span> <span class="n">ItpLine</span><span class="p">,</span> <span class="n">ItpLineAtom</span><span class="p">,</span> <span class="n">ItpLineBonds</span><span class="p">,</span>
                          <span class="n">ItpLineMoleculetype</span><span class="p">,</span> <span class="n">ItpSection</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">._top_parsers</span> <span class="k">import</span> <span class="n">itp_top</span>
+<span class="kn">from</span> <span class="nn">._top_parsers</span> <span class="k">import</span> <span class="n">read_topology</span><span class="p">,</span> <span class="n">TopologyParser</span>
 
 
 <span class="n">GroLine</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
                 <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span>
 
+<div class="viewcode-block" id="open_coordinate_file"><a class="viewcode-back" href="../../gaddlemaps.parsers.html#gaddlemaps.parsers.open_coordinate_file">[docs]</a><span class="k">def</span> <span class="nf">open_coordinate_file</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;CoordinatesParser&#39;</span><span class="p">:</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="n">extension</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="k">if</span> <span class="n">extension</span> <span class="ow">in</span> <span class="n">ParserManager</span><span class="o">.</span><span class="n">parsers</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ParserManager</span><span class="o">.</span><span class="n">parsers</span><span class="p">[</span><span class="n">extension</span><span class="p">](</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;No parser available for extension </span><span class="si">{extension}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+    
 
-<div class="viewcode-block" id="GroFile"><a class="viewcode-back" href="../../gaddlemaps.parsers.html#gaddlemaps.parsers.GroFile">[docs]</a><span class="k">class</span> <span class="nc">GroFile</span><span class="p">:</span>
+<div class="viewcode-block" id="ParserManager"><a class="viewcode-back" href="../../gaddlemaps.parsers.html#gaddlemaps.parsers.ParserManager">[docs]</a><span class="k">class</span> <span class="nc">ParserManager</span><span class="p">:</span>
+    <span class="n">parsers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="s2">&quot;str&quot;</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="s2">&quot;CoordinatesParser&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+    
+<div class="viewcode-block" id="ParserManager.register"><a class="viewcode-back" href="../../gaddlemaps.parsers.html#gaddlemaps.parsers.ParserManager.register">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">parser</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="s1">&#39;CoordinatesParser&#39;</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="n">parser</span><span class="o">.</span><span class="n">EXTENSIONS</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">extension</span> <span class="ow">in</span> <span class="n">parser</span><span class="o">.</span><span class="n">EXTENSIONS</span><span class="p">:</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">parsers</span><span class="p">[</span><span class="n">extension</span><span class="p">]</span> <span class="o">=</span> <span class="n">parser</span></div></div>
+
+<div class="viewcode-block" id="ParserRegistered"><a class="viewcode-back" href="../../gaddlemaps.parsers.html#gaddlemaps.parsers.ParserRegistered">[docs]</a><span class="k">class</span> <span class="nc">ParserRegistered</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">attrs</span><span class="p">):</span> 
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">attrs</span><span class="p">)</span> 
+        <span class="n">ParserManager</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="n">metaclass</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">attrs</span><span class="p">):</span> 
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="n">metaclass</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">attrs</span><span class="p">)</span> </div>
+
+<div class="viewcode-block" id="CoordinatesParser"><a class="viewcode-back" href="../../gaddlemaps.parsers.html#gaddlemaps.parsers.CoordinatesParser">[docs]</a><span class="k">class</span> <span class="nc">CoordinatesParser</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">ParserRegistered</span><span class="p">):</span>
+    
+    <span class="n">EXTENSIONS</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Implements a file object for opening and writing coordinate files</span>
+
+<span class="sd">        Grofile verifies the gromacs format, and autodetects the correct</span>
+<span class="sd">        way to read the file. It modifies the methods read and write of a</span>
+<span class="sd">        common file with methods that take as input lists with all the info</span>
+<span class="sd">        of an atom. The readlines and writelines are modified to take</span>
+<span class="sd">        (return) lists with the info of an atom in lists (as returned by</span>
+<span class="sd">        the read function).</span>
+
+<span class="sd">        This class can also be initiated with an already opened file.</span>
+
+<span class="sd">        Note</span>
+<span class="sd">        ----</span>
+<span class="sd">        The &quot;+&quot; modifier for the open mode is not allowed right now</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        path: str</span>
+<span class="sd">            The path to the file to be opened. </span>
+<span class="sd">        mode: str</span>
+<span class="sd">            &quot;r&quot; to open the file in read mode and &quot;w&quot; to open it in write mode.</span>
+<span class="sd">            </span>
+<span class="sd">            </span>
+<span class="sd">        Attributes</span>
+<span class="sd">        ----------</span>
+<span class="sd">        EXTENSIONS: Optional[Tuple[str, ...]]</span>
+<span class="sd">            A tuple with all the extensions that the parser is able to process.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        IOError</span>
+<span class="sd">            If the file has not the correct format</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        
+<div class="viewcode-block" id="CoordinatesParser.seek_atom"><a class="viewcode-back" href="../../gaddlemaps.parsers.html#gaddlemaps.parsers.CoordinatesParser.seek_atom">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">seek_atom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Displaces the position of the &#39;cursor&#39; to an atom line</span>
+
+<span class="sd">        Displaces the position of the &#39;cursor&#39; to the beginning of the</span>
+<span class="sd">        line of the &#39;index&#39; atom, where the first atom index is 0. This function</span>
+<span class="sd">        warrants that calling the &quot;next&quot; function the information about atom</span>
+<span class="sd">        &quot;index&quot; will be returned.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of the atom to found</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">return</span></div>
+    
+<div class="viewcode-block" id="CoordinatesParser.next"><a class="viewcode-back" href="../../gaddlemaps.parsers.html#gaddlemaps.parsers.CoordinatesParser.next">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GroLine</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns next atomline formatted</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">residue_index</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">residue_name</span> <span class="o">=</span> <span class="s2">&quot;mol&quot;</span>
+        <span class="n">atom_name</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span>        
+        <span class="n">atom_index</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">x_position</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">y_position</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">z_position</span> <span class="o">=</span> <span class="mi">0</span>
+        
+        <span class="k">return</span> <span class="p">(</span><span class="n">residue_index</span><span class="p">,</span> <span class="n">residue_name</span><span class="p">,</span> <span class="n">atom_name</span><span class="p">,</span> <span class="n">atom_index</span><span class="p">,</span>
+                <span class="n">x_position</span><span class="p">,</span> <span class="n">y_position</span><span class="p">,</span> <span class="n">z_position</span><span class="p">)</span></div>
+        
+<div class="viewcode-block" id="CoordinatesParser.writeline"><a class="viewcode-back" href="../../gaddlemaps.parsers.html#gaddlemaps.parsers.CoordinatesParser.writeline">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">writeline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atomlist</span><span class="p">:</span> <span class="n">GroLine</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Writes a line of atom information</span>
+
+<span class="sd">        If there was no content written in the file it creates the</span>
+<span class="sd">        header and the number of atoms. If the number of atoms was not</span>
+<span class="sd">        provided it will kept empty and the number will be written just</span>
+<span class="sd">        before closing the file. This possibility is only compatible</span>
+<span class="sd">        with a number of atoms smaller than 1000000.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        atomlist : list or string</span>
+<span class="sd">            A list with all the info of the atom, just like the one returned by</span>
+<span class="sd">            readline. If it is a string, it will be written directly without</span>
+<span class="sd">            parsing.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span></div>
+    
+<div class="viewcode-block" id="CoordinatesParser.close"><a class="viewcode-back" href="../../gaddlemaps.parsers.html#gaddlemaps.parsers.CoordinatesParser.close">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Closes the file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span></div>
+    
+    <span class="nd">@property</span>
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">natoms</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Number of atoms in the file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    
+    <span class="nd">@property</span>  <span class="c1">#type: ignore</span>
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">box_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a 3x3 matrix with the 3 lattice vectors</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
+    
+    <span class="nd">@box_matrix</span><span class="o">.</span><span class="n">setter</span>  <span class="c1"># type: ignore</span>
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">box_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_box</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function does no need to work in &quot;r&quot; mode</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span>
+
+    <span class="nd">@property</span>  <span class="c1">#type: ignore</span>
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">comment</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A comment/name of the system</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;Generic system&quot;</span>
+    
+    <span class="nd">@comment</span><span class="o">.</span><span class="n">setter</span>  <span class="c1"># type: ignore</span>
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">comment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_comment</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function does not need to work in &quot;r&quot; mode</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span>
+    
+<div class="viewcode-block" id="CoordinatesParser.writelines"><a class="viewcode-back" href="../../gaddlemaps.parsers.html#gaddlemaps.parsers.CoordinatesParser.writelines">[docs]</a>    <span class="k">def</span> <span class="nf">writelines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_atomlist</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">GroLine</span><span class="p">]):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Writes several lines of atoms</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        list_atomlist : list of list of str or int or float</span>
+<span class="sd">            A list of lists with all the info of the atom, just like</span>
+<span class="sd">            the one returned by readline</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">list_atomlist</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">writeline</span><span class="p">(</span><span class="n">line</span><span class="p">)</span></div>
+    
+    <span class="k">def</span> <span class="nf">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+                <span class="k">return</span>
+    
+    <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+    
+
+
+<div class="viewcode-block" id="GroFile"><a class="viewcode-back" href="../../gaddlemaps.parsers.html#gaddlemaps.parsers.GroFile">[docs]</a><span class="k">class</span> <span class="nc">GroFile</span><span class="p">(</span><span class="n">CoordinatesParser</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implements a file object for opening and writing .gro files</span>
 
@@ -92,15 +300,17 @@
 <span class="sd">        If the gro file has not the correct format</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">EXTENSIONS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;gro&quot;</span><span class="p">,</span> <span class="s2">&quot;GRO&quot;</span><span class="p">)</span>
 
     <span class="n">DEFAULT_POSTION_FORMAT</span> <span class="o">=</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
     <span class="n">DEFAULT_COMMENT</span> <span class="o">=</span> <span class="s2">&quot;Gro file genereted with &#39;Gromacs Tools&#39; python module.&quot;</span>
     <span class="n">COORD_START</span> <span class="o">=</span> <span class="mi">20</span>
+
+    <span class="c1"># Defines the maximum number of atoms in the file 10**NUMBER_FIGURES</span>
     <span class="n">NUMBER_FIGURES</span> <span class="o">=</span> <span class="mi">7</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;r&quot;</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">GroFile</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-
         <span class="n">mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_correct_mode</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_comment</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
@@ -592,16 +802,6 @@
 
         <span class="k">return</span> <span class="n">info</span></div>
 
-    <span class="k">def</span> <span class="nf">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="k">yield</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
-                <span class="k">return</span>
-
 <div class="viewcode-block" id="GroFile.close"><a class="viewcode-back" href="../../gaddlemaps.parsers.html#gaddlemaps.parsers.GroFile.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Closes the file</span>
@@ -640,11 +840,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">dump_lattice_gro</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_box_matrix</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span>
 
-    <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
 <div class="viewcode-block" id="GroFile.determine_format"><a class="viewcode-back" href="../../gaddlemaps.parsers.html#gaddlemaps.parsers.GroFile.determine_format">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">determine_format</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">atomline</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
@@ -802,6 +998,8 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">lim</span> <span class="o">=</span> <span class="mi">3</span>
     <span class="k">return</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">{:9.5f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">new_vector</span><span class="p">[:</span><span class="n">lim</span><span class="p">]])</span></div>
+
+
 </pre></div>
 
           </div>
