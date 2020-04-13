@@ -14,7 +14,7 @@ import numpy
 import abc
 import os.path
 
-from typing import Tuple, List, Union, Dict, Optional
+from typing import Tuple, List, Union, Dict, Optional, Type
 
 from ._itp_parse import (ItpFile, ItpLine, ItpLineAtom, ItpLineBonds,
                          ItpLineMoleculetype, ItpSection)
@@ -24,7 +24,36 @@ from ._top_parsers import itp_top
 GroLine = Union[Tuple[int, str, str, int, float, float, float],
                 Tuple[int, str, str, int, float, float, float, float, float, float]]
 
-class CoordinatesParser(abc.ABC):
+def open_coordinate_file(filename: str, mode: str="r") -> 'CoordinatesParser':
+    name = os.path.basename(filename)
+    extension = name.split(".")[-1]
+    
+    if extension in ParserManager.parsers:
+        return ParserManager.parsers[extension](filename, mode=mode)
+    else:
+        raise ValueError(f"No parser available for extension {extension}")
+    
+
+class ParserManager:
+    parsers: Dict["str", Type["CoordinatesParser"]] = {}
+    
+    @classmethod
+    def register(cls, parser: Type['CoordinatesParser']):
+        if parser.EXTENSIONS:
+            for extension in parser.EXTENSIONS:
+                cls.parsers[extension] = parser
+
+class ParserRegistered(abc.ABCMeta):
+    def __init__(self, name, bases, attrs): 
+        super().__init__(name, bases, attrs) 
+        ParserManager.register(self)
+
+    def __new__(metaclass, name, bases, attrs): 
+        return super().__new__(metaclass, name, bases, attrs) 
+
+class CoordinatesParser(metaclass=ParserRegistered):
+    
+    EXTENSIONS: Optional[Tuple[str, ...]] = None
     
     @abc.abstractmethod
     def __init__(self, path: str, mode: str="r"):
@@ -226,6 +255,8 @@ class GroFile(CoordinatesParser):
         If the gro file has not the correct format
 
     """
+    
+    EXTENSIONS = ("gro", "GRO")
 
     DEFAULT_POSTION_FORMAT = (8, 3)
     DEFAULT_COMMENT = "Gro file genereted with 'Gromacs Tools' python module."
@@ -924,16 +955,3 @@ def dump_lattice_gro(vectors: numpy.ndarray) -> str:
     return ' '.join(['{:9.5f}'.format(i) for i in new_vector[:lim]])
 
 
-PARSERS = {
-    "gro": GroFile
-}
-
-def open_coordinate_file(filename: str, mode: str="r") -> CoordinatesParser:
-    name = os.path.basename(filename)
-    extension = name.split(".")[-1]
-    
-    if extension in PARSERS:
-        return PARSERS[extension](filename, mode=mode)
-    else:
-        raise ValueError(f"No parser available for extension {extension}")
-    
