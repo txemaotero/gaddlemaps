@@ -18,7 +18,7 @@ from typing import Tuple, List, Union, Dict, Optional, Type
 
 from ._itp_parse import (ItpFile, ItpLine, ItpLineAtom, ItpLineBonds,
                          ItpLineMoleculetype, ItpSection)
-from ._top_parsers import itp_top
+from ._top_parsers import read_topology, TopologyParser
 
 
 GroLine = Union[Tuple[int, str, str, int, float, float, float],
@@ -79,6 +79,12 @@ class CoordinatesParser(metaclass=ParserRegistered):
             The path to the file to be opened. 
         mode: str
             "r" to open the file in read mode and "w" to open it in write mode.
+            
+            
+        Attributes
+        ----------
+        EXTENSIONS: Optional[Tuple[str, ...]]
+            A tuple with all the extensions that the parser is able to process.
 
         Raises
         ------

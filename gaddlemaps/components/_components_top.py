@@ -7,7 +7,7 @@ import os
 from itertools import groupby
 from typing import Any, Generator, List, Set, Tuple, overload
 
-from ..parsers import itp_top
+from ..parsers import read_topology
 
 
 class MoleculeTop:
@@ -43,18 +43,12 @@ class MoleculeTop:
         If the input file misses information.
 
     """
-    PARSERS = {
-        '.itp': itp_top,
-    }
 
     def __init__(self, ftop: str, file_format: str = None):
-        if file_format is None:
-            file_format = os.path.splitext(ftop)[1]
-        if file_format not in self.PARSERS:
-            raise ValueError(f'{file_format} file format is not supported.')
 
         self.ftop = ftop
-        self.name, atoms_info, atoms_bonds = self.PARSERS[file_format](ftop)
+        self.name, atoms_info, atoms_bonds = read_topology(ftop,
+                                                           file_format=file_format)
         self.atoms: List['AtomTop'] = []
 
         for index, atom in enumerate(atoms_info):

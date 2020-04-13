@@ -126,9 +126,9 @@ class TestMoleculeTop:
         """
         Initialization.
         """
-        with pytest.raises(ValueError, match=r".*.txt .*"):
+        with pytest.raises(ValueError, match=r".*txt.*"):
             molecule = MoleculeTop('test.txt')
-        with pytest.raises(ValueError, match=r".*.txt .*"):
+        with pytest.raises(ValueError, match=r".*txt.*"):
             molecule = MoleculeTop('test.itp', file_format=".txt")
 
         molecule = MoleculeTop(bf4_itp_fname)

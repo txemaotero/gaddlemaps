@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from gaddlemaps.parsers import ItpFile, itp_top
+from gaddlemaps.parsers import ItpFile, read_topology
 from gaddlemaps.parsers._top_parsers import (_itp_top_atoms, _itp_top_name,
                                              _parse_itp_bonds)
 
@@ -69,7 +69,7 @@ def test_itp_top_atoms(bf4_itp_file: ItpFile):
 
 def test_itp_top(bf4_itp_fname: str, bf4_itp_file: ItpFile,
                  tmp_path: Path):
-    name, atoms, bonds = itp_top(bf4_itp_fname)
+    name, atoms, bonds = read_topology(bf4_itp_fname)
     atoms_test, bonds_test = _itp_top_atoms(bf4_itp_file)
     assert _itp_top_name(bf4_itp_file) == name
     assert atoms_test == atoms
@@ -83,19 +83,19 @@ def test_itp_top(bf4_itp_fname: str, bf4_itp_file: ItpFile,
     with open(fitptmp, 'w') as fitp:
         fitp.write('[ test ]')
     with pytest.raises(IOError, match=r'.*moleculetype.*'):
-        _ = itp_top(fitptmp)
+        _ = read_topology(fitptmp, file_format="itp")
 
     with open(fitptmp, 'w') as fitp:
         fitp.write('[ moleculetype ]\n')
     with pytest.raises(IOError, match=r'.*atoms.*'):
-        _ = itp_top(fitptmp)
+        _ = read_topology(fitptmp, file_format="itp")
 
     with open(fitptmp, 'w') as fitp:
         fitp.write('[ moleculetype ]\n[ atoms ]\n')
     with pytest.raises(IOError, match=r'There is not molecule.*'):
-        _ = itp_top(fitptmp)
+        _ = read_topology(fitptmp, file_format="itp")
 
     with open(fitptmp, 'w') as fitp:
         fitp.write('[ moleculetype ]\nTest   1\n[ atoms ]\n')
     with pytest.raises(IOError, match=r'There are not atoms.*'):
-        _ = itp_top(fitptmp)
+        _ = read_topology(fitptmp, file_format='itp')

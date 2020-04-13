@@ -3,16 +3,93 @@ This module defines functions to parse topology files and return a list of the
 atoms already bonded.
 """
 
-from typing import TYPE_CHECKING, List, Tuple
+from typing import TYPE_CHECKING, List, Tuple, Dict, Optional, Type
+import abc
+import os.path
 
 from . import ItpFile, ItpLineAtom, ItpLineBonds
 
 if TYPE_CHECKING:
     from ..components import AtomTop
+    
 
+class TopologyParserManager:
+    parsers: Dict[str, Type['TopologyParser']] = {}
+    
+    @classmethod
+    def register(cls, parser: Type['TopologyParser']):
+        if parser.EXTENSIONS:
+            for extension in parser.EXTENSIONS:
+                cls.parsers[extension] = parser
 
-def itp_top(fitp: str) -> Tuple[str, List[Tuple[str, str, int]],
+class TopologyParserRegistered(abc.ABCMeta):
+    def __init__(self, name, bases, attrs): 
+        super().__init__(name, bases, attrs) 
+        TopologyParserManager.register(self)
+
+    def __new__(metaclass, name, bases, attrs): 
+        return super().__new__(metaclass, name, bases, attrs)
+    
+class TopologyParser(metaclass=TopologyParserRegistered):
+    
+    EXTENSIONS: Optional[Tuple[str, ...]] = None
+    
+    @abc.abstractmethod
+    def __init__(self, fit: str):
+        super().__init__()
+    
+    @property
+    @abc.abstractmethod
+    def molecule_name(self) -> str:
+        """
+        Returns the name of the molecule in the file
+        """
+        return ""
+    
+    @property
+    @abc.abstractmethod
+    def atoms_info(self) -> List[Tuple[str, str, int]]:
+        """
+        Returns a list of tuples with atomic info. Each tuple must contain, the
+        name of the residue in which the atom is included, the name of the atom,
+        and an index of the atom. The index must be unique inside the molecule.
+        """
+
+        example = [
+            ("residue_name", "atom_name", 1),
+            ("residue_name", "atom_name_2", 2),
+            ("residue_name_2", "atom_name_3", 3),
+            ]
+        return example
+    
+
+    @property
+    @abc.abstractmethod
+    def atoms_bonds(self) -> List[Tuple[int, int]]:
+        """
+        Returns a list of tuples. The is 1 tuple per bond in the molecule. Each
+        tuple has 2 interger that correspond to the atomic indexes (as output by
+        atoms_info) of the atoms that take part in the bond.
+        """
+        example = [
+            (0, 1),
+            (1, 2),
+        ]
+        return example
+    
+    @property
+    def all_info(self) -> Tuple[str, List[Tuple[str, str, int]],
                                 List[Tuple[int, int]]]:
+        """
+        Returns all the info in the following order:
+        - molecule_name
+        -atoms_info
+        -atoms_bonds
+        """
+        return self.molecule_name, self.atoms_info, self.atoms_bonds
+    
+
+class ItpParser(TopologyParser):
     """
     Reads the itp file and returns the information to load a molecule.
 
@@ -23,6 +100,69 @@ def itp_top(fitp: str) -> Tuple[str, List[Tuple[str, str, int]],
     ----------
     fitp : str
         The itp file name.
+
+    """
+    
+    
+    EXTENSIONS = ("itp", "ITP")
+    
+    def __init__(self, fitp: str):
+        itp_file = ItpFile(fitp)
+
+        if 'moleculetype' not in itp_file:
+            raise IOError('The input itp must have "moleculetype" section.')
+        if 'atoms' not in itp_file:
+            raise IOError('The input itp must have "atoms" section.')
+
+        self._name = _itp_top_name(itp_file)
+        self._atoms, self._bonds = _itp_top_atoms(itp_file)
+        
+    @property
+    def molecule_name(self) -> str:
+        """
+        Returns the name of the molecule in the file
+        """
+        return self._name
+    
+    @property
+    def atoms_info(self) -> List[Tuple[str, str, int]]:
+        """
+        Returns a list of tuples with atomic info. Each tuple must contain, the
+        name of the residue in which the atom is included, the name of the atom,
+        and an index of the atom. The index must be unique inside the molecule.
+        """
+
+        return self._atoms
+    
+
+    @property
+    def atoms_bonds(self) -> List[Tuple[int, int]]:
+        """
+        Returns a list of tuples. The is 1 tuple per bond in the molecule. Each
+        tuple has 2 interger that correspond to the atomic indexes (as output by
+        atoms_info) of the atoms that take part in the bond.
+        """
+    
+        return self._bonds
+
+
+def read_topology(ftop: str,
+                  file_format: Optional[str]=None) -> Tuple[str,
+                                                            List[Tuple[str, str, int]],
+                                                            List[Tuple[int, int]]]:
+    """
+    Reads a known topology file and returns the information to load a molecule.
+
+    This function extracts the name of the molecule and the atoms and residues
+    names. It also extract a list with the bonds.
+
+    Parameters
+    ----------
+    ftop : str
+        The topology file name.
+    
+    file_format: Optional[str]
+        Force the file to be read as if it had the extension 'file_format'
 
     Returns
     -------
@@ -36,18 +176,17 @@ def itp_top(fitp: str) -> Tuple[str, List[Tuple[str, str, int]],
         that are bonded.
     
     """
+    name = os.path.basename(ftop)
+    if file_format is None:
+        extension = name.split(".")[-1]
+    else:
+        extension = file_format
     
-    itp_file = ItpFile(fitp)
-
-    if 'moleculetype' not in itp_file:
-        raise IOError('The input itp must have "moleculetype" section.')
-    if 'atoms' not in itp_file:
-        raise IOError('The input itp must have "atoms" section.')
-
-    name = _itp_top_name(itp_file)
-    atoms, bonds = _itp_top_atoms(itp_file)
-    return name, atoms, bonds
-
+    if extension in TopologyParserManager.parsers:
+        return TopologyParserManager.parsers[extension](ftop).all_info
+    else:
+        raise ValueError(f"No parser available for extension {extension}")
+    
 
 def _itp_top_name(itp_file: ItpFile) -> str:
     for line in itp_file['moleculetype']:
