@@ -1,5 +1,6 @@
 from gaddlemaps.parsers import CoordinatesParser
 
+
 import numpy as np
 
 class SimplePDB(CoordinatesParser):
@@ -115,7 +116,3 @@ class SimplePDB(CoordinatesParser):
             else:
                 pass
     
-test = SimplePDB("/usr/local/il-library/opls_aa/cation-aprotic/BMIM.pdb")
-
-for atom in test:
-    print(atom)

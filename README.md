@@ -500,3 +500,5 @@ class SimplePDB(CoordinatesParser):
                 pass
 ```
 
+Just having this class imported or *pasted* in your script will allow gaddlemaps
+to be used with *.pdb* coordinate files.
