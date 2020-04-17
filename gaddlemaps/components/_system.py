@@ -44,6 +44,8 @@ class System:
             self.add_ftop(ftop)
 
     def __str__(self) -> str:
+        if not self.composition:
+            return 'Simulation system with no loaded molecules.'
         string = 'Simulation system with:\n\n'
         string += '\n'.join(["{:6}: {}".format(k, v)
                              for k, v in sorted(self.composition.items())])
