@@ -1,7 +1,7 @@
 import pytest
 import os.path
 
-from gaddlemaps import  interactive_restrictions, comparate_alignment, Manager
+from gaddlemaps import  interactive_restrictions, compare_alignment, Manager
 from gaddlemaps.components import Molecule
 
 from ipywidgets import VBox, Tab, Accordion
@@ -80,10 +80,10 @@ def test_restrictions_missing(manager_missing_bmim):
     assert "BF4" in restriction
     
 def test_compare(manager_bmim, manager_missing_bmim):
-    compare = comparate_alignment(manager_bmim)
+    compare = compare_alignment(manager_bmim)
     
     assert len(compare.children) == 4
     
-    compare_missing = comparate_alignment(manager_missing_bmim)
+    compare_missing = compare_alignment(manager_missing_bmim)
     
     assert len(compare_missing.children) == 2

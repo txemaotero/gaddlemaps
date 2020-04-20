@@ -181,7 +181,7 @@ def create_interactive_restriction(manager: Manager) -> Tuple[Dict[str, Box],
     for specie in manager.molecule_correspondence:
         start_molecule = manager.molecule_correspondence[specie].start
         end_molecule = manager.molecule_correspondence[specie].end
-        if  start_molecule is None or  end_molecule is None:
+        if  start_molecule is None or end_molecule is None:
             continue
         
         start_molecule.move_to([0, 0, 0])
@@ -191,8 +191,6 @@ def create_interactive_restriction(manager: Manager) -> Tuple[Dict[str, Box],
         
         boxes[specie] = box
         restrictions[specie] = restrict
-        
-    
     
     return boxes, restrictions
 
@@ -254,7 +252,7 @@ def interactive_restrictions(manager: Manager, style:int=None) -> Tuple[Widget, 
     return restriction_widget, restrictions
 
 
-def comparate_molecules(molecule_low_res: Residue, molecule_high_res: Residue,
+def compare_molecules(molecule_low_res: Residue, molecule_high_res: Residue,
                         radius: float=None):
     """
     Creates a visualtization of two molecules to compare their similarities. The
@@ -289,7 +287,7 @@ def comparate_molecules(molecule_low_res: Residue, molecule_high_res: Residue,
     struct2.add_representation("licorice")
     return view
 
-def comparate_alignment(manager: Manager, radius: float=None):
+def compare_alignment(manager: Manager, radius: float=None):
     """
     Creates a vertical stack of views for comparing the results of the whole
     alignment.
@@ -315,7 +313,7 @@ def comparate_alignment(manager: Manager, radius: float=None):
         if correspondence.end is None or correspondence.start is None:
             continue
         items.append(Label(value=specie))
-        items.append(comparate_molecules(correspondence.start,
+        items.append(compare_molecules(correspondence.start,
                                          correspondence.end,
                                          radius=radius))
     return VBox(items)
