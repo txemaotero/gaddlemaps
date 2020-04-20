@@ -56,7 +56,7 @@ of this c++ port is completely **optional** but highly recommended.
 Here we will describe the installation of the reference implementation of
 `gaddlemaps` (*i.e.* without the c++ backend). In order to install the
 backend please read the section [configuring the c++
-backend](#configuring-the-c++-backend) first.
+backend](#configuring-the-c-backend) first.
 
 The installation can be done using [pip](#pip-installation) or [building from
 source](#building-from-source). For any of the
@@ -289,7 +289,7 @@ formats for the coordinate and topology files are:
 
 However, it is easy to add more formats without touching any of the code in the
 module by the user. If you are interested in adding support for other formats
-read the FAQ [How can I use an unsupported file format?](#how-can-i-use-an-unsupported-file-format?)
+read the FAQ [How can I use an unsupported file format?](#how-can-i-use-an-unsupported-file-format)
 
 ### Perform the mapping
 
@@ -331,13 +331,13 @@ else:
     print("The backend is not accessible")
 ```
 
-If it is not installed refer to the section [Configuring the c++ backend](#Configuring-the-c++-backend).
+If it is not installed refer to the section [Configuring the c++ backend](#Configuring-the-c-backend).
 
 ### I have a big protein and it takes ages to align. Is this behavior normal?
 
 First of all check wether you are using or not the c++ backend [How do I know if
 gaddlemaps is using the c++
-backend?](#How-do-I-know-if-gaddle-maps-is-using-the-c++-backend?). However even
+backend?](#How-do-I-know-if-gaddle-maps-is-using-the-c-backend). However even
 without the c++ backend the mapping should not take more than a day even for
 really big molecules.
 
