@@ -308,6 +308,18 @@ module is required. In order to run the notebook run the following command:
 jupyter notebook examples/notebook/Interactive-example.ipynb --NotebookApp.iopub_data_rate_limit=10000000
 ```
 
+If you do not have [Jupyter](https://jupyter.org) installed you can take a look
+to its markdown preview in
+[examples/notebook/Interactive-example.md](examples/notebook/Interactive-example.md).
+
+If you are looking for a more flexible way of performing the mappings that
+allows you to have more control in each step you can find another Jupyter notebook
+[example](examples/notebook/manual_mapping.ipynb) (and the corresponding
+[preview](examples/notebook/manual_mapping.md)) which will take you around the
+module to explore more options during the mapping process. This example will
+also tell you how you can reuse the results from old mappings to afford
+computational time.
+
 ## FAQs
 
 ### What are those restraints? Wasn't gaddlemaps an automatic algorithm?
