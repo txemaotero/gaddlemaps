@@ -178,7 +178,10 @@ def create_interactive_restriction(correspondence: Dict[str, Alignment]) -> Tupl
     boxes = {}
     
     for specie in correspondence:
-        box, restrict = correspondence[specie].interactive_restrictions()
+        try:
+            box, restrict = correspondence[specie].interactive_restrictions()
+        except OSError:
+            continue
         
         boxes[specie] = box
         restrictions[specie] = restrict
