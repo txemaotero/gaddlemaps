@@ -73,7 +73,7 @@ def test_restrictions_styles(manager_bmim):
 
 def test_restrictions_missing(manager_missing_bmim):
 
-    widget, restriction = interactive_restrictions(manager_missing_bmim)
+    widget, restriction = manager_missing_bmim.interactive_restrictions()
     
     assert isinstance(widget, VBox)
     assert "BMIM" not in restriction
