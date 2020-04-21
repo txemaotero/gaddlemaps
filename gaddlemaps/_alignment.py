@@ -3,13 +3,16 @@
 This module contains features to manage the alignment engine.
 '''
 
-from typing import Any, List, Optional, Tuple
+from typing import Any, List, Optional, Tuple, TYPE_CHECKING
 
 import numpy as np
 
-from . import ExchangeMap, minimize_molecules
+from . import ExchangeMap, minimize_molecules, Restriction
 from .components import Molecule, are_connected, Residue
 from .parsers import open_coordinate_file
+
+if TYPE_CHECKING:
+    from ipywidgets import Widget
 
 
 class Alignment:
@@ -300,7 +303,7 @@ class Alignment:
             for atom in end:
                 fgro.writeline(atom.gro_line())
 
-    def interactive_restrictions(self):  # type: ignore
+    def interactive_restrictions(self) -> Tuple['Widget',Restriction]:
         """
         Creates the widget to visually generate the restrictions for alignment.
         

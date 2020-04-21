@@ -3,11 +3,14 @@ This module contains the class that is used to manage the inputs in the
 mapping process, starts the alignment and extrapolate the system.
 '''
 
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, TYPE_CHECKING
 
 from . import Alignment, guess_protein_restrains
 from .components import Molecule, System
 from .parsers import open_coordinate_file
+
+if TYPE_CHECKING:
+    from ipywidgets import Widget
 
 Deformations = Dict[str, Optional[Tuple[int, ...]]]
 Restrictions = Dict[str, Optional[List[Tuple[int, int]]]]
@@ -431,7 +434,8 @@ class Manager:
         for name in complete_correspondence:
             complete_correspondence[name].init_exchange_map(scale_factor)
 
-    def interective_restrictions(self, style:int=None):  # type: ignore
+    def interactive_restrictions(self, style:int=None) -> Tuple['Widget',
+                                                                Restrictions]:
         """
         Creates the widget to generate the restrictions of all the species in the
         alignment. It generates the final representation for the widget.
@@ -458,34 +462,7 @@ class Manager:
             filled as the widget is used. 
         
         """
-        from ipywidgets import Button, HBox, VBox, Layout, Label, Box, Tab, Accordion, Widget
+        from ._represent import interactive_restrictions
         
-        if style is None:
-            style = 2
-        
-        if style == 0:
-            representation = Tab
-        elif style == 1:
-            representation = Accordion
-        elif style == 2:
-            representation = VBox
-        else:
-            representation = VBox
-        
-        boxes, restrictions = {}, {}
-        for name, align in self.complete_correspondence.items():
-            box, restriction = align.interactive_restrictions()
-            boxes[name] = box
-            restrictions[name] = restriction
-        
-        restriction_widget = representation()
-        
-        for index, specie in enumerate(boxes):
-            child = boxes[specie]
-            if style in [2, ]:
-                child.children = (Label(value=r"$\textbf{"+ specie + r"}$"), ) + child.children
-            restriction_widget.children += (boxes[specie],)
-            if style not in [2, ]:
-                restriction_widget.set_title(index, specie)
-        
-        return restriction_widget, restrictions
+        return interactive_restrictions(self.molecule_correspondence,
+                                        style=style)

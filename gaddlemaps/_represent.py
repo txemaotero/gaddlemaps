@@ -1,4 +1,4 @@
-from . import Manager
+from . import Alignment, Manager, Restriction
 from .components import Residue
 from .parsers import GroFile
 from ._manager import Restrictions
@@ -7,7 +7,6 @@ from ipywidgets import Button, HBox, VBox, Layout, Label, Box, Tab, Accordion, W
 from os.path import join, isdir
 from os import mkdir
 
-Restriction = Optional[List[Tuple[int, int]]]
 
 
 
@@ -153,16 +152,16 @@ def create_widget_restrictions(mol_low_res: Residue, mol_high_res: Residue,
     return box, restrictions
 
 
-def create_interactive_restriction(manager: Manager) -> Tuple[Dict[str, Box],
-                                                              Restrictions]:
+def create_interactive_restriction(correspondence: Dict[str, Alignment]) -> Tuple[Dict[str, Box],
+                                                                                  Restrictions]:
     """
     Initialices all the Boxes with the widgets and the dictionary with the
     restrictions for a given manager.
     
     Parameters
     ----------
-    manager: Manager
-        The manager of the whole aligmnet process
+    correspondence: Dict[str, Alignment]
+        A dictionary that takes as key a molecule name and its aligmnet as value.
     
     Returns:
     --------
@@ -178,23 +177,16 @@ def create_interactive_restriction(manager: Manager) -> Tuple[Dict[str, Box],
     restrictions = {}
     boxes = {}
     
-    for specie in manager.molecule_correspondence:
-        start_molecule = manager.molecule_correspondence[specie].start
-        end_molecule = manager.molecule_correspondence[specie].end
-        if  start_molecule is None or end_molecule is None:
-            continue
-        
-        start_molecule.move_to([0, 0, 0])
-        end_molecule.move_to([0, 0, 0])
-        box, restrict = create_widget_restrictions(start_molecule,
-                                                   end_molecule)
+    for specie in correspondence:
+        box, restrict = correspondence[specie].interactive_restrictions()
         
         boxes[specie] = box
         restrictions[specie] = restrict
     
     return boxes, restrictions
 
-def interactive_restrictions(manager: Manager, style:int=None) -> Tuple[Widget, Restrictions]:
+def interactive_restrictions(correspondence: Dict[str, Alignment],
+                             style:int=None) -> Tuple[Widget, Restrictions]:
     """
     Creates the widget to generate the restrictions of all the species in the
     alignment. It generates the final representation fo the widget.
@@ -237,7 +229,7 @@ def interactive_restrictions(manager: Manager, style:int=None) -> Tuple[Widget, 
     else:
         representation = VBox
     
-    boxes, restrictions = create_interactive_restriction(manager)
+    boxes, restrictions = create_interactive_restriction(correspondence)
     
     restriction_widget = representation()
     

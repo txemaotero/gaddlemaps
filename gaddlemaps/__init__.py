@@ -13,7 +13,11 @@ TODO: Complete this description
 '''
 
 
+
 import os
+from typing import Optional, List, Tuple
+Restriction = Optional[List[Tuple[int, int]]]
+
 from ._auxilliary import rotation_matrix, calcule_base
 from ._exchage_map import ExchangeMap
 from ._transform_molecule import find_atom_random_displ, move_mol_atom
@@ -31,7 +35,7 @@ __all__ = ["rotation_matrix", "calcule_base", "ExchangeMap",
            "accept_metropolis", "minimize_molecules", "Alignment",
            "interactive_restrictions", "comparate_alignment",
            "Manager", "remove_hydrogens",
-           "guess_residue_restrains", "guess_protein_restrains"]
+           "guess_residue_restrains", "guess_protein_restrains", "Restriction"]
 
 
 _DATA_DIRNAME = os.path.join(os.path.dirname(__file__), 'data')

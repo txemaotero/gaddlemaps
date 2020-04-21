@@ -43,28 +43,28 @@ def manager_missing_bmim():
 
 def test_restrictions_styles(manager_bmim):
 
-    widget, restriction = interactive_restrictions(manager_bmim)
+    widget, restriction = manager_bmim.interactive_restrictions()
     
     assert isinstance(widget, VBox)
     assert "BMIM" in restriction
     assert "BF4" in restriction
     assert len(restriction) == 2
     
-    widget, restriction = interactive_restrictions(manager_bmim, style=0)
+    widget, restriction = manager_bmim.interactive_restrictions(style=0)
     
     assert isinstance(widget, Tab)
     assert "BMIM" in restriction
     assert "BF4" in restriction
     assert len(restriction) == 2
     
-    widget, restriction = interactive_restrictions(manager_bmim, style=1)
+    widget, restriction = manager_bmim.interactive_restrictions(style=1)
     
     assert isinstance(widget, Accordion)
     assert "BMIM" in restriction
     assert "BF4" in restriction
     assert len(restriction) == 2
     
-    widget, restriction = interactive_restrictions(manager_bmim, style=2)
+    widget, restriction = manager_bmim.interactive_restrictions(style=2)
     
     assert isinstance(widget, VBox)
     assert "BMIM" in restriction
