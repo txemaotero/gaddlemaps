@@ -503,7 +503,7 @@ class SimplePDB(CoordinatesParser):
                     int(line[4]),
                     line[3],
                     line[2],
-                    line[1],
+                    int(line[1]),
                     float(line[5])/10,
                     float(line[6])/10,
                     float(line[7])/10
