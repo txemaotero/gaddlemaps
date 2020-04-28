@@ -68,7 +68,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="gaddlemaps", # Replace with your own username
+    name="gaddlemaps",
     version="0.0.1",
     author='Hadrian Montes, Jose Manuel Otero Mato',
     author_email='hadrianmontes@gmail.com, josemanuel.otero.mato@gmail.com',
@@ -85,4 +85,9 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.6',
+    entry_points={
+        "console_scripts": [
+            "gaddlemaps=gaddlemaps._cli:main"
+        ]
+    }
 )
