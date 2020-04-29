@@ -155,11 +155,14 @@ def main():
     
     args = parser.parse_args()
     
-    molecules = args.mol
+    if args.mol is None:
+        molecules = []
+    else:
+        molecules = args.mol
     
     if args.auto is not None:
         print("Starting automatic search of molecues:\n")
-        molecule_info = sort_molecules(args.init_coor, args.auto, args.mol)
+        molecule_info = sort_molecules(args.init_coor, args.auto, molecules)
         
         count_mols = sum([len(i) == 3 for i in molecule_info.values()])
         print(f"A total of {count_mols} molecules has been automatically added\n")
