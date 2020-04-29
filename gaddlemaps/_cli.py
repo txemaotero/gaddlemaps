@@ -133,6 +133,8 @@ def sort_molecules(reference_coordinates: str, all_files: Sequence[str],
     
 
 def main():
+    from gaddlemaps import check_backend_installed
+    
     description = """
     Fill me
     """
@@ -177,5 +179,13 @@ def main():
                         ", final coordinates {} and final topology {}")
                 print(text.format(molecule_name, *new_mol))
         print("\n\n")
-                
+    
+    backend = check_backend_installed(warn_missing=True)
+    
+    if backend:
+        print("Starting alingment using optimized backend")
+    else:
+        print("Optimized backend was not found, falling back to the python implementation.")
+
+    
     auto_map(args.init_coor, molecules, args.scale, outfile=args.outfile)
