@@ -1,8 +1,11 @@
 import argparse
-from typing import Sequence, List, Dict, Set
+from typing import Sequence, List, Dict, Set, Tuple
 
 def auto_map(refrence_coordinates: str, species: Sequence[Sequence[str]],
              scale: float=0.5, outfile: str=None):
+    """
+    Performs all the steps in the mapping process
+    """
     from . import Manager
     from .parsers import read_topology
     from .components import Molecule
@@ -38,7 +41,23 @@ def auto_map(refrence_coordinates: str, species: Sequence[Sequence[str]],
     
     return
 
-def classify_files(files):
+def classify_files(files) -> Tuple[Set[str], Set[str]]:
+    """
+    Clasify the files betweeen topology and coordinate files
+    
+    Paramters
+    ---------
+    files: Sequence[str]
+        All the files that will be clasified
+    
+    Returns
+    -------
+    topology_files: Set[str]
+        The files compatible with a topology parser
+
+    coordinate_files: Set[str]
+        The files compatible with a coordinate parser
+    """
     from .parsers import ParserManager
     from .parsers._top_parsers import TopologyParserManager
     import os.path
@@ -64,6 +83,10 @@ def classify_files(files):
 
 def sort_molecules(reference_coordinates: str, all_files: Sequence[str],
                    known_files: Sequence[Sequence[str]]) -> Dict[str,Dict[str, str]]:
+    """
+    Given a list of unknown files looks for molecules compatible with the
+    reference coordiantes and that are not included in the knwon files
+    """
 
     from .components import System, MoleculeTop, Molecule
     import warnings
@@ -136,25 +159,79 @@ def main():
     from gaddlemaps import check_backend_installed
     
     description = """
-    Fill me
+    Command line interface for the python module gaddlemaps.
+
+GADDLE Maps(https://doi.org/10.1021/acs.jctc.7b00861) is a general algorithm
+ to switch between structures with different resolutions (*i.e.* different number
+of particles per object). This algorithm is completely automatic and does not
+require any human input. The algorithm has been designed specifically to
+transform molecules between to levels of resolution (for example from united
+atom to all atom or from coarse grain to fully atomistic). However the algorithm
+works for any structure than can be represented by a graph.
+
+This implementation allows an easy mapping between molecular systems in two
+different resolutions. The command line interface is the easiest way to map the
+simplest systems. For more options and the ability to graphically select the
+molecule restraints please refer to the README and the examples provided with
+the source code.
+
+The command line interface has also the ability to automatically select the
+topology and coordinate files necessary to perform the mapping from a list of
+possible files.
+    
     """
     
     parser = argparse.ArgumentParser(description=description)
     
     parser.add_argument("init_coor", type=str, metavar="init_coordinates.gro",
-                        help=("Add doc here"))
+                        help=("The inital system in the starting resolution."
+                        "This filee must contain all the coordinates of the "
+                        "system"))
+
+    help_mol = """Files with the information of each
+    molecule. Must provide 3 files in the following order: topology file in the 
+    starting resolution, coordinate file in the final resolution and the
+    topology file in the final resolution. This argument must be called once for
+    each specie in the system that you want to map. For example '--mol 
+    BMIM_CG.itp BMIM_AA.gro BMIM_AA.itp --mol BF4_CG.itp BF4_AA.gro BF4_AA.itp'"""
+
+    parser.add_argument('-m', "--mol", dest="mol", action='append', nargs=3, type=str,
+                        metavar=("mol_cg.itp", "mol_aa.gro", "mol_aa.itp"),
+                        help=help_mol)
     
-    parser.add_argument('-mol', dest="mol", action='append', nargs=3, type=str,
-                        metavar="mol_cg.itp mol_aa.gro mol_aa.itp")
+    help_scale = """Scaling factor that shrinks the system (for values <1).
+    This shrink factor is used to avoid colision between the atoms in the final
+    resolution. It is usually needed because the volume that the molecule fills 
+    in both resolutions is not usually the same. A short energy minimization in 
+    the final resolution is usually enough to recover a "normal" system."""
     
     parser.add_argument('--scale', dest="scale", default=0.5, type=float,
-                        metavar="0.5")
+                        metavar="0.5", help=help_scale)
     
-    parser.add_argument("-o", "--outfile", dest="outfile", required=False)
+    help_outfile = """Output file where the mapped system will be saved. 
+    Default mapped_$initial_file"""
     
-    parser.add_argument("--auto", dest="auto", action="store", nargs="+", type=str)
+    parser.add_argument("-o", "--outfile", dest="outfile", required=False,
+                        help=help_outfile)
     
-    parser.add_argument("--exclude", dest="exclude", action="store", nargs="+", type=str)
+    help_auto = """A list of files. gaddlemaps will scan this list to find
+    information about the molecules in the system. This works only if the name 
+    of the molecule in topology files is the same in both resolutions. This 
+    option can be combined with the -mol option. Files for the molecules set 
+    with the -mol flag will not be searched."""
+    
+    parser.add_argument("--auto", dest="auto", action="store", nargs="+",
+                        type=str, help=help_auto)
+    
+    help_exclude = """Molecule names of species that you don't want to map. This
+     flag works with the --auto flag. If gaddlemaps finds a molecule in the 
+     files given in the --auto flag but that molecule is included in the exclude
+      flag it will not be added to the mapping. This is usually useful to avoid
+      mapping solvent molecules (for example watter) that can be easily readded
+      after the mapping."""
+    
+    parser.add_argument("--exclude", dest="exclude", action="store", nargs="+",
+                        type=str, help=help_exclude)
     
     
     args = parser.parse_args()
