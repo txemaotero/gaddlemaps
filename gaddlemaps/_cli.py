@@ -154,6 +154,8 @@ def main():
     
     parser.add_argument("--auto", dest="auto", action="store", nargs="+", type=str)
     
+    parser.add_argument("--exclude", dest="exclude", action="store", nargs="+", type=str)
+    
     
     args = parser.parse_args()
     
@@ -171,6 +173,11 @@ def main():
         
         for molecule_name in molecule_info:
             if len(molecule_info[molecule_name]) == 3:
+                
+                if (args.exclude is not None) and (molecule_name in args.exclude):
+                    print(f"Excluding automatically found molecule {molecule_name}")
+                    continue
+                
                 new_mol = [molecule_info[molecule_name]["top_CG"],
                            molecule_info[molecule_name]["coor_AA"],
                            molecule_info[molecule_name]["top_AA"]]
