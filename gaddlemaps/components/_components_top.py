@@ -30,7 +30,7 @@ class MoleculeTop:
     Parameters
     ----------
     ftop : string
-        The path to the file with the molecule name and bonds information. 
+        The path to the file with the molecule name and bonds information.
     file_format : str, Optional
         The file extension of ftop. If it is None this will be taken from
         ftop.
@@ -98,7 +98,7 @@ class MoleculeTop:
         tot_resnames = ('{:5}{}'.format(atom.resname, atom.resid)
                         for atom in self)  # type: ignore
         return [x[0][:5].strip() for x in groupby(tot_resnames)]
-    
+
     @resnames.setter
     def resnames(self, new_resnames: List[str]):
         if not isinstance(new_resnames, list):
@@ -126,7 +126,7 @@ class MoleculeTop:
         tot_resids = ('{:5}{}'.format(atom.resname, atom.resid)
                         for atom in self)  # type: ignore
         return [int(x[0][5:].strip()) for x in groupby(tot_resids)]
-    
+
     @resids.setter
     def resids(self, new_resids: List[int]):
         if not isinstance(new_resids, list):
@@ -145,7 +145,7 @@ class MoleculeTop:
     @property
     def resname_len_list(self) -> List[Tuple[str, int]]:
         """
-        list of tuple(str, int) : 
+        list of tuple(str, int) :
             [(resname_1, number_of_atoms_with_resname_1),
             (resname_2, number_of_atoms_with_resname_2), ...]
         """
@@ -249,7 +249,7 @@ class AtomTop:
                 (self.resname == atom.resname) and
                 (self.name == atom.name) and
                 (self.bonds == atom.bonds)
-            ) 
+            )
             return condition
         return False
 
@@ -296,7 +296,7 @@ class AtomTop:
         """
         Returns a copy of the current atom.
 
-        Returns 
+        Returns
         -------
         atom_top : AtomTop
             The copy of the atom.

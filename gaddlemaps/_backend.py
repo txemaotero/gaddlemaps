@@ -19,13 +19,13 @@ def check_backend_installed(warn_missing=False) -> bool:
     """
     Returns wether the compiled backend is installed and accesible or not. It
     can also raisea warning if the backend is not fond.
-    
+
     Parameters
     ----------
     warn_missing: Optional[bool]
         If True the function will also raise a warning if the backend is not
         installed. If False no warnings will be raised. Default False
-        
+
     Returns
     -------
     installed: bool
@@ -110,7 +110,7 @@ def minimize_molecules(mol1_positions: np.ndarray,
                                           mol2_com, sigma_scale, n_steps,
                                           restriction, mol2_bonds_info, displacement_module,
                                           sim_type)
-        return np.array(positions)        
+        return np.array(positions)
 
     mol2_positions = _minimize_molecules(mol1_positions, mol2_positions,
                                          mol2_com, sigma_scale, n_steps,

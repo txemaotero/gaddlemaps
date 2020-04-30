@@ -53,7 +53,7 @@ def test_single_atom_top():
     assert atom == atom_compare
     assert atom is not atom_compare
 
-    
+
     # Same index different resid
     atom_compare = AtomTop('B1', 'BF4', 5, 0)
     assert atom == atom_compare
@@ -116,7 +116,7 @@ def test_connect_atom_top():
     assert connected_atoms_index == [4]
 
     assert not are_connected(not_connected_atoms)
-    
+
 
 class TestMoleculeTop:
     """
@@ -177,7 +177,7 @@ class TestMoleculeTop:
         for at1, at2 in zip(copy_mol, bmim_molecule):
             assert at1 == at2
             assert at1 is not at2
-    
+
     def test_resnames(self, bf4_molecule: MoleculeTop):
         """
         Resnames access and setter.

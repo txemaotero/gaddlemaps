@@ -26,46 +26,46 @@ def manager_bmim():
     manager = Manager.from_files(BMIMBF4_SYS, BMIM_CG_ITP, BF4_CG_ITP)
     bmim = Molecule.from_files(BMIM_AA_GRO, BMIM_AA_ITP)
     bf4 = Molecule.from_files(BF4_AA_GRO, BF4_AA_ITP)
-    
+
     manager.molecule_correspondence['BMIM'].end = bmim
     manager.molecule_correspondence['BF4'].end = bf4
-    
+
     return manager
 
 @pytest.fixture
 def manager_missing_bmim():
     manager = Manager.from_files(BMIMBF4_SYS, BMIM_CG_ITP, BF4_CG_ITP)
     bf4 = Molecule.from_files(BF4_AA_GRO, BF4_AA_ITP)
-    
+
     manager.molecule_correspondence['BF4'].end = bf4
-    
+
     return manager
 
 def test_restrictions_styles(manager_bmim):
 
     widget, restriction = manager_bmim.interactive_restrictions()
-    
+
     assert isinstance(widget, VBox)
     assert "BMIM" in restriction
     assert "BF4" in restriction
     assert len(restriction) == 2
-    
+
     widget, restriction = manager_bmim.interactive_restrictions(style=0)
-    
+
     assert isinstance(widget, Tab)
     assert "BMIM" in restriction
     assert "BF4" in restriction
     assert len(restriction) == 2
-    
+
     widget, restriction = manager_bmim.interactive_restrictions(style=1)
-    
+
     assert isinstance(widget, Accordion)
     assert "BMIM" in restriction
     assert "BF4" in restriction
     assert len(restriction) == 2
-    
+
     widget, restriction = manager_bmim.interactive_restrictions(style=2)
-    
+
     assert isinstance(widget, VBox)
     assert "BMIM" in restriction
     assert "BF4" in restriction
@@ -74,16 +74,16 @@ def test_restrictions_styles(manager_bmim):
 def test_restrictions_missing(manager_missing_bmim):
 
     widget, restriction = manager_missing_bmim.interactive_restrictions()
-    
+
     assert isinstance(widget, VBox)
     assert "BMIM" not in restriction
     assert "BF4" in restriction
-    
+
 def test_compare(manager_bmim, manager_missing_bmim):
     compare = compare_alignment(manager_bmim)
-    
+
     assert len(compare.children) == 4
-    
+
     compare_missing = compare_alignment(manager_missing_bmim)
-    
+
     assert len(compare_missing.children) == 2

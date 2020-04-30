@@ -113,7 +113,7 @@ def test_minimize_molecules(molecule_aa: Molecule,
                                           n_steps, [(0, 0)],
                                           mol2_bonds_info, translation_width,
                                           deformation_types)
-        mol2_positions_new_cpp = np.array(positions)        
+        mol2_positions_new_cpp = np.array(positions)
         assert np.all(np.isclose(mol2_positions_new, mol2_positions_new_cpp,
                                  rtol=1, atol=1))
 

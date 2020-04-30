@@ -20,7 +20,7 @@ def system() -> System:
     """
     System instance with DNA and E vitamin E molecules.
     """
-    
+
     fgro = os.path.join(ACTUAL_PATH, '../data/system_CG.gro')
     fgro = os.path.join(ACTUAL_PATH, '../data/system_CG.gro')
     fitpDNA = os.path.join(ACTUAL_PATH, '../data/DNA_CG.itp')

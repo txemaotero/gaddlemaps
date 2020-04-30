@@ -167,7 +167,7 @@ def test_vte_map(vte_aa: Molecule, vte_cg: Molecule, vte_map_cg: Molecule):
     Tests ExchangeMap class for E vitamin and checks the map with a previously
     obtained map.
     """
-    
+
     emap = ExchangeMap(vte_map_cg, vte_aa, scale_factor=1)
     # Check the copy of ref-molecule
     start_positions = vte_aa.atoms_positions

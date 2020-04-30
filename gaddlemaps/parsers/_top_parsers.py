@@ -11,11 +11,11 @@ from . import ItpFile, ItpLineAtom, ItpLineBonds
 
 if TYPE_CHECKING:
     from ..components import AtomTop
-    
+
 
 class TopologyParserManager:
     parsers: Dict[str, Type['TopologyParser']] = {}
-    
+
     @classmethod
     def register(cls, parser: Type['TopologyParser']):
         if parser.EXTENSIONS:
@@ -23,21 +23,21 @@ class TopologyParserManager:
                 cls.parsers[extension] = parser
 
 class TopologyParserRegistered(abc.ABCMeta):
-    def __init__(self, name, bases, attrs): 
-        super().__init__(name, bases, attrs) 
+    def __init__(self, name, bases, attrs):
+        super().__init__(name, bases, attrs)
         TopologyParserManager.register(self)
 
-    def __new__(metaclass, name, bases, attrs): 
+    def __new__(metaclass, name, bases, attrs):
         return super().__new__(metaclass, name, bases, attrs)
-    
+
 class TopologyParser(metaclass=TopologyParserRegistered):
-    
+
     EXTENSIONS: Optional[Tuple[str, ...]] = None
-    
+
     @abc.abstractmethod
     def __init__(self, fit: str):
         super().__init__()
-    
+
     @property
     @abc.abstractmethod
     def molecule_name(self) -> str:
@@ -45,7 +45,7 @@ class TopologyParser(metaclass=TopologyParserRegistered):
         Returns the name of the molecule in the file
         """
         return ""
-    
+
     @property
     @abc.abstractmethod
     def atoms_info(self) -> List[Tuple[str, str, int]]:
@@ -61,7 +61,7 @@ class TopologyParser(metaclass=TopologyParserRegistered):
             ("residue_name_2", "atom_name_3", 3),
             ]
         return example
-    
+
 
     @property
     @abc.abstractmethod
@@ -76,7 +76,7 @@ class TopologyParser(metaclass=TopologyParserRegistered):
             (1, 2),
         ]
         return example
-    
+
     @property
     def all_info(self) -> Tuple[str, List[Tuple[str, str, int]],
                                 List[Tuple[int, int]]]:
@@ -87,7 +87,7 @@ class TopologyParser(metaclass=TopologyParserRegistered):
         -atoms_bonds
         """
         return self.molecule_name, self.atoms_info, self.atoms_bonds
-    
+
 
 class ItpParser(TopologyParser):
     """
@@ -102,10 +102,10 @@ class ItpParser(TopologyParser):
         The itp file name.
 
     """
-    
-    
+
+
     EXTENSIONS = ("itp", "ITP")
-    
+
     def __init__(self, fitp: str):
         itp_file = ItpFile(fitp)
 
@@ -116,14 +116,14 @@ class ItpParser(TopologyParser):
 
         self._name = _itp_top_name(itp_file)
         self._atoms, self._bonds = _itp_top_atoms(itp_file)
-        
+
     @property
     def molecule_name(self) -> str:
         """
         Returns the name of the molecule in the file
         """
         return self._name
-    
+
     @property
     def atoms_info(self) -> List[Tuple[str, str, int]]:
         """
@@ -133,7 +133,7 @@ class ItpParser(TopologyParser):
         """
 
         return self._atoms
-    
+
 
     @property
     def atoms_bonds(self) -> List[Tuple[int, int]]:
@@ -142,7 +142,7 @@ class ItpParser(TopologyParser):
         tuple has 2 interger that correspond to the atomic indexes (as output by
         atoms_info) of the atoms that take part in the bond.
         """
-    
+
         return self._bonds
 
 
@@ -160,7 +160,7 @@ def read_topology(ftop: str,
     ----------
     ftop : str
         The topology file name.
-    
+
     file_format: Optional[str]
         Force the file to be read as if it had the extension 'file_format'
 
@@ -174,19 +174,19 @@ def read_topology(ftop: str,
     atoms_bonds : List of tuples of (int, int)
         A list with tuples with atoms index (referred to the atoms_info indexes)
         that are bonded.
-    
+
     """
     name = os.path.basename(ftop)
     if file_format is None:
         extension = name.split(".")[-1]
     else:
         extension = file_format
-    
+
     if extension in TopologyParserManager.parsers:
         return TopologyParserManager.parsers[extension](ftop).all_info
     else:
         raise ValueError(f"No parser available for extension {extension}")
-    
+
 
 def _itp_top_name(itp_file: ItpFile) -> str:
     for line in itp_file['moleculetype']:

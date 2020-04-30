@@ -97,7 +97,7 @@ class System:
     def __len__(self) -> int:
         return sum(elem[2] for elem in self._molecules_ordered)
 
-    def _check_index_in_available_mgro(self, index_array: np.ndarray, 
+    def _check_index_in_available_mgro(self, index_array: np.ndarray,
                                        mol_itp: MoleculeTop) -> int:
         start_index = None
         len_array = len(index_array)
@@ -112,7 +112,7 @@ class System:
                            'the molecule is not recognized in the system.'))
         return start_index
 
-    def _find_all_molecules_and_replace(self, index_mol_gro: np.ndarray, 
+    def _find_all_molecules_and_replace(self, index_mol_gro: np.ndarray,
                                         mol_index: int,
                                         start_index: int = 0):
         av_gro = self._available_mgro_ordered

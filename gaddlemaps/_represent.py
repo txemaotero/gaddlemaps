@@ -18,7 +18,7 @@ class Cycle:
     def __init__(self, values):
         self._values = values
         self._index = 0
-    
+
     def __iter__(self):
         while True:
             yield self._values[self._index]
@@ -30,7 +30,7 @@ class Cycle:
             self._index += 1
             self._index %= len(self._values)
             return val
-            
+
     def reset(self):
         self._index = 0
 
@@ -38,12 +38,12 @@ def nglview_struct(molecule: Residue):
     """
     Creates an object that acts as a interface betweeen gaddle maps residues and
     nglview. The class is stored inside a funciton to isolate the dependecy.
-    
+
     Parameters
     ----------
     molecule: Residue
         The molecule that will be represented in nglview
-    
+
     Returns
     -------
     structure: nglview.Structure
@@ -56,15 +56,15 @@ def nglview_struct(molecule: Residue):
                 super().__init__(*args, **kwargs)
                 self._molecule = molecule
                 self.ext = "gro"
-        
+
         def get_structure_string(self):
             header = f"Generated for using with GADDLE Maps\n {len(self._molecule)}\n"
             footer = f"0.0 0.0 0.0\n"
-            
+
             data = "\n".join([GroFile.parse_atomlist(atom.gro_line()) for atom in self._molecule])
-            
+
             return header + data + footer
-                
+
     return NglResidue(molecule)
 
 def create_widget_restrictions(mol_low_res: Residue, mol_high_res: Residue,
@@ -72,7 +72,7 @@ def create_widget_restrictions(mol_low_res: Residue, mol_high_res: Residue,
     """
     Creates a jupyter widget that eases the creation of restraints between 2
     resolution of molecules.
-    
+
     Parameters
     ----------
     mol_low_res: Residue
@@ -81,12 +81,12 @@ def create_widget_restrictions(mol_low_res: Residue, mol_high_res: Residue,
         The moleucle in the end resolution
     restrric: Optional[List[Tuple[int, int]]]:
         If not None is a list where the new restrictions will be appended.
-    
+
     Returns
     -------
     box: ipywidgets.Box
         The box taht contains all the necessary widgets ready to be displayed
-    
+
     restrictions: List[Tuple[int, int]]
         The list where the generated restrictions will be stored. If restric was
         not None, this is the same object than the input
@@ -97,9 +97,9 @@ def create_widget_restrictions(mol_low_res: Residue, mol_high_res: Residue,
         restrictions = restrict
     else:
         restrictions = []
-    
-    
-    
+
+
+
     text = Label(value="Low Resolution")
     view = nglview.NGLWidget(nglview_struct(mol_low_res))
 
@@ -108,12 +108,12 @@ def create_widget_restrictions(mol_low_res: Residue, mol_high_res: Residue,
 
     button = Button(description="Add restriction")
     button2 = Button(description="Delete restriction")
-    
+
     restrictions_text = Label(value="Restrictions =")
     restrictions_val = Label(value="")
-    
+
     colors = Cycle(["red", "blue", "green", "white", "grey", "#ff00ff"])
-    
+
     def update_restrictions(reset: bool=False):
         if reset:
             view.clear_representations()
@@ -129,22 +129,22 @@ def create_widget_restrictions(mol_low_res: Residue, mol_high_res: Residue,
         view.add_representation('licorice', selection="all")
         view2.add_representation('licorice', selection="all")
         restrictions_val.value = ", ".join([str(i) for i in restrictions])
-    
+
     def add_restriction(*args):
         color = next(colors)
-        
+
         restrictions.append((view.picked["atom1"]["index"], view2.picked["atom1"]["index"]))
-        
+
         view.add_representation("licorice", radius=1, color=color, selection=[restrictions[-1][0]], opacity=0.75)
         view2.add_representation("licorice", radius=1, color=color, selection=[restrictions[-1][1]], opacity=0.75)
-        
+
         update_restrictions()
-    
+
     def delete_restriction(*args):
         if restrictions:
             restrictions.pop()
         update_restrictions(reset=True)
-        
+
     button.on_click(add_restriction)
     button2.on_click(delete_restriction)
     update_restrictions(reset=True)
@@ -157,12 +157,12 @@ def create_interactive_restriction(correspondence: Dict[str, Alignment]) -> Tupl
     """
     Initialices all the Boxes with the widgets and the dictionary with the
     restrictions for a given manager.
-    
+
     Parameters
     ----------
     correspondence: Dict[str, Alignment]
         A dictionary that takes as key a molecule name and its aligmnet as value.
-    
+
     Returns:
     --------
     boxes: Dict[str, ipywidgets.Box]
@@ -173,19 +173,19 @@ def create_interactive_restriction(correspondence: Dict[str, Alignment]) -> Tupl
         widget for each specie. This will be initially empty and it will be
         filled as the widget is used.
     """
-                                       
+
     restrictions = {}
     boxes = {}
-    
+
     for specie in correspondence:
         try:
             box, restrict = correspondence[specie].interactive_restrictions()
         except OSError:
             continue
-        
+
         boxes[specie] = box
         restrictions[specie] = restrict
-    
+
     return boxes, restrictions
 
 def interactive_restrictions(correspondence: Dict[str, Alignment],
@@ -193,10 +193,10 @@ def interactive_restrictions(correspondence: Dict[str, Alignment],
     """
     Creates the widget to generate the restrictions of all the species in the
     alignment. It generates the final representation fo the widget.
-    
+
     Parameters
     ----------
-    
+
     manager: Manager
         The object that manages all the alignment process
     style: Optional[int]
@@ -208,7 +208,7 @@ def interactive_restrictions(correspondence: Dict[str, Alignment],
         The default value is 2. This is the only one fully operational, in the
         other ones it is necessary to manually refresh the widget in the
         notebook when changing between species.
-    
+
     Returns
     -------
     restriction_widget: ipywidgets.Widget
@@ -216,13 +216,13 @@ def interactive_restrictions(correspondence: Dict[str, Alignment],
     restrictions: Dict[str, List[Tuple[int, int]]]
         The dictionary with the restrictions that will be generated by the
         widget for each specie. This will be initially empty and it will be
-        filled as the widget is used. 
-    
+        filled as the widget is used.
+
     """
-    
+
     if style is None:
         style = 2
-    
+
     if style == 0:
         representation = Tab
     elif style == 1:
@@ -231,11 +231,11 @@ def interactive_restrictions(correspondence: Dict[str, Alignment],
         representation = VBox
     else:
         representation = VBox
-    
+
     boxes, restrictions = create_interactive_restriction(correspondence)
-    
+
     restriction_widget = representation()
-    
+
     for index, specie in enumerate(boxes):
         child = boxes[specie]
         if style in [2, ]:
@@ -243,7 +243,7 @@ def interactive_restrictions(correspondence: Dict[str, Alignment],
         restriction_widget.children += (boxes[specie],)
         if style not in [2, ]:
             restriction_widget.set_title(index, specie)
-    
+
     return restriction_widget, restrictions
 
 
@@ -253,7 +253,7 @@ def compare_molecules(molecule_low_res: Residue, molecule_high_res: Residue,
     Creates a visualtization of two molecules to compare their similarities. The
     first molecule is represented with low opacity and with big chunky atoms,
     while the second one is represented in the standard fashion.
-    
+
     Parameters
     ----------
     molecule_low_res: Residue
@@ -263,7 +263,7 @@ def compare_molecules(molecule_low_res: Residue, molecule_high_res: Residue,
     radius: Optional[float]
         The radius of the atoms in the low resolution representation. Default
         2.5
-    
+
     Returns
     -------
     view: nglview.NGLWidget
@@ -286,7 +286,7 @@ def compare_alignment(manager: Manager, radius: float=None):
     """
     Creates a vertical stack of views for comparing the results of the whole
     alignment.
-    
+
     Parameters
     ----------
     manager: Manager
@@ -294,16 +294,16 @@ def compare_alignment(manager: Manager, radius: float=None):
     radius: Optional[float]
         The radius of the atoms in the low resolution representation. Default
         2.5
-    
+
     Returns
     -------
     box: ipywidgets.Box
         A vertical box with al the views ready to be visualizaed in jupyter.
-    
-    
+
+
     """
     items = []
-    
+
     for specie, correspondence in manager.complete_correspondence.items():
         if correspondence.end is None or correspondence.start is None:
             continue
@@ -312,19 +312,19 @@ def compare_alignment(manager: Manager, radius: float=None):
                                          correspondence.end,
                                          radius=radius))
     return VBox(items)
-    
-    
-    
-    
-    
-    
-    
-    
-        
-        
-        
-    
-    
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -21,7 +21,7 @@ class Atom:
     AtomItp have. To create the atom object, both input atoms should have the
     same resname and name attributes. On the other hand, only the attributes
     from the AtomGro can be changed (e.g. positions, velocities, ...) excluding
-    the resname and name. 
+    the resname and name.
 
     Parameters
     ----------
@@ -70,7 +70,7 @@ class Atom:
         Residue number for the part of the atom with the topology (atom_top).
         """
         return self._atom_top.resid
-    
+
     @top_resid.setter
     def top_resid(self, new_resid: int):
         self._atom_top.resid = new_resid
@@ -81,7 +81,7 @@ class Atom:
         Residue number for the gro part of the atom (atom_gro).
         """
         return self._atom_gro.resid
-    
+
     @gro_resid.setter
     def gro_resid(self, new_resid: int):
         self._atom_gro.resid = new_resid
@@ -152,7 +152,7 @@ class Atom:
         """
         Two atoms are the same if they have the same name, resname, index and top_resid.
         """
-        
+
         if isinstance(atom, Atom):
             condition = (self.resname == atom.resname and
                          self.name == atom.name and

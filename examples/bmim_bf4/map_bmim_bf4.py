@@ -98,7 +98,7 @@ manager.extrapolate_system('example_bmim_bf4_map.gro')
 # will find two molecules with the residue names and ids "START", 1 and "END", 2
 # for the molecules in the initial and final resolution respectively. You can
 # use any external software of molecular visualization to check if the "END"
-# molecule correctly overlaps the "START" one. 
+# molecule correctly overlaps the "START" one.
 
 for align in manager.molecule_correspondence.values():
     align.write_comparative_gro()

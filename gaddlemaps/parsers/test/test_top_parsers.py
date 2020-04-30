@@ -35,7 +35,7 @@ def test_itp_top_name(bf4_itp_file: ItpFile):
     Test for the _itp_top_name function.
     """
     assert _itp_top_name(bf4_itp_file) == 'BF4'
-    
+
 
 def test_parse_itp_bonds(bf4_itp_file: ItpFile):
     """
@@ -45,7 +45,7 @@ def test_parse_itp_bonds(bf4_itp_file: ItpFile):
     test_bonds = [(1, 2), (1, 3), (1, 4), (1, 5)]
     for bond in test_bonds:
         assert bond in bonds
-    
+
 
 def test_itp_top_atoms(bf4_itp_file: ItpFile):
     """

@@ -8,15 +8,15 @@
 # embebed in a vesicle composed by DPSM and VTE molecules. This vesicle is
 # solvated by a huge number of water molecules. We will change this system from
 # coarse-grained resolution to a fully united atom model (no hydrogens).
-# 
+#
 # We will map this system following a more flexible process than that used in
 # the IL mapping example, in other words, we are not going to use the `Manager`
 # class. Doing the mapping in this way will allow you for example to force the
 # molecule corresponding even when molecules in the initial and final
 # resolution do not match.
-# 
+#
 # ## Initializing the system and the components
-# 
+#
 # The first thing that we need to do is to load the objects with the
 # information of the system that we want to map. So firstly, we are going to
 # initialize a `System` object with no information about the molecular
@@ -79,7 +79,7 @@ vte_align = Alignment(start=vte_initial, end=vte_final)
 # However, before starting the alignment we should think about passing
 # constrains to the algorithm. Lets discuss the constrains for each molecule
 # type:
-# 
+#
 # - DNA fragment: As we said before, this can be considered as a protein as it
 # is a molecule with multiple residues. When this is the case, the Alignment
 # will automatically optimize the process assigning constrains for all the
@@ -88,7 +88,7 @@ vte_align = Alignment(start=vte_initial, end=vte_final)
 # molecules. NOTE: If we now that the residue sequence in both resolution do
 # not match we should set the `auto_guess_protein_restrictions` argument to
 # `False`.
-# 
+#
 # - DPSM: This molecule can be very tricky to map as it is formed by three
 # ramifications. One of them is a polar head and the others are organic tails
 # of different lengths. As the algorithm does not use atom types to identify
@@ -102,13 +102,13 @@ vte_align = Alignment(start=vte_initial, end=vte_final)
 # restrictions = [(0, 44), (8, 34), (5, 0)]
 #
 # Bellow we will select this restrains with the graphical interface.
-# 
+#
 # - VTE: This molecule is simpler than DPSM but its linearity may induce to
 # anti-parallel alignments so we will pass a restriction to tell the algorithm
 # which bead corresponds with the atom in the terminal carbon (not the head).
-# 
+#
 # restrictions = [(0, 29)]
-# 
+#
 
 
 # Graphically select the restrictions. This only works in jupyter
@@ -119,7 +119,7 @@ vte_align = Alignment(start=vte_initial, end=vte_final)
 # Once the restrictions are chosen we can initialize the alignment process.
 # However, before continuing, lets see some of the functionalities that the
 # alignment process offers through its arguments:
-# 
+#
 # - `restrictions`: These are the restrictions mentioned before. They help the
 # algorithm to find the best alignment. **NOTE**: If the molecule has multiple
 # residues and you want to automatically assign the restrictions this argument
@@ -139,7 +139,7 @@ vte_align = Alignment(start=vte_initial, end=vte_final)
 # - `auto_guess_protein_restrictions`: If True (default) and `restrictions` is
 # None, the restrains will be automatically set if the molecule has more than
 # one residue using the residue sequence.
-# 
+#
 # With these considerations we can now align our molecules. This step can take
 # a while depending on the molecules you want to align and specially on the
 # backend implementation you are using. For example: the DPSM molecule will
@@ -150,12 +150,12 @@ vte_align = Alignment(start=vte_initial, end=vte_final)
 # are mapping systems with small molecules you can avoid the c++ backend
 # installation. However, if you are planning to map large molecules like
 # proteins you should spend some time in the installation.
-# 
+#
 # NOTE 1: If you are using the c++ extension for the backend (which is
 # highly recommended) you will not see any output during the process in the
 # cell. The output will be displayed in the terminal where the jupyter-notebook
 # is running. We are working on fixing this.
-# 
+#
 # NOTE 2: You can avoid the alignment process if you initialize the
 # `Alignment` object with molecular configurations that have been already
 # aligned before, e.g. you have already aligned the molecules for mapping other
@@ -240,4 +240,4 @@ with open_coordinate_file('system_mapped.gro', 'w') as fgro:
 # We finally get a file with the mapped system. Note that the
 # `system_mapped.gro` file will contain a very strange version of the molecules
 # due to the scale factor of 0.5. With a short energy minimization this will be
-# fixed. 
+# fixed.

@@ -56,7 +56,7 @@ def test_gro_file():
 
     with pytest.raises(AttributeError):
         open_fgro.comment = 'Test line'
-    
+
     with pytest.raises(IndexError):
         open_fgro.seek_atom(40)
 

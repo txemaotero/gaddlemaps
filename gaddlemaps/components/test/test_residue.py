@@ -56,7 +56,7 @@ class TestAtomGro:
         """
         atom = AtomGro((1, 'BMIM', 'N1', 1, 4.668, 3.571, 8.232, -0.2489,
                         0.2514, 0.1046))
-        assert atom.resid == 1 
+        assert atom.resid == 1
         assert atom.resname == 'BMIM'
         assert atom.name == 'N1'
         assert atom.atomid == 1
@@ -73,7 +73,7 @@ class TestAtomGro:
         """
         with pytest.raises(ValueError):
             residue = atom_gro1 + atom_gro3
-        
+
         residue = atom_gro1 + atom_gro2
         assert isinstance(residue, Residue)
         assert len(residue) == 2
@@ -325,7 +325,7 @@ class TestResidue:
                 atoms.append(AtomGro(line))
         new_residue = Residue(atoms)
         assert new_residue == residue
-        
+
     def test_update_from_top(self, residue: Residue, bf4_mtop: MoleculeTop):
         """
         Test for update_from_molecule_top method.
@@ -338,7 +338,7 @@ class TestResidue:
             assert atom.name == name
 
         new_residue.update_from_molecule_top(bf4_mtop)
-        names = ['B1', 'F2', 'F3', 'F4', 'F5'] 
+        names = ['B1', 'F2', 'F3', 'F4', 'F5']
         for atom, name in zip(new_residue, names):
             assert atom.name == name
 

@@ -23,7 +23,7 @@ ACTUAL_PATH = os.path.split(os.path.join(os.path.abspath(__file__)))[0]
 @pytest.fixture
 def atom_gro_generator() -> AtomGenerator:
     """
-    A function to create AtomGro instances. 
+    A function to create AtomGro instances.
     """
     def generate_atom_gro(resid: int = 1, resname: str = 'BMIM',
                           name: str = 'N1', atomid: int = 1) -> AtomGro:
@@ -122,7 +122,7 @@ def test_molecule_top_and_residues_match(molecule_top_bmim: MoleculeTop,
     # different length
     assert not _molecule_top_and_residues_match(molecule_top_bmim,
                                                 residue_protein)
-                                                
+
     assert _molecule_top_and_residues_match(molecule_top_bmim,
                                             [residue_bmim])
     assert _molecule_top_and_residues_match(molecule_top_protein,
@@ -130,7 +130,7 @@ def test_molecule_top_and_residues_match(molecule_top_bmim: MoleculeTop,
     residue_bmim.resname = 'test'
     assert not _molecule_top_and_residues_match(molecule_top_bmim,
                                                 [residue_bmim])
-    
+
 
 
 class TestAtom:
@@ -202,7 +202,7 @@ class TestAtom:
             resid = atom_n1_bmim.resid
         with pytest.raises(AttributeError):
             atom_n1_bmim.resid = 1
-        
+
         # Other access and set
         with pytest.raises(AttributeError):
             resid = atom_n1_bmim.test
@@ -229,8 +229,8 @@ class TestAtom:
         assert atom_n1_bmim.index == 5
         assert hash(atom_n1_bmim) == 5
         assert atom_n1_bmim._atom_top.index == 5
-        
-        # bonds 
+
+        # bonds
         assert atom_n1_bmim.bonds == atom_n1_bmim._atom_top.bonds
         atom_n1_bmim.bonds = {1, 32, 4}
         assert atom_n1_bmim.bonds == {1, 32, 4}
@@ -298,7 +298,7 @@ class TestMolecule:
         assert atom_compare != molec[0]
         assert molec.index(atom_compare) == 24
         with pytest.raises(ValueError):
-            _ = molec.index(34)  # type: ignore 
+            _ = molec.index(34)  # type: ignore
 
         assert molec._each_atom_resid == [0] * len(molec)
 
@@ -672,7 +672,7 @@ class TestMolecule:
 
         with pytest.raises(AttributeError):
             test = molecule_bmim.remove_atom(molecule_bmim[0]) # type: ignore
-        
+
     def test_rotate(self, molecule_protein: Molecule):
         """
         Test for the rotate method.
@@ -685,7 +685,7 @@ class TestMolecule:
         rot_mat = rotation_matrix([0, 0, 1], 0)
         molecule_protein.rotate(rot_mat)
         assert np.isclose(old_pos, molecule_protein.atoms_positions).all()
-        
+
     def test_move(self, molecule_protein: Molecule):
         """
         Tests for the moving methods.

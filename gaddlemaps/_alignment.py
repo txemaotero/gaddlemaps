@@ -23,7 +23,7 @@ class Alignment:
     will take two molecules in different representations (e.g. coarse grained
     and atomistic), one of them will be taken as initial representation and the
     other as the final one. These molecules can be passed as arguments in the
-    object initialization or assigned after its creation. 
+    object initialization or assigned after its creation.
 
     NOTE: Once both molecules are assigned you can only set them again with the
     same molecule type (although it may have different position).
@@ -194,7 +194,7 @@ class Alignment:
             to set "auto_guess_protein_restrictions" parameter to False.
 
         """
-        
+
         if self.start is None or self.end is None:
             raise ValueError("Start and End molecules must be set before the aligment")
 
@@ -283,10 +283,10 @@ class Alignment:
             {name}_compare.gro, where name is the name of the molecule.
 
         """
-        
+
         if self.start is None or self.end is None:
             raise ValueError("Start and End molecules must be set before writng the comparative")
-        
+
         if fname is None:
             fname = '{}_compare.gro'.format(self.start.name)
         start = self.start.deep_copy()
@@ -306,7 +306,7 @@ class Alignment:
     def interactive_restrictions(self) -> Tuple['Widget',Restriction]:
         """
         Creates the widget to visually generate the restrictions for alignment.
-        
+
         Returns
         -------
         restriction_widget: ipywidgets.Widget
@@ -320,14 +320,14 @@ class Alignment:
                            ' assigned.'))
 
         from ._represent import create_widget_restrictions
-        
+
         start_molecule = self.start
         end_molecule = self.end
         start_molecule.move_to([0, 0, 0])
         end_molecule.move_to([0, 0, 0])
 
         box, restrictions = create_widget_restrictions(start_molecule, end_molecule)
-        
+
         return box, restrictions
 
 

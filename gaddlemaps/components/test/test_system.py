@@ -63,7 +63,7 @@ class TestSystemGro:
             for atom in res:
                 assert atom.atomid == atom_index
                 atom_index += 1
-        
+
         # Check the last positions and velocities
         test_positions = np.array([
             [0.288, 1.338, 0.925],

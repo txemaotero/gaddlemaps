@@ -45,7 +45,7 @@ BMIMBF4_SYS = os.path.join(ACTUAL_PATH, '../data/system_bmimbf4_cg.gro')
 
 def test_map_bmimbf4(tmp_path: Path):
     """
-    Tests the map process for the BMIM BF4 system. 
+    Tests the map process for the BMIM BF4 system.
     """
     sys = System(BMIMBF4_SYS, BMIM_CG_ITP, BF4_CG_ITP)
     bmim = System(BMIM_AA_GRO, BMIM_AA_ITP)[0]

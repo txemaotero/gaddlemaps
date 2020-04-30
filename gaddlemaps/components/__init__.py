@@ -50,7 +50,7 @@ def are_connected(atoms:AtomsConnected) -> bool:
     connected : bool
        True if the atoms are connected, else False.
     """
-    
+
     connected_atoms: List[int] = []
     _find_connected_atoms(atoms, 0, connected_atoms)
     return len(connected_atoms) == len(atoms)
