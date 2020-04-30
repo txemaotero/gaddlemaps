@@ -191,7 +191,7 @@ def read_topology(ftop: str,
 def _itp_top_name(itp_file: ItpFile) -> str:
     for line in itp_file['moleculetype']:
         if line.content:
-           return line.name
+            return line.name
     raise IOError('There is not molecule name in "moleculetype" sec.')
 
 

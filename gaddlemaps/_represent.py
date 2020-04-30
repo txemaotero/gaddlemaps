@@ -26,10 +26,10 @@ class Cycle:
             self._index %= len(self._values)
 
     def __next__(self):
-            val = self._values[self._index]
-            self._index += 1
-            self._index %= len(self._values)
-            return val
+        val = self._values[self._index]
+        self._index += 1
+        self._index %= len(self._values)
+        return val
 
     def reset(self):
         self._index = 0
@@ -68,7 +68,7 @@ def nglview_struct(molecule: Residue):
     return NglResidue(molecule)
 
 def create_widget_restrictions(mol_low_res: Residue, mol_high_res: Residue,
-                                restrict: Restriction = None)-> Tuple[Box, Restriction]:
+                               restrict: Restriction = None)-> Tuple[Box, Restriction]:
     """
     Creates a jupyter widget that eases the creation of restraints between 2
     resolution of molecules.
@@ -121,9 +121,11 @@ def create_widget_restrictions(mol_low_res: Residue, mol_high_res: Residue,
             colors.reset()
 
             for restriction in restrictions:
-                color=next(colors)
-                view.add_representation("licorice", radius=1, color=color, selection=[restriction[0]], opacity=0.75)
-                view2.add_representation("licorice", radius=1, color=color, selection=[restriction[1]], opacity=0.75)
+                color = next(colors)
+                view.add_representation("licorice", radius=1, color=color,
+                                        selection=[restriction[0]], opacity=0.75)
+                view2.add_representation("licorice", radius=1, color=color,
+                                         selection=[restriction[1]], opacity=0.75)
 
 
         view.add_representation('licorice', selection="all")

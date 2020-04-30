@@ -1,5 +1,5 @@
 import argparse
-from typing import Sequence, List, Dict, Set, Tuple
+from typing import Sequence, Dict, Set, Tuple
 
 def auto_map(refrence_coordinates: str, species: Sequence[Sequence[str]],
              scale: float=0.5, outfile: str=None):
@@ -110,7 +110,7 @@ def sort_molecules(reference_coordinates: str, all_files: Sequence[str],
 
     system = System(reference_coordinates, *[files[0] for files in known_files])
 
-    added_molecues: Dict[str,Dict[str, str]] = {}
+    added_molecues: Dict[str, Dict[str, str]] = {}
     used_files: Set[str]  = set()
 
     topology_molecues = [(i, MoleculeTop(i)) for i in topology_files]

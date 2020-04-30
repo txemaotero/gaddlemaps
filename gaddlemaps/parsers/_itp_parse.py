@@ -5,7 +5,7 @@ This module contains useful features to parse itp files.
 
 import re
 from collections import OrderedDict
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple
 from warnings import warn
 
 

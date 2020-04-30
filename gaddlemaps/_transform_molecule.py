@@ -5,7 +5,7 @@ This module contains functions that change the molecules conformation.
 
 
 from collections import deque
-from typing import Dict, List, Optional, Tuple, Deque
+from typing import Dict, List, Tuple, Deque
 
 import numpy as np
 
