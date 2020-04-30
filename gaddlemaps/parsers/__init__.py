@@ -18,7 +18,7 @@ from typing import Tuple, List, Union, Dict, Optional, Type
 
 from ._itp_parse import (ItpFile, ItpLine, ItpLineAtom, ItpLineBonds,
                          ItpLineMoleculetype, ItpSection)
-from ._top_parsers import read_topology, TopologyParser
+from ._top_parsers import read_topology, TopologyParser, TopologyParserManager
 
 
 GroLine = Union[Tuple[int, str, str, int, float, float, float],
@@ -27,16 +27,16 @@ GroLine = Union[Tuple[int, str, str, int, float, float, float],
 def open_coordinate_file(filename: str, mode: str="r") -> 'CoordinatesParser':
     name = os.path.basename(filename)
     extension = name.split(".")[-1]
-    
+
     if extension in ParserManager.parsers:
         return ParserManager.parsers[extension](filename, mode=mode)
     else:
         raise ValueError(f"No parser available for extension {extension}")
-    
+
 
 class ParserManager:
     parsers: Dict["str", Type["CoordinatesParser"]] = {}
-    
+
     @classmethod
     def register(cls, parser: Type['CoordinatesParser']):
         if parser.EXTENSIONS:
@@ -44,17 +44,17 @@ class ParserManager:
                 cls.parsers[extension] = parser
 
 class ParserRegistered(abc.ABCMeta):
-    def __init__(self, name, bases, attrs): 
-        super().__init__(name, bases, attrs) 
+    def __init__(self, name, bases, attrs):
+        super().__init__(name, bases, attrs)
         ParserManager.register(self)
 
-    def __new__(metaclass, name, bases, attrs): 
-        return super().__new__(metaclass, name, bases, attrs) 
+    def __new__(metaclass, name, bases, attrs):
+        return super().__new__(metaclass, name, bases, attrs)
 
 class CoordinatesParser(metaclass=ParserRegistered):
-    
+
     EXTENSIONS: Optional[Tuple[str, ...]] = None
-    
+
     @abc.abstractmethod
     def __init__(self, path: str, mode: str="r"):
         """
@@ -76,11 +76,11 @@ class CoordinatesParser(metaclass=ParserRegistered):
         Parameters
         ----------
         path: str
-            The path to the file to be opened. 
+            The path to the file to be opened.
         mode: str
             "r" to open the file in read mode and "w" to open it in write mode.
-            
-            
+
+
         Attributes
         ----------
         EXTENSIONS: Optional[Tuple[str, ...]]
@@ -93,7 +93,7 @@ class CoordinatesParser(metaclass=ParserRegistered):
         """
 
         super().__init__()
-        
+
     @abc.abstractmethod
     def seek_atom(self, index: int):
         """
@@ -110,9 +110,9 @@ class CoordinatesParser(metaclass=ParserRegistered):
             The index of the atom to found
 
         """
-        
+
         return
-    
+
     @abc.abstractmethod
     def next(self) -> GroLine:
         """
@@ -120,15 +120,15 @@ class CoordinatesParser(metaclass=ParserRegistered):
         """
         residue_index = 1
         residue_name = "mol"
-        atom_name = "C"        
+        atom_name = "C"
         atom_index = 1
         x_position = 0
         y_position = 0
         z_position = 0
-        
+
         return (residue_index, residue_name, atom_name, atom_index,
                 x_position, y_position, z_position)
-        
+
     @abc.abstractmethod
     def writeline(self, atomlist: GroLine):
         """
@@ -149,14 +149,14 @@ class CoordinatesParser(metaclass=ParserRegistered):
 
         """
         return
-    
+
     @abc.abstractmethod
     def close(self):
         """
         Closes the file
         """
         return
-    
+
     @property
     @abc.abstractmethod
     def natoms(self) -> int:
@@ -164,7 +164,7 @@ class CoordinatesParser(metaclass=ParserRegistered):
         Number of atoms in the file
         """
         return 0
-    
+
     @property  #type: ignore
     @abc.abstractmethod
     def box_matrix(self) -> numpy.ndarray:
@@ -172,7 +172,7 @@ class CoordinatesParser(metaclass=ParserRegistered):
         Return a 3x3 matrix with the 3 lattice vectors
         """
         return numpy.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
-    
+
     @box_matrix.setter  # type: ignore
     @abc.abstractmethod
     def box_matrix(self, new_box: numpy.ndarray):
@@ -188,7 +188,7 @@ class CoordinatesParser(metaclass=ParserRegistered):
         A comment/name of the system
         """
         return "Generic system"
-    
+
     @comment.setter  # type: ignore
     @abc.abstractmethod
     def comment(self, new_comment: str):
@@ -196,7 +196,7 @@ class CoordinatesParser(metaclass=ParserRegistered):
         This function does not need to work in "r" mode
         """
         return
-    
+
     def writelines(self, list_atomlist: List[GroLine]):
         """
         Writes several lines of atoms
@@ -211,7 +211,7 @@ class CoordinatesParser(metaclass=ParserRegistered):
 
         for line in list_atomlist:
             self.writeline(line)
-    
+
     def __next__(self):
         return self.next()
 
@@ -221,14 +221,14 @@ class CoordinatesParser(metaclass=ParserRegistered):
                 yield next(self)
             except StopIteration:
                 return
-    
+
     def __enter__(self):
         return self
 
     def __exit__(self, *args):
         self.close()
 
-    
+
 
 
 class GroFile(CoordinatesParser):
@@ -251,7 +251,7 @@ class GroFile(CoordinatesParser):
     Parameters
     ----------
     path: str
-        The path to the file to be opened. 
+        The path to the file to be opened.
     mode: str
         "r" to open the file in read mode and "w" to open it in write mode.
 
@@ -261,7 +261,7 @@ class GroFile(CoordinatesParser):
         If the gro file has not the correct format
 
     """
-    
+
     EXTENSIONS = ("gro", "GRO")
 
     DEFAULT_POSTION_FORMAT = (8, 3)
@@ -269,7 +269,7 @@ class GroFile(CoordinatesParser):
     COORD_START = 20
 
     # Defines the maximum number of atoms in the file 10**NUMBER_FIGURES
-    NUMBER_FIGURES = 7
+    NUMBER_FIGURES = 9
 
     def __init__(self, path: str, mode: str = "r"):
         mode = self._correct_mode(mode)
@@ -436,7 +436,7 @@ class GroFile(CoordinatesParser):
             error_text = ("Index {} is greater than the number of atoms in the "
                           "grofile").format(index)
             raise IndexError(error_text)
-        
+
         if self._init_position is None or self._atomline_bytesize is None:
             raise ValueError("Error in initalizaiton")
 
@@ -685,7 +685,7 @@ class GroFile(CoordinatesParser):
         return out
 
     @classmethod
-    def parse_atomline(cls, atomline: str, 
+    def parse_atomline(cls, atomline: str,
                        format_dict: Optional[Dict] = None) -> GroLine:
         """
         Parses an atom line and returns its content in a list.
@@ -744,13 +744,13 @@ class GroFile(CoordinatesParser):
         res_num, atom_num = _validate_res_atom_numbers(atomline)
 
         info: GroLine = (
-                res_num,
-                atomline[5:10].strip(),
-                atomline[10:15].strip(),
-                atom_num,
-                float(atomline[20:20+space]),
-                float(atomline[20+space:20+2*space]),
-                float(atomline[20+2*space:20+3*space])
+            res_num,
+            atomline[5:10].strip(),
+            atomline[10:15].strip(),
+            atom_num,
+            float(atomline[20:20+space]),
+            float(atomline[20+space:20+2*space]),
+            float(atomline[20+2*space:20+3*space])
         )
 
         if format_dict["velocities"]:
