@@ -31,6 +31,10 @@ transform between systems in coarse grained and fully atomistic resolutions
 because by only aligning one molecule of each specie the whole system can be
 transformed.
 
+> **IMPORTANT** If you are experiencing problems during the mapping process (the
+> mapping gets stuck at some point, the final system looks weird...) check the
+> [FAQs](#FAQs) section because most common mistakes are covered there.
+
 ### The gaddlemaps module
 
 In this module we offer the reference implementation of the algorithm in python
@@ -364,7 +368,21 @@ This problem can be solved by adding restraints between all the atoms of the
 molecule but by far the easiest way to accelerate the alignment is to set the
 same sequence of residues in both files.
 
-### I have some other problem or an expected behavior of the code. How should I report it?
+### Why the final mapped system looks so weird?
+
+By default, when the molecular alignments are extrapolated to all the
+configurations in the simulation box, the coordinates of the atoms in the
+molecules in the final resolution are scaled down (see the original paper for
+a more detailed description of this reduction) to avoid different molecules
+to overlap in the final system. If this is not done, every simulation that
+takes that mapped system as input would crash in the first steps. A short energy
+minimization is enough to fix this scale of the atomic coordinates.
+
+> **NOTE**: Before trying to resolvate or ionize any of the systems obtained
+> with this tool is highly recommended to perform a short energy minimization to
+> relax the molecular structures.
+
+### I have some other problem or an unexpected behavior of the code. How should I report it?
 
 If you find that the code does not work as expected please check if there is an
 [issue in github](https://github.com/txemaotero/gaddlemaps/issues) with the same
