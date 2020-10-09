@@ -78,6 +78,7 @@ setuptools.setup(
     url="",
     packages=['gaddlemaps', 'gaddlemaps.parsers', 'gaddlemaps.components'],
     cmdclass=cmdclass,
+    include_package_data=True,
     ext_modules=ext_modules,
     classifiers=[
         "Programming Language :: Python :: 3",

@@ -1,1 +1,2 @@
 recursive-include cython_backend *
+include gaddlemaps/data/*
