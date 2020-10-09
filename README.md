@@ -324,6 +324,50 @@ module to explore more options during the mapping process. This example will
 also tell you how you can reuse the results from old mappings to afford
 computational time.
 
+#### CLI
+
+Another option to perform a mapping is using the command line interface that is
+available after the module installation. This tool is accessible through the
+command `gaddlemaps` in a terminal. The documentation of this command can be
+checked running:
+
+```bash
+gaddlemaps -h
+```
+
+A basic usage of it would look like this:
+
+```bash
+gaddlemaps system_initial.gro --mol molecule1_initial.itp molecule1_final.gro molecule1_final.itp --mol molecule2_initial.itp molecule2_final.gro molecule2_final.itp --scale 0.5 -o system_final.gro
+```
+
+where `system_initial.gro` is the file with the coordinates of the atoms of the
+system to be mapped in the initial resolution. After each `--mol` flag all the
+files for mapping each desired type of molecule must be provided (topology in
+the initial resolution, atom coordinates in the final resolution and topology of
+the molecule in the final resolution). The `--scale` flag specifies the scaling
+factor to reduce the final atomic coordinates to avoid molecular overlaps.
+Finally, the `-o` option specified the path to write the output file with the
+coordinates in the final resolution.
+
+There is another way to run a mapping with this tool that automatically detects
+all the files needed for each molecule. For example, imagine that in the current
+directory you have all the files needed for the mapping we did in with the
+previous command and more (for instances files to map a "molecule3" that we do
+not want to map). In this scenario we could run the same mapping as before
+running the following command:
+
+```bash
+gaddlemaps system_initial.gro --auto * --exclude molecule3 --scale 0.5 -o system_final.gro
+```
+
+Note that the identification of the molecules is based on their names in the
+".itp" files and also in the possibility of molecule object initiation so use
+this option with caution. The `--exclude` flag is used to tell the command to
+not include the molecule3 (the molecule name in the .itp file) in the mapping
+process (useful for example to exclude solvent molecules).
+
+
 ## FAQs
 
 ### What are those restraints? Wasn't gaddlemaps an automatic algorithm?
