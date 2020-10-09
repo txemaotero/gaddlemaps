@@ -20,9 +20,9 @@ from gaddlemaps.components import System, Molecule
 # initialization.
 
 manager = Manager.from_files(
-    '../gaddlemaps/data/system_bmimbf4_cg.gro',
-    '../gaddlemaps/data/BMIM_CG.itp',
-    '../gaddlemaps/data/BF4_CG.itp'
+    '../../gaddlemaps/data/system_bmimbf4_cg.gro',
+    '../../gaddlemaps/data/BMIM_CG.itp',
+    '../../gaddlemaps/data/BF4_CG.itp'
 )
 
 # Now, we need to specify the molecules in the final resolution (AA). In this
@@ -32,17 +32,17 @@ manager = Manager.from_files(
 # these systems which are the desired molecules (as the input gro files only
 # contain one molecule).
 
-bmim_aa = System('../gaddlemaps/data/BMIM_AA.gro',
-                 '../gaddlemaps/data/BMIM_AA.itp')[0]
-bf4_aa = System('../gaddlemaps/data/BF4_AA.gro',
-                '../gaddlemaps/data/BF4_AA.itp')[0]
+bmim_aa = System('../../gaddlemaps/data/BMIM_AA.gro',
+                 '../../gaddlemaps/data/BMIM_AA.itp')[0]
+bf4_aa = System('../../gaddlemaps/data/BF4_AA.gro',
+                '../../gaddlemaps/data/BF4_AA.itp')[0]
 
 # We could also have created these molecules with the Molecule.from_file method
 
-bmim_aa = Molecule.from_files('../gaddlemaps/data/BMIM_AA.gro',
-                              '../gaddlemaps/data/BMIM_AA.itp')
-bf4_aa = Molecule.from_files('../gaddlemaps/data/BF4_AA.gro',
-                             '../gaddlemaps/data/BF4_AA.itp')
+bmim_aa = Molecule.from_files('../../gaddlemaps/data/BMIM_AA.gro',
+                              '../../gaddlemaps/data/BMIM_AA.itp')
+bf4_aa = Molecule.from_files('../../gaddlemaps/data/BF4_AA.gro',
+                             '../../gaddlemaps/data/BF4_AA.itp')
 
 # Once the molecules are created, we need to specify which one correspond with
 # the molecules in the initial resolution. For that, we have 2 options. First,
@@ -78,7 +78,7 @@ manager.align_molecules(restrictions=restrictions)
 # (although it is not for this example as the molecules are very small).
 # Once the molecules are aligned, the exchange maps need to be initialized.
 
-manager.calculate_exchange_maps(scale_factor=0.5)
+manager.calculate_exchange_maps(scale_factor=1)
 
 # The "scale_factor" parameter is used to reduce the final size of the mapped
 # molecules (if the factor is smaller than 1). This avoids possible molecule
