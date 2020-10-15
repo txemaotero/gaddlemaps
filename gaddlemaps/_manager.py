@@ -131,7 +131,7 @@ class Manager:
                 new_mol = complete_correspondence[name].exchange_map(mol)  # type: ignore
                 for atom in new_mol:
                     line = atom.gro_line()
-                    line[3] = atom_index % 99999
+                    line[3] = atom_index
                     atom_index += 1
                     fgro.writeline(line)
 
