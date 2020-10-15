@@ -681,7 +681,7 @@ class GroFile(CoordinatesParser):
         ]
         if velocities:
             format_list.append("{:{figures}.{velocities}f}"*3)
-        out = "".join(format_list).format(*atomlist, **float_format_dict)
+        out = "".join(format_list).format(*atominfo, **float_format_dict)
         return out
 
     @classmethod
