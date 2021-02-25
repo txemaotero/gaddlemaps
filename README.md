@@ -68,13 +68,19 @@ methods gaddlemaps needs [Python](http://pythonhosted.org) 3.6 or greater.
 
 ### pip installation
 
-**NOTE: THIS DOES NOT WORK YET, IT HAS NOT BEEN UPLOADED TO PIPY**
-
-This is the simplest method to install the module just running
+This is the simplest and prefered method to install the module. In order to
+install gaddlemaps just run:
 
 ```bash
 pip install gaddlempas --upgrade
 ```
+
+This method will autodetect wether the requirements for the optimized c++
+backend are available and, if possible, will install the module with the
+optimized backend. If the dependencies are not met, it will install the native
+python version of the backend. The dependencies necessary for the backend are
+detailed in the section [configuring the c++
+backend](#configuring-the-c-backend).
 
 ### Building from source
 #### Prerequisites
@@ -83,6 +89,7 @@ In order to build from source the following prerequisites are needed:
 
 * [Numpy](https://numpy.org)
 * [Scipy](https://www.scipy.org)
+* [more_itertools](https://github.com/more-itertools/more-itertools)
 * [Jupyter Notebook](https://jupyter.org)
 * [nglview](https://github.com/arose/nglview) (optional)
 
@@ -191,6 +198,13 @@ and following the instructions on the screen.
 
 For the installation of the Armadillo library please refer to their
 [installation documentation](http://arma.sourceforge.net/download.html).
+
+If using a Debian based Linux distribution it should be possible to install it
+using apt:
+
+```bash
+sudo apt-get install libarmadillo-dev
+```
 
 In order to check if the installation is in the path create a file
 *armadillo_test.cpp* with the following content:
