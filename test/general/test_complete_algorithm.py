@@ -31,31 +31,31 @@ from gaddlemaps.components import System
 # Define some file names
 ACTUAL_PATH = os.path.split(os.path.join(os.path.abspath(__file__)))[0]
 
-SYS_CG_GRO = os.path.join(ACTUAL_PATH, '../data/system_CG.gro')
-SYS_CG_GRO = os.path.join(ACTUAL_PATH, '../data/system_CG.gro')
+SYS_CG_GRO = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/system_CG.gro')
+SYS_CG_GRO = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/system_CG.gro')
 
-VTE_CG_ITP = os.path.join(ACTUAL_PATH, '../data/vitamin_E_CG.itp')
-VTE_CG_MAP_GRO = os.path.join(ACTUAL_PATH, '../data/VTE_map.gro')
+VTE_CG_ITP = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/vitamin_E_CG.itp')
+VTE_CG_MAP_GRO = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/VTE_map.gro')
 
-DNA_CG_ITP = os.path.join(ACTUAL_PATH, '../data/DNA_CG.itp')
-DNA_CG_MAP_GRO = os.path.join(ACTUAL_PATH, '../data/DNA_map.gro')
+DNA_CG_ITP = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/DNA_CG.itp')
+DNA_CG_MAP_GRO = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/DNA_map.gro')
 
-VTE_AA_ITP = os.path.join(ACTUAL_PATH, '../data/VTE_AA.itp')
-VTE_AA_GRO = os.path.join(ACTUAL_PATH, '../data/VTE_AA.gro')
+VTE_AA_ITP = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/VTE_AA.itp')
+VTE_AA_GRO = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/VTE_AA.gro')
 
-DNA_AA_ITP = os.path.join(ACTUAL_PATH, '../data/DNA_AA.itp')
-DNA_AA_GRO = os.path.join(ACTUAL_PATH, '../data/DNA_AA.gro')
+DNA_AA_ITP = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/DNA_AA.itp')
+DNA_AA_GRO = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/DNA_AA.gro')
 
-BMIM_AA_ITP = os.path.join(ACTUAL_PATH, '../data/BMIM_AA.itp')
-BMIM_AA_GRO = os.path.join(ACTUAL_PATH, '../data/BMIM_AA.gro')
+BMIM_AA_ITP = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/BMIM_AA.itp')
+BMIM_AA_GRO = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/BMIM_AA.gro')
 
-BF4_AA_ITP = os.path.join(ACTUAL_PATH, '../data/BF4_AA.itp')
-BF4_AA_GRO = os.path.join(ACTUAL_PATH, '../data/BF4_AA.gro')
+BF4_AA_ITP = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/BF4_AA.itp')
+BF4_AA_GRO = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/BF4_AA.gro')
 
-BMIM_CG_ITP = os.path.join(ACTUAL_PATH, '../data/BMIM_CG.itp')
-BF4_CG_ITP = os.path.join(ACTUAL_PATH, '../data/BF4_CG.itp')
+BMIM_CG_ITP = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/BMIM_CG.itp')
+BF4_CG_ITP = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/BF4_CG.itp')
 
-BMIMBF4_SYS = os.path.join(ACTUAL_PATH, '../data/system_bmimbf4_cg.gro')
+BMIMBF4_SYS = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/system_bmimbf4_cg.gro')
 
 
 def test_map_bmimbf4(tmp_path: Path):

@@ -32,7 +32,7 @@ def bf4_itp_fname() -> str:
     """
     File name with the itp of a BF4 molecule.
     """
-    return os.path.join(ACTUAL_PATH, '../../data/BF4_AA.itp')
+    return os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/BF4_AA.itp')
 
 
 @pytest.fixture
@@ -48,7 +48,7 @@ def bmim_molecule() -> MoleculeTop:
     """
     A BF4 MoleculeTop.
     """
-    fname = os.path.join(ACTUAL_PATH, '../../data/BMIM_AA.itp')
+    fname = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/BMIM_AA.itp')
     return MoleculeTop(fname)
 
 def test_single_atom_top():

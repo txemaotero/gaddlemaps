@@ -29,13 +29,13 @@ ACTUAL_PATH = os.path.split(os.path.join(os.path.abspath(__file__)))[0]
 
 @pytest.fixture
 def itp_file() -> ItpFile:
-    data = os.path.join(ACTUAL_PATH, '../../data/SDS_AA.itp')
+    data = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/SDS_AA.itp')
     return ItpFile(data)
 
 
 @pytest.fixture
 def dna_itp() -> ItpFile:
-    fitp = os.path.join(ACTUAL_PATH, '../../data/DNA_CG.itp')
+    fitp = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/DNA_CG.itp')
     return ItpFile(fitp)
 
 

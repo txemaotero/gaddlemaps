@@ -34,7 +34,7 @@ def bf4_itp_fname() -> str:
     """
     File name with the itp of a BF4 molecule.
     """
-    return os.path.join(ACTUAL_PATH, '../../data/BF4_AA.itp')
+    return os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/BF4_AA.itp')
 
 
 @pytest.fixture

@@ -36,8 +36,8 @@ def molecule_aa() -> Molecule:
     """
     Molecule instance of curcumine all atom.
     """
-    fgro = os.path.join(ACTUAL_PATH, '../data/CUR_AA.gro')
-    fitp = os.path.join(ACTUAL_PATH, '../data/CUR_AA.itp')
+    fgro = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/CUR_AA.gro')
+    fitp = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/CUR_AA.itp')
     return System(fgro, fitp)[0]
 
 
@@ -46,8 +46,8 @@ def molecule_cg() -> Molecule:
     """
     Molecule instance of curcumine coarse-grained.
     """
-    fgro = os.path.join(ACTUAL_PATH, '../data/CUR_map.gro')
-    fitp = os.path.join(ACTUAL_PATH, '../data/CUR_CG.itp')
+    fgro = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/CUR_map.gro')
+    fitp = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/CUR_CG.itp')
     return System(fgro, fitp)[0]
 
 

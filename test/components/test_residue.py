@@ -58,7 +58,7 @@ def bf4_mtop() -> MoleculeTop:
     """
     A BF4 MoleculeTop.
     """
-    return MoleculeTop(os.path.join(ACTUAL_PATH, '../../data/BF4_AA.itp'))
+    return MoleculeTop(os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/BF4_AA.itp'))
 
 
 class TestAtomGro:

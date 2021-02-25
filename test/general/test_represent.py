@@ -23,16 +23,16 @@ from ipywidgets import VBox, Tab, Accordion
 
 # Define some file names
 ACTUAL_PATH = os.path.split(os.path.join(os.path.abspath(__file__)))[0]
-BMIM_AA_ITP = os.path.join(ACTUAL_PATH, '../data/BMIM_AA.itp')
-BMIM_AA_GRO = os.path.join(ACTUAL_PATH, '../data/BMIM_AA.gro')
+BMIM_AA_ITP = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/BMIM_AA.itp')
+BMIM_AA_GRO = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/BMIM_AA.gro')
 
-BF4_AA_ITP = os.path.join(ACTUAL_PATH, '../data/BF4_AA.itp')
-BF4_AA_GRO = os.path.join(ACTUAL_PATH, '../data/BF4_AA.gro')
+BF4_AA_ITP = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/BF4_AA.itp')
+BF4_AA_GRO = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/BF4_AA.gro')
 
-BMIM_CG_ITP = os.path.join(ACTUAL_PATH, '../data/BMIM_CG.itp')
-BF4_CG_ITP = os.path.join(ACTUAL_PATH, '../data/BF4_CG.itp')
+BMIM_CG_ITP = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/BMIM_CG.itp')
+BF4_CG_ITP = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/BF4_CG.itp')
 
-BMIMBF4_SYS = os.path.join(ACTUAL_PATH, '../data/system_bmimbf4_cg.gro')
+BMIMBF4_SYS = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/system_bmimbf4_cg.gro')
 
 
 

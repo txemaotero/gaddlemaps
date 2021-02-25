@@ -35,11 +35,11 @@ def molecule_aa() -> Molecule:
     """
     Molecule instance of curcumine in all-atom resolution.
     """
-    fgro = os.path.join(ACTUAL_PATH, '../data/CUR_AA.gro')
+    fgro = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/CUR_AA.gro')
     with GroFile(fgro) as _file:
         atoms = [AtomGro(line) for line in _file]
     mgro = Residue(atoms)
-    fitp = os.path.join(ACTUAL_PATH, '../data/CUR_AA.itp')
+    fitp = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/CUR_AA.itp')
     mitp = MoleculeTop(fitp)
     return Molecule(mitp, [mgro])
 
@@ -49,11 +49,11 @@ def molecule_cg() -> Molecule:
     """
     Molecule instance of curcumine in coarse-grained resolution.
     """
-    fgro = os.path.join(ACTUAL_PATH, '../data/CUR_map.gro')
+    fgro = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/CUR_map.gro')
     with GroFile(fgro) as _file:
         atoms = [AtomGro(line) for line in _file]
     mgro = Residue(atoms)
-    fitp = os.path.join(ACTUAL_PATH, '../data/CUR_CG.itp')
+    fitp = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/CUR_CG.itp')
     mitp = MoleculeTop(fitp)
     return Molecule(mitp, [mgro])
 
@@ -63,8 +63,8 @@ def bf4_aa() -> Molecule:
     """
     Molecule instance of BF4 in all-atom resolution.
     """
-    fgro = os.path.join(ACTUAL_PATH, '../data/BF4_AA.gro')
-    fitp = os.path.join(ACTUAL_PATH, '../data/BF4_AA.itp')
+    fgro = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/BF4_AA.gro')
+    fitp = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/BF4_AA.itp')
     return System(fgro, fitp)[0]
 
 
@@ -73,8 +73,8 @@ def bf4_cg() -> Molecule:
     """
     Molecule instance of BF4 in coarse-grained resolution.
     """
-    fgro = os.path.join(ACTUAL_PATH, '../data/BF4_CG.gro')
-    fitp = os.path.join(ACTUAL_PATH, '../data/BF4_CG.itp')
+    fgro = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/BF4_CG.gro')
+    fitp = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/BF4_CG.itp')
     return System(fgro, fitp)[0]
 
 
@@ -83,11 +83,11 @@ def vte_aa() -> Molecule:
     """
     Molecule instance of E vitamin in all-atom resolution.
     """
-    fgro = os.path.join(ACTUAL_PATH, '../data/VTE_AA.gro')
+    fgro = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/VTE_AA.gro')
     with GroFile(fgro) as _file:
         atoms = [AtomGro(line) for line in _file]
     mgro = Residue(atoms)
-    fitp = os.path.join(ACTUAL_PATH, '../data/VTE_AA.itp')
+    fitp = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/VTE_AA.itp')
     mitp = MoleculeTop(fitp)
     return Molecule(mitp, [mgro])
 
@@ -97,9 +97,9 @@ def vte_cg() -> Molecule:
     """
     Molecule instance of E vitamin in coarse-grained resolution.
     """
-    fgro = os.path.join(ACTUAL_PATH, '../data/system_CG.gro')
-    fgro = os.path.join(ACTUAL_PATH, '../data/system_CG.gro')
-    fitp = os.path.join(ACTUAL_PATH, '../data/vitamin_E_CG.itp')
+    fgro = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/system_CG.gro')
+    fgro = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/system_CG.gro')
+    fitp = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/vitamin_E_CG.itp')
     return System(fgro, fitp)[0]
 
 
@@ -109,11 +109,11 @@ def vte_map_cg() -> Molecule:
     Molecule instance of E vitamin in coarse-grained resolution after being
     mapped.
     """
-    fgro = os.path.join(ACTUAL_PATH, '../data/VTE_map.gro')
+    fgro = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/VTE_map.gro')
     with GroFile(fgro) as _file:
         atoms = [AtomGro(line) for line in _file]
     mgro = Residue(atoms)
-    fitp = os.path.join(ACTUAL_PATH, '../data/vitamin_E_CG.itp')
+    fitp = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/vitamin_E_CG.itp')
     mitp = MoleculeTop(fitp)
     return Molecule(mitp, [mgro])
 

@@ -29,11 +29,11 @@ from gaddlemaps.components import System
 
 ACTUAL_PATH = os.path.split(os.path.join(os.path.abspath(__file__)))[0]
 
-Protein_cg_gro = os.path.join(ACTUAL_PATH, '../data/Protein_CG.gro')
-Protein_cg_itp = os.path.join(ACTUAL_PATH, '../data/Protein_CG.itp')
+Protein_cg_gro = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/Protein_CG.gro')
+Protein_cg_itp = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/Protein_CG.itp')
 
-Protein_aa_gro = os.path.join(ACTUAL_PATH, '../data/Protein_AA.gro')
-Protein_aa_itp = os.path.join(ACTUAL_PATH, '../data/Protein_AA.itp')
+Protein_aa_gro = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/Protein_AA.gro')
+Protein_aa_itp = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/Protein_AA.itp')
 
 n_test = 1
 times = np.empty(n_test)

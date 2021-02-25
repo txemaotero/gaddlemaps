@@ -62,7 +62,7 @@ def molecule_top_bmim() -> MoleculeTop:
     """
     BMIM MoleculeTop instance.
     """
-    fname = os.path.join(ACTUAL_PATH, '../../data/BMIM_AA.itp')
+    fname = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/BMIM_AA.itp')
     return MoleculeTop(fname)
 
 
@@ -71,7 +71,7 @@ def residue_bmim() -> Residue:
     """
     BMIM Residue instance.
     """
-    fname = os.path.join(ACTUAL_PATH, '../../data/BMIM_AA.gro')
+    fname = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/BMIM_AA.gro')
     with GroFile(fname) as fgro:
         atoms = [AtomGro(line) for line in fgro]
     return Residue(atoms)
@@ -91,7 +91,7 @@ def molecule_top_protein() -> MoleculeTop:
     """
     MoleculeTop instance for molecule with multiple residues.
     """
-    fname = os.path.join(ACTUAL_PATH, '../../data/Protein_CG.itp')
+    fname = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/Protein_CG.itp')
     return MoleculeTop(fname)
 
 
@@ -100,7 +100,7 @@ def residue_protein() -> List[Residue]:
     """
     List of Residue instances for a molecule with multiple residues.
     """
-    fname = os.path.join(ACTUAL_PATH, '../../data/Protein_CG.gro')
+    fname = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/Protein_CG.gro')
     residues: List[Residue] = []
     with GroFile(fname) as fgro:
         atom = AtomGro(next(fgro))
@@ -384,12 +384,12 @@ class TestMolecule:
         """
         Test the molecule initialization from files.
         """
-        fitp = os.path.join(ACTUAL_PATH, '../../data/BMIM_AA.itp')
-        fgro = os.path.join(ACTUAL_PATH, '../../data/BMIM_AA.gro')
+        fitp = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/BMIM_AA.itp')
+        fgro = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/BMIM_AA.gro')
         bmim = Molecule.from_files(fgro, fitp)
         assert len(bmim) == 25
-        fitp = os.path.join(ACTUAL_PATH, '../../data/BMIM_CG.itp')
-        fgro = os.path.join(ACTUAL_PATH, '../../data/system_bmimbf4_cg.gro')
+        fitp = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/BMIM_CG.itp')
+        fgro = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/system_bmimbf4_cg.gro')
         with pytest.raises(IOError):
             bmim = Molecule.from_files(fgro, fitp)
 
@@ -740,7 +740,7 @@ class TestMolecule:
         Test for update_from_molecule_top method.
         """
         # Make a copy of the original top
-        fname = os.path.join(ACTUAL_PATH, '../../data/BMIM_AA.itp')
+        fname = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/BMIM_AA.itp')
         mol_top = MoleculeTop(fname)
         for at1, at2 in zip(mol_top, molecule_bmim):
             assert at1.name == at2.name

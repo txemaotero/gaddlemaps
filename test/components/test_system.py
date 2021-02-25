@@ -30,15 +30,15 @@ ACTUAL_PATH = os.path.split(os.path.join(os.path.abspath(__file__)))[0]
 
 @pytest.fixture
 def bmimbf4_gro_fname() -> str:
-    return os.path.join(ACTUAL_PATH, '../../data/system_bmimbf4_cg.gro')
+    return os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/system_bmimbf4_cg.gro')
 
 
 @pytest.fixture
 def system() -> System:
-    fgro = os.path.join(ACTUAL_PATH, '../../data/system_CG.gro')
-    fitpDNA = os.path.join(ACTUAL_PATH, '../../data/DNA_CG.itp')
-    fitpDPSM = os.path.join(ACTUAL_PATH, '../../data/DPSM_CG.itp')
-    fitpVTE = os.path.join(ACTUAL_PATH, '../../data/vitamin_E_CG.itp')
+    fgro = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/system_CG.gro')
+    fitpDNA = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/DNA_CG.itp')
+    fitpDPSM = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/DPSM_CG.itp')
+    fitpVTE = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/vitamin_E_CG.itp')
     return System(fgro, fitpDNA, fitpDPSM, fitpVTE)
 
 
@@ -178,10 +178,10 @@ class TestSystem:
         Test System initialization with a system with molecules with multiple
         residues.
         """
-        fgro = os.path.join(ACTUAL_PATH, '../../data/system_CG.gro')
-        fgro = os.path.join(ACTUAL_PATH, '../../data/system_CG.gro')
-        fitpSDS = os.path.join(ACTUAL_PATH, '../../data/SDS_AA.itp')
-        fitpADN = os.path.join(ACTUAL_PATH, '../../data/DNA_CG.itp')
+        fgro = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/system_CG.gro')
+        fgro = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/system_CG.gro')
+        fitpSDS = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/SDS_AA.itp')
+        fitpADN = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/DNA_CG.itp')
 
         with pytest.raises(IOError):
             _ = System(fgro, fitpSDS)
@@ -212,7 +212,7 @@ class TestSystem:
         assert system[1].name == 'DPSM'
         assert system[-1].name == 'VTE'
 
-        fgro = os.path.join(ACTUAL_PATH, '../../data/system_CG.gro')
+        fgro = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/system_CG.gro')
         assert system.fgro == fgro
 
         with pytest.raises(IndexError):

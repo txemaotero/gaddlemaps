@@ -36,10 +36,10 @@ def system() -> System:
     System instance with DNA and E vitamin E molecules.
     """
 
-    fgro = os.path.join(ACTUAL_PATH, '../data/system_CG.gro')
-    fgro = os.path.join(ACTUAL_PATH, '../data/system_CG.gro')
-    fitpDNA = os.path.join(ACTUAL_PATH, '../data/DNA_CG.itp')
-    fitpVTE = os.path.join(ACTUAL_PATH, '../data/vitamin_E_CG.itp')
+    fgro = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/system_CG.gro')
+    fgro = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/system_CG.gro')
+    fitpDNA = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/DNA_CG.itp')
+    fitpVTE = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/vitamin_E_CG.itp')
     return System(fgro, fitpDNA, fitpVTE)
 
 
@@ -48,8 +48,8 @@ def molecule_VTE_AA() -> Molecule:
     """
     Molecule instance of E vitamin in all-atom resolution.
     """
-    fitpVTE = os.path.join(ACTUAL_PATH, '../data/VTE_AA.itp')
-    fgroVTE = os.path.join(ACTUAL_PATH, '../data/VTE_AA.gro')
+    fitpVTE = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/VTE_AA.itp')
+    fgroVTE = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/VTE_AA.gro')
     VTEgro = SystemGro(fgroVTE)[0]
     VTEitp = MoleculeTop(fitpVTE)
     return Molecule(VTEitp, [VTEgro])
@@ -61,8 +61,8 @@ def molecule_VTE_map() -> Molecule:
     Molecule instance of E vitamin in coarse-grained resolution after being
     mapped.
     """
-    fitpVTE = os.path.join(ACTUAL_PATH, '../data/vitamin_E_CG.itp')
-    fgroVTE = os.path.join(ACTUAL_PATH, '../data/VTE_map.gro')
+    fitpVTE = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/vitamin_E_CG.itp')
+    fgroVTE = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/VTE_map.gro')
     VTEgro = SystemGro(fgroVTE)[0]
     VTEitp = MoleculeTop(fitpVTE)
     return Molecule(VTEitp, [VTEgro])
@@ -73,8 +73,8 @@ def molecule_DNA_AA() -> Molecule:
     """
     Molecule instance of DNA in all-atom resolution.
     """
-    fitpDNA = os.path.join(ACTUAL_PATH, '../data/DNA_AA.itp')
-    fgroDNA = os.path.join(ACTUAL_PATH, '../data/DNA_AA.gro')
+    fitpDNA = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/DNA_AA.itp')
+    fgroDNA = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/DNA_AA.gro')
     return System(fgroDNA, fitpDNA)[0]
 
 
@@ -83,8 +83,8 @@ def molecule_DNA_map() -> Molecule:
     """
     Molecule instance of DNA in coarse-grained resolution after being mapped.
     """
-    fitpDNA = os.path.join(ACTUAL_PATH, '../data/DNA_CG.itp')
-    fgroDNA = os.path.join(ACTUAL_PATH, '../data/DNA_map.gro')
+    fitpDNA = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/DNA_CG.itp')
+    fgroDNA = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/DNA_map.gro')
     return System(fgroDNA, fitpDNA)[0]
 
 
@@ -93,8 +93,8 @@ def molecule_popc_AA() -> Molecule:
     """
     Molecule instance of POPC in all-atom resolution.
     """
-    fitppopc = os.path.join(ACTUAL_PATH, '../data/popc-AA.itp')
-    fgropopc = os.path.join(ACTUAL_PATH, '../data/popc-AA.gro')
+    fitppopc = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/popc-AA.itp')
+    fgropopc = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/popc-AA.gro')
     popcgro = SystemGro(fgropopc)[0]
     popcitp = MoleculeTop(fitppopc)
     return Molecule(popcitp, [popcgro])
@@ -128,10 +128,10 @@ class TestManager:
         """
         Tests the Manager initialization from corresponding files.
         """
-        fgro = os.path.join(ACTUAL_PATH, '../data/system_CG.gro')
-        fgro = os.path.join(ACTUAL_PATH, '../data/system_CG.gro')
-        fitpDNA = os.path.join(ACTUAL_PATH, '../data/DNA_CG.itp')
-        fitpVTE = os.path.join(ACTUAL_PATH, '../data/vitamin_E_CG.itp')
+        fgro = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/system_CG.gro')
+        fgro = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/system_CG.gro')
+        fitpDNA = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/DNA_CG.itp')
+        fitpVTE = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/vitamin_E_CG.itp')
         man = Manager.from_files(fgro, fitpVTE, fitpDNA)
         assert isinstance(man.system, System)
         assert len(man.molecule_correspondence) == 2
@@ -314,8 +314,8 @@ class TestManager:
         manager.extrapolate_system(fname)
 
         fgro = fname
-        fitpDNA = os.path.join(ACTUAL_PATH, '../data/DNA_AA.itp')
-        fitpVTE = os.path.join(ACTUAL_PATH, '../data/VTE_AA.itp')
+        fitpDNA = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/DNA_AA.itp')
+        fitpVTE = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/VTE_AA.itp')
         sys_end = System(fgro, fitpDNA, fitpVTE)
 
         poss = system[0].atoms_positions

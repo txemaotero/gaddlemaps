@@ -61,7 +61,7 @@ def test_gro_file():
     """
     Test for opening a gro from string
     """
-    fname = os.path.join(ACTUAL_PATH, '../../data/BMIM_AA.gro')
+    fname = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/BMIM_AA.gro')
     open_fgro = GroFile(fname, 'r')
     assert open_fgro.name == fname
 

@@ -51,7 +51,7 @@ def makeExtension(extName, cpp, use_cython):
     if use_cython:
         extPath += ".pyx"
     else:
-        extPath += ".c"
+        extPath += ".cpp"
     return Extension(
         extName,
         [extPath]+cpp,
@@ -85,19 +85,19 @@ with open("README.md", "r") as fh:
 setuptools.setup(
     name="gaddlemaps",
     version="0.0.1",
-    author='Hadrian Montes, Jose Manuel Otero Mato',
+    author='Jose Manuel Otero Mato, Hadrián Montes Campos, Luis Miguel Varela Cabo',
     author_email='hadrianmontes@gmail.com, josemanuel.otero.mato@gmail.com',
     description="Python package to apply the GADDLE-MAPS algorithm",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="",
+    url="https://github.com/txemaotero/gaddlemaps",
     packages=['gaddlemaps', 'gaddlemaps.parsers', 'gaddlemaps.components'],
     cmdclass=cmdclass,
     include_package_data=True,
     ext_modules=ext_modules,
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",
+        "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.6',
