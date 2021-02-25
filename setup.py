@@ -41,6 +41,55 @@ def scancppdir(dir, files=[]):
             files.append(path)
     return files
 
+def check_armadillo():
+    import tempfile
+    import shutil
+
+    import distutils.sysconfig
+    import distutils.ccompiler
+    from distutils.errors import CompileError, LinkError
+
+    libraries = ['armadillo']
+    extra_link_args=["-L/usr/local/lib"]
+    include_dirs = ["/usr/local/include"]
+
+    # write a temporary .c file to compile
+    c_code = """
+#include <armadillo>
+#include <iostream>
+
+int main(){
+    arma::Mat<double> A(3,3, arma::fill::eye);
+return 0;
+}
+    """
+    tmp_dir = tempfile.mkdtemp(prefix = 'tmp_test_arma_')
+    bin_file_name = os.path.join(tmp_dir, 'test_arma')
+    file_name = bin_file_name + '.cpp'
+    with open(file_name, 'w') as fp:
+        fp.write(c_code)
+
+    # and try to compile it
+    compiler = distutils.ccompiler.new_compiler()
+    assert isinstance(compiler, distutils.ccompiler.CCompiler)
+    distutils.sysconfig.customize_compiler(compiler)
+
+    try:
+        compiler.link_executable(
+            compiler.compile([file_name]),
+            bin_file_name,
+            target_lang="c++",
+            libraries=libraries,
+            library_dirs=include_dirs,
+            extra_postargs=extra_link_args,
+            )
+        out = True
+    except:
+        out = False
+
+    shutil.rmtree(tmp_dir)
+    return out
+
 
 # generate an Extension object from its dotted name
 def makeExtension(extName, cpp, use_cython):
@@ -71,13 +120,18 @@ try:
 except ImportError:
     use_cython = False
 else:
-    use_cython = True
-    cmdclass.update({'build_ext': build_ext})
+        use_cython = True
+        cmdclass.update({'build_ext': build_ext})
 
 
 extNames = scandir("cython_backend")
 cpp = scancppdir("cython_backend/c++_src/")
-ext_modules = [makeExtension(name, cpp, use_cython) for name in extNames]
+if check_armadillo():
+    print("Using the backend")
+    ext_modules = [makeExtension(name, cpp, use_cython) for name in extNames]
+else:
+    print("Not Using the backend")
+    ext_modules = []
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
