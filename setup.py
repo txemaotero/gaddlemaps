@@ -120,8 +120,8 @@ try:
 except ImportError:
     use_cython = False
 else:
-        use_cython = True
-        cmdclass.update({'build_ext': build_ext})
+    use_cython = True
+    cmdclass.update({'build_ext': build_ext})
 
 
 extNames = scandir("cython_backend")
@@ -138,7 +138,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="gaddlemaps",
-    version="0.0.1",
+    version="0.0.1.c2",
     author='Jose Manuel Otero Mato, Hadrián Montes Campos, Luis Miguel Varela Cabo',
     author_email='hadrianmontes@gmail.com, josemanuel.otero.mato@gmail.com',
     description="Python package to apply the GADDLE-MAPS algorithm",
@@ -154,6 +154,9 @@ setuptools.setup(
         "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
         "Operating System :: OS Independent",
     ],
+    install_requires=[
+          'numpy', 'scipy', 'more_itertools', 'ipywidgets'
+      ],
     python_requires='>=3.6',
     entry_points={
         "console_scripts": [
