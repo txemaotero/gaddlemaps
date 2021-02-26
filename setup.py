@@ -138,7 +138,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="gaddlemaps",
-    version="0.0.1.c2",
+    version="0.1.rc2",
     author='Jose Manuel Otero Mato, Hadrián Montes Campos, Luis Miguel Varela Cabo',
     author_email='hadrianmontes@gmail.com, josemanuel.otero.mato@gmail.com',
     description="Python package to apply the GADDLE-MAPS algorithm",
@@ -162,5 +162,12 @@ setuptools.setup(
         "console_scripts": [
             "gaddlemaps=gaddlemaps._cli:main"
         ]
+    },
+    project_urls={
+        'Documentation': "https://gaddlemaps.readthedocs.io/",
+        'Source': 'https://github.com/txemaotero/gaddlemaps',
+        'Tracker': 'https://github.com/txemaotero/gaddlemaps/issues',
+        'Developed in': 'https://www.usc.gal/en',
+        'Cite': 'https://doi.org/10.1021/acs.jctc.7b00861',
     }
 )
