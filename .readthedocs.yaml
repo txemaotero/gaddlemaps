@@ -1,6 +1,7 @@
 version: 2
 
 python:
+  setup_py_install: true
   version: 3.7
   install:
     - requirements: docs/Requirements.txt
