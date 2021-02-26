@@ -7,6 +7,8 @@
 [**Features**](#features)
 |
 [**FAQs**](#faqs)
+|
+[**Documentation**](https://gaddlemaps.readthedocs.io/)
 
 ## What is GADDLE Maps?
 
