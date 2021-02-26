@@ -74,7 +74,7 @@ This is the simplest and prefered method to install the module. In order to
 install gaddlemaps just run:
 
 ```bash
-pip install gaddlempas --upgrade
+pip install gaddlemaps --upgrade
 ```
 
 This method will autodetect wether the requirements for the optimized c++
