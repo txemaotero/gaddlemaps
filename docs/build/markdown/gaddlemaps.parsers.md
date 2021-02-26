@@ -34,34 +34,34 @@ Bases: [`object`](https://docs.python.org/3/library/functions.html#object)
 
 ### Methods
 
-| `close`(self)
+| `close`()
 
  | Closes the file
 
  |
-| `next`(self)
+| `next`()
 
-                                    | Returns next atomline formatted
+                                  | Returns next atomline formatted
 
                                                                                                                                                              |
-| `seek_atom`(self, index)
+| `seek_atom`(index)
 
                         | Displaces the position of the ‘cursor’ to an atom line
 
                                                                                                                                       |
-| `writeline`(self, atomlist, str, str, int, …)
+| `writeline`(atomlist)
 
-   | Writes a line of atom information
+                     | Writes a line of atom information
 
                                                                                                                                                            |
-| `writelines`(self, list_atomlist, str, str, …)
+| `writelines`(list_atomlist)
 
-  | Writes several lines of atoms
+               | Writes several lines of atoms
 
                                                                                                                                                                |
 <!-- !! processed by numpydoc !! -->
 
-#### EXTENSIONS(: Optional[Tuple[str, ...]] = None)
+#### EXTENSIONS(: Optional[Tuple[[str](https://docs.python.org/3/library/stdtypes.html#str), …]] = None)
 
 #### abstract property box_matrix()
 Return a 3x3 matrix with the 3 lattice vectors
@@ -70,11 +70,11 @@ Return a 3x3 matrix with the 3 lattice vectors
 
 * **Return type**
 
-    [`ndarray`](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)
+    [`ndarray`](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)
 
 
 
-#### abstract close(self)
+#### abstract close()
 Closes the file
 
 <!-- !! processed by numpydoc !! -->
@@ -101,7 +101,7 @@ Number of atoms in the file
 
 
 
-#### abstract next(self)
+#### abstract next()
 Returns next atomline formatted
 
 <!-- !! processed by numpydoc !! -->
@@ -112,7 +112,7 @@ Returns next atomline formatted
 
 
 
-#### abstract seek_atom(self, index: int)
+#### abstract seek_atom(index)
 Displaces the position of the ‘cursor’ to an atom line
 
 Displaces the position of the ‘cursor’ to the beginning of the
@@ -128,7 +128,7 @@ warrants that calling the “next” function the information about atom
 
 <!-- !! processed by numpydoc !! -->
 
-#### abstract writeline(self, atomlist: Union[Tuple[int, str, str, int, float, float, float], Tuple[int, str, str, int, float, float, float, float, float, float]])
+#### abstract writeline(atomlist)
 Writes a line of atom information
 
 If there was no content written in the file it creates the
@@ -147,7 +147,7 @@ with a number of atoms smaller than 1000000.
 
 <!-- !! processed by numpydoc !! -->
 
-#### writelines(self, list_atomlist: List[Union[Tuple[int, str, str, int, float, float, float], Tuple[int, str, str, int, float, float, float, float, float, float]]])
+#### writelines(list_atomlist)
 Writes several lines of atoms
 
 
@@ -217,59 +217,59 @@ This class can also be initiated with an already opened file.
 
 ### Methods
 
-| `close`(self)
+| `close`()
 
-                                   | Closes the file
+                                 | Closes the file
 
                                                                                                                                                                              |
 | `determine_format`(atomline)
 
-                    | Returns the format of the postion coordinates and whether or not the .gro file has velocities
+              | Returns the format of the postion coordinates and whether or not the .gro file has velocities
 
                                                                                                |
-| `next`(self)
+| `next`()
 
-                                    | Returns next atomline formatted
+                                  | Returns next atomline formatted
 
                                                                                                                                                              |
-| `parse_atomline`(atomline, format_dict, …)
+| `parse_atomline`(atomline[, format_dict])
 
-      | Parses an atom line and returns its content in a list.
+ | Parses an atom line and returns its content in a list.
 
                                                                                                                                       |
-| `parse_atomlist`(atomlist, str, str, int, …)
+| `parse_atomlist`(atomlist[, format_dict])
 
-    | Convert a list of atom info to string with the appropriate format
+ | Convert a list of atom info to string with the appropriate format
 
                                                                                                                            |
-| `readline`(self, parsed)
+| `readline`([parsed])
 
-                        | Returns the next line of the gro file.
+                      | Returns the next line of the gro file.
 
                                                                                                                                                       |
-| `readlines`(self)
+| `readlines`()
 
-                               | Returns all the lines of a grofile parsed in lists.
+                             | Returns all the lines of a grofile parsed in lists.
 
                                                                                                                                          |
-| `seek_atom`(self, index)
+| `seek_atom`(index)
 
                         | Displaces the position of the ‘cursor’ to an atom line
 
                                                                                                                                       |
 | `validate_string`(string)
 
-                       | Validates a string to be valid as resname or as name.
+                 | Validates a string to be valid as resname or as name.
 
                                                                                                                                        |
-| `writeline`(self, atomlist, str, str, int, …)
+| `writeline`(atomlist)
 
-   | Writes a line of atom information
+                     | Writes a line of atom information
 
                                                                                                                                                            |
-| `writelines`(self, list_atomlist, str, str, …)
+| `writelines`(list_atomlist)
 
-  | Writes several lines of atoms
+               | Writes several lines of atoms
 
                                                                                                                                                                |
 <!-- !! processed by numpydoc !! -->
@@ -280,9 +280,9 @@ This class can also be initiated with an already opened file.
 
 #### DEFAULT_POSTION_FORMAT( = (8, 3))
 
-#### EXTENSIONS(: Optional[Tuple[str, ...]] = ('gro', 'GRO'))
+#### EXTENSIONS(: Optional[Tuple[[str](https://docs.python.org/3/library/stdtypes.html#str), …]] = ('gro', 'GRO'))
 
-#### NUMBER_FIGURES( = 7)
+#### NUMBER_FIGURES( = 9)
 
 #### property box_matrix()
 the 3 lattice vectors of the box.
@@ -290,18 +290,18 @@ the 3 lattice vectors of the box.
 
 * **Type**
 
-    [numpy.ndarray](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)(3,3)
+    [numpy.ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)(3,3)
 
 
 <!-- !! processed by numpydoc !! -->
 
 * **Return type**
 
-    [`ndarray`](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)
+    [`ndarray`](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)
 
 
 
-#### close(self)
+#### close()
 Closes the file
 
 If the file is in write mode it will write al the remaining
@@ -326,7 +326,7 @@ The comment of the .gro file.
 
 
 
-#### classmethod determine_format(atomline: str)
+#### classmethod determine_format(atomline)
 Returns the format of the postion coordinates and whether or
 not the .gro file has velocities
 
@@ -388,7 +388,7 @@ The number of atoms in the system.
 
 
 
-#### next(self)
+#### next()
 Returns next atomline formatted
 
 <!-- !! processed by numpydoc !! -->
@@ -399,7 +399,7 @@ Returns next atomline formatted
 
 
 
-#### classmethod parse_atomline(atomline: str, format_dict: Union[Dict, NoneType] = None)
+#### classmethod parse_atomline(atomline, format_dict=None)
 Parses an atom line and returns its content in a list.
 
 Parses an atom line and returns its content in a list. In its default
@@ -462,7 +462,7 @@ corresponds to the ‘%C.Df’ format.
 
 <!-- !! processed by numpydoc !! -->
 
-#### classmethod parse_atomlist(atomlist: Union[Tuple[int, str, str, int, float, float, float], Tuple[int, str, str, int, float, float, float, float, float, float]], format_dict: Dict = None)
+#### classmethod parse_atomlist(atomlist, format_dict=None)
 Convert a list of atom info to string with the appropriate format
 
 Parses a list with the atom information and returns its content in a
@@ -542,7 +542,7 @@ positions.
 
 
 
-#### readline(self, parsed: bool = True)
+#### readline(parsed=True)
 Returns the next line of the gro file.
 
 If parsed=True (default) the data on the atom line is parsed
@@ -571,7 +571,7 @@ string (just like if it were opened as a common file.)
 
 <!-- !! processed by numpydoc !! -->
 
-#### readlines(self)
+#### readlines()
 Returns all the lines of a grofile parsed in lists.
 
 
@@ -588,7 +588,7 @@ Returns all the lines of a grofile parsed in lists.
 
 <!-- !! processed by numpydoc !! -->
 
-#### seek_atom(self, index: int)
+#### seek_atom(index)
 Displaces the position of the ‘cursor’ to an atom line
 
 Displaces the position of the ‘cursor’ to the beginning of the
@@ -604,7 +604,7 @@ box lattice line is found.
 
 <!-- !! processed by numpydoc !! -->
 
-#### static validate_string(string: str)
+#### static validate_string(string)
 Validates a string to be valid as resname or as name.
 
 If the input name has more than 5 characters, new name is returned
@@ -630,7 +630,7 @@ cutting the input one.
 
 <!-- !! processed by numpydoc !! -->
 
-#### writeline(self, atomlist: Union[Tuple[int, str, str, int, float, float, float], Tuple[int, str, str, int, float, float, float, float, float, float]])
+#### writeline(atomlist)
 Writes a line of atom information
 
 If there was no content written in the file it creates the
@@ -649,7 +649,7 @@ with a number of atoms smaller than 1000000.
 
 <!-- !! processed by numpydoc !! -->
 
-#### writelines(self, list_atomlist: List[Union[Tuple[int, str, str, int, float, float, float], Tuple[int, str, str, int, float, float, float, float, float, float]]])
+#### writelines(list_atomlist)
 Writes several lines of atoms
 
 If there was no content written in the file it creates the
@@ -674,12 +674,12 @@ Bases: [`object`](https://docs.python.org/3/library/functions.html#object)
 
 | **register**
 
-                                      |                                                                                                                                                                                             |
+                                |                                                                                                                                                                                             |
 <!-- !! processed by numpydoc !! -->
 
-#### parsers(: Dict[str, Type[CoordinatesParser]] = {'GRO': <class 'gaddlemaps.parsers.GroFile'>, 'gro': <class 'gaddlemaps.parsers.GroFile'>})
+#### parsers(: Dict[[str](https://docs.python.org/3/library/stdtypes.html#str), Type[gaddlemaps.parsers.CoordinatesParser]] = {'GRO': <class 'gaddlemaps.parsers.GroFile'>, 'gro': <class 'gaddlemaps.parsers.GroFile'>})
 
-#### classmethod register(parser: Type[ForwardRef('CoordinatesParser')])
+#### classmethod register(parser)
 <!-- !! processed by numpydoc !! -->
 
 ### class gaddlemaps.parsers.ParserRegistered(name, bases, attrs)
@@ -687,42 +687,42 @@ Bases: [`abc.ABCMeta`](https://docs.python.org/3/library/abc.html#abc.ABCMeta)
 
 ### Methods
 
-| `__call__`(self, /, \\\*args, \\\*\\\*kwargs)
+| `__call__`(\*args, \*\*kwargs)
 
-         | Call self as a function.
+               | Call self as a function.
 
                                                                                                                                                                     |
-| `mro`(self, /)
+| `mro`(/)
 
                                   | Return a type’s method resolution order.
 
                                                                                                                                                     |
-| `register`(cls, subclass)
+| `register`(subclass)
 
-                       | Register a virtual subclass of an ABC.
+                      | Register a virtual subclass of an ABC.
 
                                                                                                                                                       |
 <!-- !! processed by numpydoc !! -->
 
-#### mro(self, /)
+#### mro(/)
 Return a type’s method resolution order.
 
 <!-- !! processed by numpydoc !! -->
 
-#### register(cls, subclass)
+#### register(subclass)
 Register a virtual subclass of an ABC.
 
 Returns the subclass, to allow usage as a class decorator.
 
 <!-- !! processed by numpydoc !! -->
 
-### gaddlemaps.parsers.dump_lattice_gro(vectors: numpy.ndarray)
+### gaddlemaps.parsers.dump_lattice_gro(vectors)
 Extracts final line of a .gro file from the lattice vectors for pbc.
 
 
 * **Parameters**
 
-    **vectors** ([*numpy.ndarray*](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)*(**(**3**,**3**)**)*) – An array with a lattice vector in each row.
+    **vectors** ([*numpy.ndarray*](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)*(**(**3**,**3**)**)*) – An array with a lattice vector in each row.
 
 
 
@@ -739,7 +739,7 @@ Extracts final line of a .gro file from the lattice vectors for pbc.
 
 <!-- !! processed by numpydoc !! -->
 
-### gaddlemaps.parsers.extract_lattice_gro(line: str)
+### gaddlemaps.parsers.extract_lattice_gro(line)
 Extracts the lattice vectors for pbc from the final line of a .gro file.
 
 
@@ -757,12 +757,12 @@ Extracts the lattice vectors for pbc from the final line of a .gro file.
 
 * **Return type**
 
-    [numpy.ndarray](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)((3,3))
+    [numpy.ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)((3,3))
 
 
 <!-- !! processed by numpydoc !! -->
 
-### gaddlemaps.parsers.open_coordinate_file(filename: str, mode: str = 'r')
+### gaddlemaps.parsers.open_coordinate_file(filename, mode='r')
 <!-- !! processed by numpydoc !! -->
 
 * **Return type**

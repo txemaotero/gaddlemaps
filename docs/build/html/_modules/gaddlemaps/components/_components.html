@@ -1,56 +1,187 @@
 
-<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta charset="utf-8" />
-    <title>gaddlemaps.components._components &#8212; Gaddle Maps  documentation</title>
-    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
-    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>gaddlemaps.components._components &mdash; Gaddle Maps  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
     
-    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/language_data.js"></script>
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
     
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="../../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Gaddle Maps  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../components.html" accesskey="U">gaddlemaps.components</a> &#187;</li> 
-      </ul>
-    </div>  
+</head>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Gaddle Maps
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">GADDLE Maps simplified documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gaddlemaps.html">gaddlemaps package</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Gaddle Maps</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+          <li><a href="../components.html">gaddlemaps.components</a> &raquo;</li>
+        
+      <li>gaddlemaps.components._components</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
             
   <h1>Source code for gaddlemaps.components._components</h1><div class="highlight"><pre>
-<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span></span><span class="c1">#    Gaddlemaps python module.</span>
+<span class="c1">#    Copyright (C) 2019-2021 José Manuel Otero Mato, Hadrián Montes Campos, Luis Miguel Varela Cabo</span>
+<span class="c1">#</span>
+<span class="c1">#    This program is free software: you can redistribute it and/or modify</span>
+<span class="c1">#    it under the terms of the GNU Affero General Public License as published by</span>
+<span class="c1">#    the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c1">#    (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#    This program is distributed in the hope that it will be useful,</span>
+<span class="c1">#    but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#    GNU Affero General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#    You should have received a copy of the GNU Affero General Public License</span>
+<span class="c1">#    along with this program.  If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
+<span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">This module contains Atom and Molecule objects which connect information from</span>
 <span class="sd">both gro and itp files.</span>
 <span class="sd">&#39;&#39;&#39;</span>
 
-<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="p">(</span><span class="n">Any</span><span class="p">,</span> <span class="n">DefaultDict</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Any</span><span class="p">,</span> <span class="n">DefaultDict</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span>
                     <span class="n">Union</span><span class="p">)</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">scipy.spatial.distance</span> <span class="k">import</span> <span class="n">euclidean</span>
+<span class="kn">from</span> <span class="nn">scipy.spatial.distance</span> <span class="kn">import</span> <span class="n">euclidean</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">AtomGro</span><span class="p">,</span> <span class="n">AtomTop</span><span class="p">,</span> <span class="n">MoleculeTop</span><span class="p">,</span> <span class="n">Residue</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">AtomGro</span><span class="p">,</span> <span class="n">AtomTop</span><span class="p">,</span> <span class="n">MoleculeTop</span><span class="p">,</span> <span class="n">Residue</span>
 
 
 <div class="viewcode-block" id="Atom"><a class="viewcode-back" href="../../../gaddlemaps.components.html#gaddlemaps.components.Atom">[docs]</a><span class="k">class</span> <span class="nc">Atom</span><span class="p">:</span>
@@ -61,7 +192,7 @@
 <span class="sd">    AtomItp have. To create the atom object, both input atoms should have the</span>
 <span class="sd">    same resname and name attributes. On the other hand, only the attributes</span>
 <span class="sd">    from the AtomGro can be changed (e.g. positions, velocities, ...) excluding</span>
-<span class="sd">    the resname and name. </span>
+<span class="sd">    the resname and name.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -79,14 +210,14 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atom_top</span><span class="p">:</span> <span class="n">AtomTop</span><span class="p">,</span> <span class="n">atom_gro</span><span class="p">:</span> <span class="n">AtomGro</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atom_top</span><span class="p">:</span> <span class="n">AtomTop</span><span class="p">,</span> <span class="n">atom_gro</span><span class="p">:</span> <span class="n">AtomGro</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">atom_gro</span><span class="p">,</span> <span class="n">AtomGro</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;atom_gro input have to be an AtomGro instance.&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">atom_top</span><span class="p">,</span> <span class="n">AtomTop</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;atom_top input have to be an AtomTop instance.&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">atom_gro</span><span class="o">.</span><span class="n">resname</span> <span class="o">!=</span> <span class="n">atom_top</span><span class="o">.</span><span class="n">resname</span> <span class="ow">or</span> <span class="n">atom_gro</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="n">atom_top</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">((</span><span class="n">f</span><span class="s1">&#39;Input atoms do not match:</span><span class="se">\n</span><span class="s1">-</span><span class="si">{atom_gro}</span><span class="s1">&#39;</span>
-                           <span class="n">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">-</span><span class="si">{atom_top}</span><span class="s1">&#39;</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">((</span><span class="sa">f</span><span class="s1">&#39;Input atoms do not match:</span><span class="se">\n</span><span class="s1">-</span><span class="si">{</span><span class="n">atom_gro</span><span class="si">}</span><span class="s1">&#39;</span>
+                           <span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">-</span><span class="si">{</span><span class="n">atom_top</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_atom_gro</span> <span class="o">=</span> <span class="n">atom_gro</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_atom_top</span> <span class="o">=</span> <span class="n">atom_top</span>
 
@@ -110,7 +241,7 @@
 <span class="sd">        Residue number for the part of the atom with the topology (atom_top).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atom_top</span><span class="o">.</span><span class="n">resid</span>
-    
+
     <span class="nd">@top_resid</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">top_resid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_resid</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_atom_top</span><span class="o">.</span><span class="n">resid</span> <span class="o">=</span> <span class="n">new_resid</span>
@@ -121,12 +252,12 @@
 <span class="sd">        Residue number for the gro part of the atom (atom_gro).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atom_gro</span><span class="o">.</span><span class="n">resid</span>
-    
+
     <span class="nd">@gro_resid</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">gro_resid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_resid</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_atom_gro</span><span class="o">.</span><span class="n">resid</span> <span class="o">=</span> <span class="n">new_resid</span>
 
-    <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s1">&#39;resid&#39;</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">((</span><span class="s1">&#39;To access resid use gro_resid or&#39;</span>
                                   <span class="s1">&#39; top_resid properties.&#39;</span><span class="p">))</span>
@@ -134,9 +265,9 @@
             <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_atom_gro</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_atom_top</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
             <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_atom_top</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
-        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Atom object has no attribute </span><span class="si">{attr}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Atom object has no attribute </span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;_atom_top&#39;</span><span class="p">,</span> <span class="s1">&#39;_atom_gro&#39;</span><span class="p">]:</span>
             <span class="nb">super</span><span class="p">(</span><span class="n">Atom</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
         <span class="c1"># Special cases that are present in both atoms</span>
@@ -155,17 +286,17 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">super</span><span class="p">(</span><span class="n">Atom</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="n">string</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span><span class="s1">&#39;Atom </span><span class="si">{self.name}</span><span class="s1"> of molecule </span><span class="si">{self.resname}</span><span class="s1">&#39;</span>
-                  <span class="n">f</span><span class="s1">&#39; with gro residue number </span><span class="si">{self.gro_resid}</span><span class="s1">.&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Atom </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> of molecule </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resname</span><span class="si">}</span><span class="s1">&#39;</span>
+                  <span class="sa">f</span><span class="s1">&#39; with gro residue number </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gro_resid</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">string</span>
 
     <span class="fm">__repr__</span> <span class="o">=</span> <span class="fm">__str__</span>
 
-    <span class="k">def</span> <span class="nf">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_atom_top</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__dir__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="fm">__dir__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For Ipython autocompletion.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -188,11 +319,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">Atom</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_atom_top</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atom_gro</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span></div>
 
-    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atom</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atom</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Two atoms are the same if they have the same name, resname, index and top_resid.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="n">Atom</span><span class="p">):</span>
             <span class="n">condition</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resname</span> <span class="o">==</span> <span class="n">atom</span><span class="o">.</span><span class="n">resname</span> <span class="ow">and</span>
                          <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">atom</span><span class="o">.</span><span class="n">name</span> <span class="ow">and</span>
@@ -229,7 +360,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">__excluded__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;resname&#39;</span><span class="p">,</span> <span class="s1">&#39;resid&#39;</span><span class="p">,</span> <span class="s1">&#39;residname&#39;</span><span class="p">,</span> <span class="s1">&#39;remove_atom&#39;</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">molecule_top</span><span class="p">:</span> <span class="n">MoleculeTop</span><span class="p">,</span> <span class="n">residues</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Residue</span><span class="p">]):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">molecule_top</span><span class="p">:</span> <span class="n">MoleculeTop</span><span class="p">,</span> <span class="n">residues</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Residue</span><span class="p">]):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_molecule_top_and_residues_match</span><span class="p">(</span><span class="n">molecule_top</span><span class="p">,</span> <span class="n">residues</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">IOError</span><span class="p">((</span><span class="s1">&#39;The molecule can not be initialized. &#39;</span>
                            <span class="s1">&#39;The input residues have not the same atoms that &#39;</span>
@@ -245,27 +376,27 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_residues</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_each_atom_resid</span> <span class="o">+=</span> <span class="p">[</span><span class="n">res_index</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Atom&#39;</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Atom&#39;</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
         <span class="n">residue_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_each_atom_resid</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
         <span class="n">atom_index</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">i</span> <span class="o">==</span> <span class="n">residue_index</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_each_atom_resid</span><span class="p">[:</span><span class="n">index</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">Atom</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_molecule_top</span><span class="p">[</span><span class="n">index</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_residues</span><span class="p">[</span><span class="n">residue_index</span><span class="p">][</span><span class="n">atom_index</span><span class="p">])</span>
 
-    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="s1">&#39;Atom&#39;</span><span class="p">]:</span>  <span class="c1"># type: ignore</span>
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="s1">&#39;Atom&#39;</span><span class="p">]:</span>  <span class="c1"># type: ignore</span>
         <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_residues</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">res</span><span class="p">:</span>
                 <span class="k">yield</span> <span class="n">Atom</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule_top</span><span class="p">[</span><span class="n">index</span><span class="p">],</span> <span class="n">atom</span><span class="p">)</span>
                 <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
 
-    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_each_atom_resid</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">f</span><span class="s1">&#39;Molecule of </span><span class="si">{self.name}</span><span class="s1">.&#39;</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;Molecule of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">.&#39;</span>
 
     <span class="fm">__repr__</span> <span class="o">=</span> <span class="fm">__str__</span>
 
-    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">molecule</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">molecule</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">molecule</span><span class="p">,</span> <span class="n">Molecule</span><span class="p">)</span> <span class="ow">and</span>
             <span class="n">molecule</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">and</span>
             <span class="nb">len</span><span class="p">(</span><span class="n">molecule</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)):</span>
@@ -276,16 +407,16 @@
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="nf">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">molecule</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">molecule</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">molecule</span>
 
-    <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;Residue&#39;</span><span class="p">,</span> <span class="s1">&#39;AtomGro&#39;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">&#39;Residue&#39;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;Residue&#39;</span><span class="p">,</span> <span class="s1">&#39;AtomGro&#39;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">&#39;Residue&#39;</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
-    <span class="k">def</span> <span class="nf">__radd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;Residue&#39;</span><span class="p">,</span> <span class="s1">&#39;AtomGro&#39;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">&#39;Residue&#39;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__radd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;Residue&#39;</span><span class="p">,</span> <span class="s1">&#39;AtomGro&#39;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">&#39;Residue&#39;</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
-    <span class="k">def</span> <span class="nf">__getattribute__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__getattribute__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Special methods that are implemented for Residue but not for</span>
 <span class="sd">        Molecule.</span>
@@ -295,12 +426,12 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">Molecule</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__getattribute__</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_molecule_top</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
             <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_molecule_top</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
-        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Molecule object has no attribute </span><span class="si">{attr}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Molecule object has no attribute </span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;resname&#39;</span><span class="p">,</span> <span class="s1">&#39;resid&#39;</span><span class="p">,</span> <span class="s1">&#39;residname&#39;</span><span class="p">,</span> <span class="s1">&#39;remove_atom&#39;</span><span class="p">]:</span>
             <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;_molecule_top&#39;</span><span class="p">,</span> <span class="s1">&#39;_residues&#39;</span><span class="p">]:</span>
@@ -312,7 +443,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">super</span><span class="p">(</span><span class="n">Molecule</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__dir__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="fm">__dir__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For Ipython autocompletion.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -400,8 +531,8 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">new_resnames</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">new_resnames</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_resnames</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resnames</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">((</span><span class="s1">&#39;You should provide a list with&#39;</span>
-                                  <span class="n">f</span><span class="s1">&#39; {len(self.resnames)} residues instead of&#39;</span>
-                                  <span class="n">f</span><span class="s1">&#39; {len(new_resnames)}.&#39;</span><span class="p">))</span>
+                                  <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resnames</span><span class="p">)</span><span class="si">}</span><span class="s1"> residues instead of&#39;</span>
+                                  <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">new_resnames</span><span class="p">)</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">))</span>
 
             <span class="k">for</span> <span class="n">atom</span><span class="p">,</span> <span class="n">res_index</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_each_atom_resid</span><span class="p">):</span>
                 <span class="n">atom</span><span class="o">.</span><span class="n">resname</span> <span class="o">=</span> <span class="n">new_resnames</span><span class="p">[</span><span class="n">res_index</span><span class="p">]</span>
@@ -429,8 +560,8 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">new_resids</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">new_resids</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">int</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_resids</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resids</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">((</span><span class="s1">&#39;You should provide a list with&#39;</span>
-                                  <span class="n">f</span><span class="s1">&#39; {len(self.resids)} residue ids instead&#39;</span>
-                                  <span class="n">f</span><span class="s1">&#39; of {len(new_resids)}.&#39;</span><span class="p">))</span>
+                                  <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resids</span><span class="p">)</span><span class="si">}</span><span class="s1"> residue ids instead&#39;</span>
+                                  <span class="sa">f</span><span class="s1">&#39; of </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">new_resids</span><span class="p">)</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">))</span>
 
             <span class="k">for</span> <span class="n">atom</span><span class="p">,</span> <span class="n">res_index</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_each_atom_resid</span><span class="p">):</span>
                 <span class="n">atom</span><span class="o">.</span><span class="n">top_resid</span> <span class="o">=</span> <span class="n">new_resids</span><span class="p">[</span><span class="n">res_index</span><span class="p">]</span>
@@ -512,7 +643,7 @@
         <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">self_atom</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">self_atom</span> <span class="o">==</span> <span class="n">atom</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">index</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;</span><span class="si">{atom}</span><span class="s1"> is not in molecule.&#39;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">atom</span><span class="si">}</span><span class="s1"> is not in molecule.&#39;</span><span class="p">)</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">bonds_distance</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]]:</span>
@@ -551,7 +682,7 @@
 <span class="sd">            The initialized molecule.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">System</span>
+        <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">System</span>
         <span class="n">syst</span> <span class="o">=</span> <span class="n">System</span><span class="p">(</span><span class="n">fgro</span><span class="p">,</span> <span class="n">ftop</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">syst</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">syst</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -572,42 +703,47 @@
     <span class="k">return</span> <span class="kc">True</span>
 </pre></div>
 
+           </div>
+           
           </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019-2021, Jose Manuel Otero Mato, Hadrián Montes Campos, Luis Miguel Varela Cabo.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="../../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Gaddle Maps  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../components.html" >gaddlemaps.components</a> &#187;</li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2020, Jose Manuel Otero Mato, Hadrián Montes Campos.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
-    </div>
-  </body>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
 </html>

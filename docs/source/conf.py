@@ -34,7 +34,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'Gaddle Maps'
-copyright = '2020, Jose Manuel Otero Mato, Hadrián Montes Campos'
+copyright = '2019-2021, Jose Manuel Otero Mato, Hadrián Montes Campos, Luis Miguel Varela Cabo'
 author = 'Jose Manuel Otero Mato, Hadrián Montes Campos'
 
 
@@ -51,6 +51,7 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
     'sphinx_markdown_builder',
+    "sphinx_rtd_theme",
     # 'sphinx.ext.mathjax',
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
@@ -79,7 +80,7 @@ pygments_style = "sphinx"
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'classic'
+html_theme = "sphinx_rtd_theme"
 html_theme_options = {"stickysidebar": True}
 
 

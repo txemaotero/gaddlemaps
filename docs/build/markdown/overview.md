@@ -66,44 +66,49 @@ Alignment objects as value.
 
 ### Methods
 
-| `add_end_molecule`(self, molecule)
+| `add_end_molecule`(molecule)
 
  | Add a new molecule in the end resolution to the correct Alignment.
 
  |
-| `add_end_molecules`(self, \\\*molecules)
+| `add_end_molecules`(\*molecules)
 
-          | Add multiple molecules at once.
+           | Add multiple molecules at once.
 
                                                                                                                                                              |
-| `align_molecules`(self, restrictions, …)
+| `align_molecules`([restrictions, …])
 
-        | Starts the alignment engine to find the optimal overlap between molecules
+      | Starts the alignment engine to find the optimal overlap between molecules
 
                                                                                                                    |
-| `calculate_exchange_maps`(self, scale_factor)
+| `calculate_exchange_maps`([scale_factor])
 
-   | Runs the alignment engine and calculate the exchange maps.
+ | Runs the alignment engine and calculate the exchange maps.
 
                                                                                                                                   |
-| `extrapolate_system`(self, fgro_out)
+| `extrapolate_system`(fgro_out)
 
             | Loops over the molecules in self.system and applies the exchange map.
 
                                                                                                                        |
-| `from_files`(f_system_gro, \\\*ftops)
+| `from_files`(f_system_gro, \*ftops)
 
-             | Build the object using the system .gro file and molecules topologies.
+        | Build the object using the system .gro file and molecules topologies.
 
                                                                                                                        |
-| `parse_restrictions`(self, restrictions, …)
+| `interactive_restrictions`([style])
 
-     | Checks the format and validates of the restrictions for the alignment.
+       | Creates the widget to generate the restrictions of all the species in the alignment.
+
+                                                                                                        |
+| `parse_restrictions`([restrictions, …])
+
+   | Checks the format and validates of the restrictions for the alignment.
 
                                                                                                                       |
 <!-- !! processed by numpydoc !! -->
 
-#### add_end_molecule(self, molecule: gaddlemaps.components._components.Molecule)
+#### add_end_molecule(molecule)
 Add a new molecule in the end resolution to the correct Alignment.
 
 
@@ -127,7 +132,7 @@ Add a new molecule in the end resolution to the correct Alignment.
 
 <!-- !! processed by numpydoc !! -->
 
-#### add_end_molecules(self, \*molecules: gaddlemaps.components._components.Molecule)
+#### add_end_molecules(\*molecules)
 Add multiple molecules at once.
 
 
@@ -151,7 +156,7 @@ Add multiple molecules at once.
 
 <!-- !! processed by numpydoc !! -->
 
-#### align_molecules(self, restrictions: Dict[str, Union[List[Tuple[int, int]], NoneType]] = None, deformation_types: Dict[str, Union[Tuple[int, ...], NoneType]] = None, ignore_hydrogens: Dict[str, bool] = None, parse_restrictions: bool = True)
+#### align_molecules(restrictions=None, deformation_types=None, ignore_hydrogens=None, parse_restrictions=True)
 Starts the alignment engine to find the optimal overlap between molecules
 
 
@@ -202,7 +207,7 @@ Starts the alignment engine to find the optimal overlap between molecules
 
 <!-- !! processed by numpydoc !! -->
 
-#### calculate_exchange_maps(self, scale_factor: float = 0.5)
+#### calculate_exchange_maps(scale_factor=0.5)
 Runs the alignment engine and calculate the exchange maps.
 
 
@@ -232,7 +237,7 @@ Alignment objects as value if it has start and end init.
 
 
 
-#### extrapolate_system(self, fgro_out: str)
+#### extrapolate_system(fgro_out)
 Loops over the molecules in self.system and applies the exchange map.
 
 
@@ -249,7 +254,7 @@ Loops over the molecules in self.system and applies the exchange map.
 
 <!-- !! processed by numpydoc !! -->
 
-#### classmethod from_files(f_system_gro: str, \*ftops: str)
+#### classmethod from_files(f_system_gro, \*ftops)
 Build the object using the system .gro file and molecules topologies.
 
 
@@ -276,7 +281,48 @@ Build the object using the system .gro file and molecules topologies.
 
 <!-- !! processed by numpydoc !! -->
 
-#### parse_restrictions(self, restrictions: Dict[str, Union[List[Tuple[int, int]], NoneType]] = None, guess_proteins: bool = False)
+#### interactive_restrictions(style=None)
+Creates the widget to generate the restrictions of all the species in the
+alignment. It generates the final representation for the widget.
+
+
+* **Parameters**
+
+    **style** (*Optional**[*[*int*](https://docs.python.org/3/library/functions.html#int)*]*) – An integer that determine which style will be used to represent the
+    widget for each specie.
+
+    > 0: One tab per specie.
+    > 1: Accordion, when one specie opens the other collapse
+    > 2: Vertically aligned, one over the other
+
+    The default value is 2. This is the only one fully operational, in the
+    other ones it is necessary to manually refresh the widget in the
+    notebook when changing between species.
+
+
+
+
+* **Return type**
+
+    [`Tuple`](https://docs.python.org/3/library/typing.html#typing.Tuple)[[`ForwardRef`](https://docs.python.org/3/library/typing.html#typing.ForwardRef), [`Dict`](https://docs.python.org/3/library/typing.html#typing.Dict)[[`str`](https://docs.python.org/3/library/stdtypes.html#str), [`Optional`](https://docs.python.org/3/library/typing.html#typing.Optional)[[`List`](https://docs.python.org/3/library/typing.html#typing.List)[[`Tuple`](https://docs.python.org/3/library/typing.html#typing.Tuple)[[`int`](https://docs.python.org/3/library/functions.html#int), [`int`](https://docs.python.org/3/library/functions.html#int)]]]]]
+
+
+
+* **Returns**
+
+    
+    * **restriction_widget** (*ipywidgets.Widget*) – The widget that contains the constraint generator for all the species
+
+
+    * **restrictions** (*Dict[str, List[Tuple[int, int]]]*) – The dictionary with the restrictions that will be generated by the
+    widget for each specie. This will be initially empty and it will be
+    filled as the widget is used.
+
+
+
+<!-- !! processed by numpydoc !! -->
+
+#### parse_restrictions(restrictions=None, guess_proteins=False)
 Checks the format and validates of the restrictions for the alignment.
 
 
@@ -368,24 +414,24 @@ corresponding to the input ftops will be loaded.
 
 ### Methods
 
-| `add_ftop`(self, ftop)
+| `add_ftop`(ftop)
 
                           | Adds and identifies the molecule from the ftop to the system.
 
                                                                                                                                |
-| `add_molecule_top`(self, mol_top)
+| `add_molecule_top`(mol_top)
 
                | Adds a molecule to the system and find it in the gro file.
 
                                                                                                                                   |
 <!-- !! processed by numpydoc !! -->
 
-#### add_ftop(self, ftop: str)
+#### add_ftop(ftop)
 Adds and identifies the molecule from the ftop to the system.
 
 <!-- !! processed by numpydoc !! -->
 
-#### add_molecule_top(self, mol_top: gaddlemaps.components._components_top.MoleculeTop)
+#### add_molecule_top(mol_top)
 Adds a molecule to the system and find it in the gro file.
 
 <!-- !! processed by numpydoc !! -->
@@ -526,57 +572,57 @@ inherits from Residue so they have the same methods and properties
 
 ### Methods
 
-| `copy`(self, new_residues)
+| `copy`([new_residues])
 
-                      | Returns a copy of the molecule.
+                    | Returns a copy of the molecule.
 
                                                                                                                                                              |
-| `deep_copy`(self, new_residues)
+| `deep_copy`([new_residues])
 
-                 | Returns a deep copy of the molecule.
+               | Returns a deep copy of the molecule.
 
                                                                                                                                                         |
-| `distance_to`(self, residue, numpy.ndarray], …)
+| `distance_to`(residue[, box_vects, inv])
 
- | Returns the distance between self and residue.
+  | Returns the distance between self and residue.
 
                                                                                                                                               |
 | `from_files`(fgro, ftop)
 
-                        | Loads the molecule from gro and a compatible topology file.
+                  | Loads the molecule from gro and a compatible topology file.
 
                                                                                                                                  |
-| `index`(self, atom)
+| `index`(atom)
 
                              | Returns the index of the atom in the molecule.
 
                                                                                                                                               |
-| `move`(self, displacement)
+| `move`(displacement)
 
                       | Moves the residue a given displacement vector.
 
                                                                                                                                               |
-| `move_to`(self, new_position)
+| `move_to`(new_position)
 
                    | Moves the residue geometric_center to new_position.
 
                                                                                                                                          |
-| `remove_atom`(self, atom)
+| `remove_atom`(atom)
 
                        | Removes a given atom from the residue.
 
                                                                                                                                                       |
-| `rotate`(self, rotation_matrix)
+| `rotate`(rotation_matrix)
 
                  | Rotate the residue around its center of mass with a given rotation matrix.
 
                                                                                                                   |
-| `update_from_molecule_top`(self, mtop)
+| `update_from_molecule_top`(mtop)
 
           | Modifies the Residue atoms name to match the mtop.
 
                                                                                                                                           |
-| `write_gro`(self, fout)
+| `write_gro`(fout)
 
                          | Writes a .gro file with the residue conformation.
 
@@ -623,14 +669,14 @@ An array with the atoms positions.
 
 * **Type**
 
-    [numpy.ndarray](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)((N, 3))
+    [numpy.ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)((N, 3))
 
 
 <!-- !! processed by numpydoc !! -->
 
 * **Return type**
 
-    [`ndarray`](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)
+    [`ndarray`](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)
 
 
 
@@ -641,14 +687,14 @@ If one of the atoms has no velocity this returns None.
 
 * **Type**
 
-    [numpy.ndarray](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)((N, 3)) or [None](https://docs.python.org/3/library/constants.html#None)
+    [numpy.ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)((N, 3)) or [None](https://docs.python.org/3/library/constants.html#None)
 
 
 <!-- !! processed by numpydoc !! -->
 
 * **Return type**
 
-    [`Optional`](https://docs.python.org/3/library/typing.html#typing.Optional)[[`ndarray`](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)]
+    [`Optional`](https://docs.python.org/3/library/typing.html#typing.Optional)[[`ndarray`](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)]
 
 
 
@@ -675,7 +721,7 @@ maps.
 
 
 
-#### copy(self, new_residues: List[gaddlemaps.components._residue.Residue] = None)
+#### copy(new_residues=None)
 Returns a copy of the molecule.
 
 If new_molecule_gro is passed, the old residues will be replaced
@@ -706,7 +752,7 @@ completely independent new molecule use “deep_copy” method.
 
 <!-- !! processed by numpydoc !! -->
 
-#### deep_copy(self, new_residues: List[gaddlemaps.components._residue.Residue] = None)
+#### deep_copy(new_residues=None)
 Returns a deep copy of the molecule.
 
 If new_molecule_gro is passed, the old residues will be replaced
@@ -734,7 +780,7 @@ the original one.
 
 <!-- !! processed by numpydoc !! -->
 
-#### distance_to(self, residue: Union[ForwardRef('Residue'), numpy.ndarray], box_vects: numpy.ndarray = None, inv: bool = False)
+#### distance_to(residue, box_vects=None, inv=False)
 Returns the distance between self and residue.
 
 residue can be a Residue instance or a 3D vector.
@@ -743,10 +789,10 @@ residue can be a Residue instance or a 3D vector.
 * **Parameters**
 
     
-    * **residue** (*Residue** or *[*numpy.ndarray*](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)) – The residue or a point to compute the distance.
+    * **residue** (*Residue** or *[*numpy.ndarray*](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)) – The residue or a point to compute the distance.
 
 
-    * **box_vects** ([*numpy.ndarray*](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)) – The box vectors to apply periodic boundary conditions.
+    * **box_vects** ([*numpy.ndarray*](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)) – The box vectors to apply periodic boundary conditions.
 
 
     * **inv** ([*bool*](https://docs.python.org/3/library/functions.html#bool)) – If it is True, box_vects are considered as the inverse matrix of
@@ -785,7 +831,7 @@ without applying periodic boundary conditions.
 
 
 
-#### classmethod from_files(fgro: str, ftop: str)
+#### classmethod from_files(fgro, ftop)
 Loads the molecule from gro and a compatible topology file.
 
 
@@ -818,18 +864,18 @@ Coordinates of the geometric center of the residue.
 
 * **Type**
 
-    [numpy.ndarray](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)(3)
+    [numpy.ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)(3)
 
 
 <!-- !! processed by numpydoc !! -->
 
 * **Return type**
 
-    [`ndarray`](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)
+    [`ndarray`](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)
 
 
 
-#### index(self, atom: 'Atom')
+#### index(atom)
 Returns the index of the atom in the molecule.
 
 
@@ -869,29 +915,29 @@ The object with the topology information of the molecule.
 
 
 
-#### move(self, displacement: numpy.ndarray)
+#### move(displacement)
 Moves the residue a given displacement vector.
 
 
 * **Parameters**
 
-    **displacement** ([*numpy.ndarray*](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)*(**3**)*) – An array with the displacement vector.
+    **displacement** ([*numpy.ndarray*](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)*(**3**)*) – An array with the displacement vector.
 
 
 <!-- !! processed by numpydoc !! -->
 
-#### move_to(self, new_position: numpy.ndarray)
+#### move_to(new_position)
 Moves the residue geometric_center to new_position.
 
 
 * **Parameters**
 
-    **new_position** ([*numpy.ndarray*](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)*(**3**)*) – An array with the new position coordinates.
+    **new_position** ([*numpy.ndarray*](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)*(**3**)*) – An array with the new position coordinates.
 
 
 <!-- !! processed by numpydoc !! -->
 
-#### remove_atom(self, atom: 'AtomGro')
+#### remove_atom(atom)
 Removes a given atom from the residue.
 
 
@@ -1019,21 +1065,21 @@ same value.
 
 
 
-#### rotate(self, rotation_matrix: numpy.ndarray)
+#### rotate(rotation_matrix)
 Rotate the residue around its center of mass with a given rotation
 matrix.
 
 
 * **Parameters**
 
-    **rotation_matrix** ([*numpy.ndarray*](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)) – 3x3 array with the rotation matrix.
+    **rotation_matrix** ([*numpy.ndarray*](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)) – 3x3 array with the rotation matrix.
     ADVICE: create the matrix with the help of “rotation_matrix”
     function placed in the root of the package.
 
 
 <!-- !! processed by numpydoc !! -->
 
-#### update_from_molecule_top(self, mtop: 'MoleculeTop')
+#### update_from_molecule_top(mtop)
 Modifies the Residue atoms name to match the mtop.
 
 This method is very useful when you have a miss-match between the
@@ -1055,7 +1101,7 @@ atoms in the topology are in the Residue.
 
 <!-- !! processed by numpydoc !! -->
 
-#### write_gro(self, fout: str)
+#### write_gro(fout)
 Writes a .gro file with the residue conformation.
 
 

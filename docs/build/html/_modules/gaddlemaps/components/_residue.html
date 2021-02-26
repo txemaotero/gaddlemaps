@@ -1,58 +1,189 @@
 
-<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta charset="utf-8" />
-    <title>gaddlemaps.components._residue &#8212; Gaddle Maps  documentation</title>
-    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
-    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>gaddlemaps.components._residue &mdash; Gaddle Maps  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
     
-    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/language_data.js"></script>
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
     
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="../../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Gaddle Maps  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../components.html" accesskey="U">gaddlemaps.components</a> &#187;</li> 
-      </ul>
-    </div>  
+</head>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Gaddle Maps
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">GADDLE Maps simplified documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gaddlemaps.html">gaddlemaps package</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Gaddle Maps</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+          <li><a href="../components.html">gaddlemaps.components</a> &raquo;</li>
+        
+      <li>gaddlemaps.components._residue</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
             
   <h1>Source code for gaddlemaps.components._residue</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="c1">#    Gaddlemaps python module.</span>
+<span class="c1">#    Copyright (C) 2019-2021 José Manuel Otero Mato, Hadrián Montes Campos, Luis Miguel Varela Cabo</span>
+<span class="c1">#</span>
+<span class="c1">#    This program is free software: you can redistribute it and/or modify</span>
+<span class="c1">#    it under the terms of the GNU Affero General Public License as published by</span>
+<span class="c1">#    the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c1">#    (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#    This program is distributed in the hope that it will be useful,</span>
+<span class="c1">#    but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#    GNU Affero General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#    You should have received a copy of the GNU Affero General Public License</span>
+<span class="c1">#    along with this program.  If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">This submodule defines a Residue class that will constitute molecules.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="p">(</span><span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span><span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span>
                     <span class="n">overload</span><span class="p">)</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">..parsers</span> <span class="k">import</span> <span class="n">open_coordinate_file</span><span class="p">,</span> <span class="n">GroLine</span><span class="p">,</span> <span class="n">GroFile</span>
+<span class="kn">from</span> <span class="nn">..parsers</span> <span class="kn">import</span> <span class="n">open_coordinate_file</span><span class="p">,</span> <span class="n">GroLine</span><span class="p">,</span> <span class="n">GroFile</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">MoleculeTop</span>
+    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">MoleculeTop</span>
 
 
 <div class="viewcode-block" id="Residue"><a class="viewcode-back" href="../../../gaddlemaps.components.html#gaddlemaps.components.Residue">[docs]</a><span class="k">class</span> <span class="nc">Residue</span><span class="p">:</span>
@@ -78,7 +209,7 @@
 <span class="sd">        residue number or name.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atoms</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;AtomGro&#39;</span><span class="p">]):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atoms</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;AtomGro&#39;</span><span class="p">]):</span>
         <span class="n">residnames</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">residname</span> <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">atoms</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">residnames</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">((</span><span class="s1">&#39;Empty list of atoms are not allowed to &#39;</span>
@@ -86,32 +217,32 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">residnames</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">((</span><span class="s1">&#39;The atoms of a Residue must have the same&#39;</span>
                               <span class="s1">&#39; residue name and number. Found residues: &#39;</span>
-                              <span class="n">f</span><span class="s1">&#39;</span><span class="si">{residnames}</span><span class="s1">.&#39;</span><span class="p">))</span>
+                              <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">residnames</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_atoms_gro</span> <span class="o">=</span> <span class="n">atoms</span>
 
 
     <span class="nd">@overload</span>
-    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;AtomGro&#39;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;AtomGro&#39;</span><span class="p">:</span>
         <span class="o">...</span>
     <span class="nd">@overload</span>
-    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">slice</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;AtomGro&#39;</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">slice</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;AtomGro&#39;</span><span class="p">]:</span>
         <span class="o">...</span>
-    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atoms_gro</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="s1">&#39;AtomGro&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="s1">&#39;AtomGro&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
         <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atoms_gro</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">atom</span>
 
-    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_atoms_gro</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">f</span><span class="s1">&#39;Residue </span><span class="si">{self.resname}</span><span class="s1"> with number </span><span class="si">{self.resid}</span><span class="s1">.&#39;</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;Residue </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resname</span><span class="si">}</span><span class="s1"> with number </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resid</span><span class="si">}</span><span class="s1">.&#39;</span>
 
     <span class="fm">__repr__</span> <span class="o">=</span> <span class="fm">__str__</span>
 
-    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Two residues are equal if all their atoms are equal.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -119,15 +250,15 @@
             <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">at1</span> <span class="o">==</span> <span class="n">at2</span> <span class="k">for</span> <span class="n">at1</span><span class="p">,</span> <span class="n">at2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span>
         <span class="k">return</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="nf">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">element</span>
 
-    <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;Residue&#39;</span><span class="p">,</span> <span class="s1">&#39;AtomGro&#39;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">&#39;Residue&#39;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;Residue&#39;</span><span class="p">,</span> <span class="s1">&#39;AtomGro&#39;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">&#39;Residue&#39;</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Residue</span><span class="p">):</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">residname</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">residname</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">((</span><span class="s1">&#39;To add two Residues they must have the same&#39;</span>
                                   <span class="s1">&#39; residue name and number. Given residues:&#39;</span>
-                                  <span class="n">f</span><span class="s1">&#39; </span><span class="si">{self.residname}</span><span class="s1">, </span><span class="si">{other.residname}</span><span class="s1">.&#39;</span><span class="p">))</span>
+                                  <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">residname</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="n">other</span><span class="o">.</span><span class="n">residname</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">))</span>
             <span class="k">return</span> <span class="n">Residue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">atoms</span> <span class="o">+</span> <span class="n">other</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">AtomGro</span><span class="p">):</span>
             <span class="c1"># Only can be added if they have the same residname</span>
@@ -137,13 +268,13 @@
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">((</span><span class="s1">&#39;To add an AtomGro and a Residue &#39;</span>
                                   <span class="s1">&#39; they must have the same residue name and&#39;</span>
                                   <span class="s1">&#39; number. Given atom residue: &#39;</span>
-                                  <span class="n">f</span><span class="s1">&#39;</span><span class="si">{other.residname}</span><span class="s1">. Current residue: &#39;</span>
-                                  <span class="n">f</span><span class="s1">&#39;</span><span class="si">{self.residname}</span><span class="s1">.&#39;</span><span class="p">))</span>
+                                  <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">other</span><span class="o">.</span><span class="n">residname</span><span class="si">}</span><span class="s1">. Current residue: &#39;</span>
+                                  <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">residname</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">((</span><span class="s1">&#39;It is not possible to add a Residue and a &#39;</span>
-                             <span class="n">f</span><span class="s1">&#39;{type(other)}&#39;</span><span class="p">))</span>
+                             <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">__radd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;Residue&#39;</span><span class="p">,</span> <span class="s1">&#39;AtomGro&#39;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">&#39;Residue&#39;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__radd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;Residue&#39;</span><span class="p">,</span> <span class="s1">&#39;AtomGro&#39;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">&#39;Residue&#39;</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">other</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span> <span class="o">+</span> <span class="n">other</span>
@@ -166,7 +297,7 @@
     <span class="k">def</span> <span class="nf">atoms_positions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_positions</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">new_positions</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="mi">3</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">((</span><span class="s1">&#39;The new positions must be an array of shape &#39;</span>
-                              <span class="n">f</span><span class="s1">&#39;({len(self)}, 3)&#39;</span><span class="p">))</span>
+                              <span class="sa">f</span><span class="s1">&#39;(</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s1">, 3)&#39;</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">atom</span><span class="p">,</span> <span class="n">pos</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_positions</span><span class="p">):</span>
             <span class="n">atom</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">pos</span>
 
@@ -191,7 +322,7 @@
             <span class="k">return</span>
         <span class="k">if</span> <span class="n">new_velocities</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="mi">3</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">((</span><span class="s1">&#39;The new velocities must be an array of shape &#39;</span>
-                              <span class="n">f</span><span class="s1">&#39;({len(self)}, 3)&#39;</span><span class="p">))</span>
+                              <span class="sa">f</span><span class="s1">&#39;(</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s1">, 3)&#39;</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">atom</span><span class="p">,</span> <span class="n">vel</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_velocities</span><span class="p">):</span>
             <span class="n">atom</span><span class="o">.</span><span class="n">velocity</span> <span class="o">=</span> <span class="n">vel</span>
 
@@ -207,7 +338,7 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_ids</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s1">&#39;The new ids must have the same length as self.&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">new_ids</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;atomids must be integers, given: </span><span class="si">{new_ids}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;atomids must be integers, given: </span><span class="si">{</span><span class="n">new_ids</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">atom</span><span class="p">,</span> <span class="n">_id</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_ids</span><span class="p">):</span>
             <span class="n">atom</span><span class="o">.</span><span class="n">atomid</span> <span class="o">=</span> <span class="n">_id</span>
 
@@ -253,8 +384,8 @@
                 <span class="n">old_resname</span> <span class="o">=</span> <span class="n">new_resname</span>
                 <span class="n">new_resname</span> <span class="o">=</span> <span class="n">new_resname</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span>
                 <span class="n">warn_text</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;The input resname has more than 5 character &#39;</span>
-                             <span class="n">f</span><span class="s1">&#39; (</span><span class="si">{old_resname}</span><span class="s1">). This has been modified to&#39;</span>
-                             <span class="n">f</span><span class="s1">&#39; </span><span class="si">{new_resname}</span><span class="s1">.&#39;</span><span class="p">)</span>
+                             <span class="sa">f</span><span class="s1">&#39; (</span><span class="si">{</span><span class="n">old_resname</span><span class="si">}</span><span class="s1">). This has been modified to&#39;</span>
+                             <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{</span><span class="n">new_resname</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">warn_text</span><span class="p">,</span> <span class="ne">UserWarning</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
                 <span class="n">atom</span><span class="o">.</span><span class="n">resname</span> <span class="o">=</span> <span class="n">new_resname</span>
@@ -381,8 +512,8 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mtop</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">((</span><span class="n">f</span><span class="s1">&#39;The Residue with name </span><span class="si">{self.resname}</span><span class="s1"> &#39;</span>
-                              <span class="n">f</span><span class="s1">&#39;missmatch the itp molecule </span><span class="si">{mtop.name}</span><span class="s1">.&#39;</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">((</span><span class="sa">f</span><span class="s1">&#39;The Residue with name </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resname</span><span class="si">}</span><span class="s1"> &#39;</span>
+                              <span class="sa">f</span><span class="s1">&#39;missmatch the itp molecule </span><span class="si">{</span><span class="n">mtop</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">at_gro</span><span class="p">,</span> <span class="n">at_itp</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mtop</span><span class="p">):</span>
             <span class="n">at_gro</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">at_itp</span><span class="o">.</span><span class="n">name</span></div>
 
@@ -462,7 +593,7 @@
 <span class="sd">        this attribute is set to None.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parsed_gro_line</span><span class="p">:</span> <span class="n">GroLine</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parsed_gro_line</span><span class="p">:</span> <span class="n">GroLine</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">AtomGro</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resid</span><span class="p">,</span>
          <span class="bp">self</span><span class="o">.</span><span class="n">resname</span><span class="p">,</span>
@@ -479,7 +610,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">velocities</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s1">&#39;AtomGro&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Residue&#39;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s1">&#39;AtomGro&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Residue&#39;</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">AtomGro</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">other</span><span class="o">.</span><span class="n">residname</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">residname</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">Residue</span><span class="p">([</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">])</span>
@@ -494,7 +625,7 @@
             <span class="c1"># has the addition defined</span>
             <span class="k">return</span> <span class="n">other</span> <span class="o">+</span> <span class="bp">self</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">string</span> <span class="o">=</span> <span class="s1">&#39;Atom </span><span class="si">{}</span><span class="s1"> with residue </span><span class="si">{}</span><span class="s1"> and number </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                                                                  <span class="bp">self</span><span class="o">.</span><span class="n">resname</span><span class="p">,</span>
                                                                  <span class="bp">self</span><span class="o">.</span><span class="n">resid</span><span class="p">)</span>
@@ -502,7 +633,7 @@
 
     <span class="fm">__repr__</span> <span class="o">=</span> <span class="fm">__str__</span>
 
-    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Two AtomGro are equal if they have the same name and the same residue</span>
 <span class="sd">        name.</span>
@@ -512,7 +643,7 @@
                     <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">element</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
         <span class="k">return</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="nf">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">element</span>
 
 <div class="viewcode-block" id="AtomGro.gro_line"><a class="viewcode-back" href="../../../gaddlemaps.components.html#gaddlemaps.components.AtomGro.gro_line">[docs]</a>    <span class="k">def</span> <span class="nf">gro_line</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parsed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]]:</span>
@@ -586,42 +717,47 @@
                            <span class="s1">&#39; not be parsed.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)))</span></div>
 </pre></div>
 
+           </div>
+           
           </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019-2021, Jose Manuel Otero Mato, Hadrián Montes Campos, Luis Miguel Varela Cabo.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="../../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">Gaddle Maps  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../components.html" >gaddlemaps.components</a> &#187;</li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2020, Jose Manuel Otero Mato, Hadrián Montes Campos.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
-    </div>
-  </body>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
 </html>

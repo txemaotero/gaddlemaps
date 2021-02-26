@@ -24,6 +24,141 @@ AtomGro and AtomTop).
 
 <!-- !! processed by numpydoc !! -->
 
+### class gaddlemaps.components.Atom(atom_top, atom_gro)
+Bases: [`object`](https://docs.python.org/3/library/functions.html#object)
+
+An atom class that wraps the AtomTop and AtomGro classes.
+
+You can access to the methods and attributes that both AtomGro and
+AtomItp have. To create the atom object, both input atoms should have the
+same resname and name attributes. On the other hand, only the attributes
+from the AtomGro can be changed (e.g. positions, velocities, …) excluding
+the resname and name.
+
+
+* **Parameters**
+
+    
+    * **atom_top** (*AtomTop*) – The AtomTop object.
+
+
+    * **atom_gro** (*AtomGro*) – The AtomGro object.
+
+
+
+* **Raises**
+
+    
+    * [**IOError**](https://docs.python.org/3/library/exceptions.html#IOError) – If the atom_gro and atom_top do not correspond to the same atom.
+
+
+    * [**TypeError**](https://docs.python.org/3/library/exceptions.html#TypeError) – If the inputs are not instances of the corresponding classes.
+
+
+
+* **Attributes**
+
+    `atom_gro`
+
+        AtomGro : The input AtomGro object
+
+    `atom_top`
+
+        AtomTop : The input AtomTop object
+
+    `gro_resid`
+
+        Residue number for the gro part of the atom (atom_gro).
+
+    `top_resid`
+
+        Residue number for the part of the atom with the topology (atom_top).
+
+
+### Methods
+
+| `copy`()
+
+ | Returns a copy of self.
+
+ |
+<!-- !! processed by numpydoc !! -->
+
+#### property atom_gro()
+The input AtomGro object
+
+
+* **Type**
+
+    AtomGro
+
+
+<!-- !! processed by numpydoc !! -->
+
+* **Return type**
+
+    `AtomGro`
+
+
+
+#### property atom_top()
+The input AtomTop object
+
+
+* **Type**
+
+    AtomTop
+
+
+<!-- !! processed by numpydoc !! -->
+
+* **Return type**
+
+    `AtomTop`
+
+
+
+#### copy()
+Returns a copy of self.
+
+Only the gro atom is copied. The atom_top remains the same.
+
+
+* **Returns**
+
+    **new_atom** – The copied atom.
+
+
+
+* **Return type**
+
+    Atom
+
+
+<!-- !! processed by numpydoc !! -->
+
+#### property gro_resid()
+Residue number for the gro part of the atom (atom_gro).
+
+<!-- !! processed by numpydoc !! -->
+
+* **Return type**
+
+    [`int`](https://docs.python.org/3/library/functions.html#int)
+
+
+
+#### property top_resid()
+Residue number for the part of the atom with the topology (atom_top).
+
+<!-- !! processed by numpydoc !! -->
+
+* **Return type**
+
+    [`int`](https://docs.python.org/3/library/functions.html#int)
+
+
+
 ### class gaddlemaps.components.AtomGro(parsed_gro_line)
 Bases: [`object`](https://docs.python.org/3/library/functions.html#object)
 
@@ -114,19 +249,19 @@ this attribute is set to None.
 
 ### Methods
 
-| `copy`(self)
+| `copy`()
 
- | Returns a copy of the atom.
+                                  | Returns a copy of the atom.
 
- |
-| `gro_line`(self, parsed)
+                                                                                                                                                                 |
+| `gro_line`([parsed])
 
                       | Returns the gro line corresponding to the atom.
 
                                                                                                                                              |
 <!-- !! processed by numpydoc !! -->
 
-#### copy(self)
+#### copy()
 Returns a copy of the atom.
 
 You can safely change the attributes of the returned atom without
@@ -164,7 +299,7 @@ alphabetic character in the atom name.
 
 
 
-#### gro_line(self, parsed: bool = True)
+#### gro_line(parsed=True)
 Returns the gro line corresponding to the atom.
 
 
@@ -251,24 +386,24 @@ A set with the hash of the atoms that are connected to self.
 
 ### Methods
 
-| `closest_atoms`(self, natoms)
+| `closest_atoms`([natoms])
 
                  | Returns a list with natoms index of bonded atoms to self.
 
                                                                                                                                    |
-| `connect`(self, atom)
+| `connect`(atom)
 
-                         | Connects self with other atom setting the bond.
+                           | Connects self with other atom setting the bond.
 
                                                                                                                                              |
-| `copy`(self)
+| `copy`()
 
                                   | Returns a copy of the current atom.
 
                                                                                                                                                          |
 <!-- !! processed by numpydoc !! -->
 
-#### closest_atoms(self, natoms: int = 2)
+#### closest_atoms(natoms=2)
 Returns a list with natoms index of bonded atoms to self.
 
 If more than natoms are bonded self, the natoms  with lower id_num are
@@ -294,7 +429,7 @@ returned.
 
 <!-- !! processed by numpydoc !! -->
 
-#### connect(self, atom: 'AtomTop')
+#### connect(atom)
 Connects self with other atom setting the bond.
 
 
@@ -305,7 +440,7 @@ Connects self with other atom setting the bond.
 
 <!-- !! processed by numpydoc !! -->
 
-#### copy(self)
+#### copy()
 Returns a copy of the current atom.
 
 
@@ -336,767 +471,6 @@ An identifier of the residue (resid+name)
 * **Return type**
 
     [`str`](https://docs.python.org/3/library/stdtypes.html#str)
-
-
-
-### class gaddlemaps.components.Atom(atom_top, atom_gro)
-Bases: [`object`](https://docs.python.org/3/library/functions.html#object)
-
-An atom class that wraps the AtomTop and AtomGro classes.
-
-You can access to the methods and attributes that both AtomGro and
-AtomItp have. To create the atom object, both input atoms should have the
-same resname and name attributes. On the other hand, only the attributes
-from the AtomGro can be changed (e.g. positions, velocities, …) excluding
-the resname and name.
-
-
-* **Parameters**
-
-    
-    * **atom_top** (*AtomTop*) – The AtomTop object.
-
-
-    * **atom_gro** (*AtomGro*) – The AtomGro object.
-
-
-
-* **Raises**
-
-    
-    * [**IOError**](https://docs.python.org/3/library/exceptions.html#IOError) – If the atom_gro and atom_top do not correspond to the same atom.
-
-
-    * [**TypeError**](https://docs.python.org/3/library/exceptions.html#TypeError) – If the inputs are not instances of the corresponding classes.
-
-
-
-* **Attributes**
-
-    `atom_gro`
-
-        AtomGro : The input AtomGro object
-
-    `atom_top`
-
-        AtomTop : The input AtomTop object
-
-    `gro_resid`
-
-        Residue number for the gro part of the atom (atom_gro).
-
-    `top_resid`
-
-        Residue number for the part of the atom with the topology (atom_top).
-
-
-### Methods
-
-| `copy`(self)
-
-                                  | Returns a copy of self.
-
-                                                                                                                                                                     |
-<!-- !! processed by numpydoc !! -->
-
-#### property atom_gro()
-The input AtomGro object
-
-
-* **Type**
-
-    AtomGro
-
-
-<!-- !! processed by numpydoc !! -->
-
-* **Return type**
-
-    `AtomGro`
-
-
-
-#### property atom_top()
-The input AtomTop object
-
-
-* **Type**
-
-    AtomTop
-
-
-<!-- !! processed by numpydoc !! -->
-
-* **Return type**
-
-    `AtomTop`
-
-
-
-#### copy(self)
-Returns a copy of self.
-
-Only the gro atom is copied. The atom_top remains the same.
-
-
-* **Returns**
-
-    **new_atom** – The copied atom.
-
-
-
-* **Return type**
-
-    Atom
-
-
-<!-- !! processed by numpydoc !! -->
-
-#### property gro_resid()
-Residue number for the gro part of the atom (atom_gro).
-
-<!-- !! processed by numpydoc !! -->
-
-* **Return type**
-
-    [`int`](https://docs.python.org/3/library/functions.html#int)
-
-
-
-#### property top_resid()
-Residue number for the part of the atom with the topology (atom_top).
-
-<!-- !! processed by numpydoc !! -->
-
-* **Return type**
-
-    [`int`](https://docs.python.org/3/library/functions.html#int)
-
-
-
-### class gaddlemaps.components.Residue(atoms)
-Bases: [`object`](https://docs.python.org/3/library/functions.html#object)
-
-A class with the information of a residue in a .gro file.
-
-This class creates objects that are enumerations of AtomGro instances. It
-has methods to manipulate atoms positions maintaining the shape of the
-residue. This class have to be initialized with non empty list of atoms.
-
-You can add two residues if the atoms from both residues have the same
-residue name and number. This can also be done with just one atom and the
-same check will be done.
-
-
-* **Parameters**
-
-    **atoms** (*list of AtomGro*) – A list with the atoms of the residue.
-
-
-:raises ValueError : If the the input list of atoms is empty or they have different: residue number or name.
-
-
-* **Attributes**
-
-    `atoms`
-
-        list of AtomGro: List with a copy of the atoms of the residue.
-
-    `atoms_ids`
-
-        list of int: A list with the ids of the atoms of the residue.
-
-    `atoms_positions`
-
-        numpy.ndarray((N, 3)) : An array with the atoms positions.
-
-    `atoms_velocities`
-
-        numpy.ndarray((N, 3)) or None : An array with the atoms velocities.
-
-    `distance_to_zero`
-
-        float : The distance between the geometric_center and (0, 0, 0)
-
-    `geometric_center`
-
-        numpy.ndarray(3): Coordinates of the geometric center of the residue.
-
-    `resid`
-
-        int: Residue number of the residue.
-
-    `residname`
-
-        string: An identifier of the residue (resid+name)
-
-    `resname`
-
-        string: Resname of the residue.
-
-    `x`
-
-        float: The x coordinate of the geometric center of the residue.
-
-    `y`
-
-        float: The y coordinate of the geometric center of the residue.
-
-    `z`
-
-        float: The z coordinate of the geometric center of the residue.
-
-
-### Methods
-
-| `copy`(self)
-
-                                  | Returns a copy of the residue.
-
-                                                                                                                                                              |
-| `distance_to`(self, residue, numpy.ndarray], …)
-
- | Returns the distance between self and residue.
-
-                                                                                                                                              |
-| `move`(self, displacement)
-
-                      | Moves the residue a given displacement vector.
-
-                                                                                                                                              |
-| `move_to`(self, new_position)
-
-                   | Moves the residue geometric_center to new_position.
-
-                                                                                                                                         |
-| `remove_atom`(self, atom)
-
-                       | Removes a given atom from the residue.
-
-                                                                                                                                                      |
-| `rotate`(self, rotation_matrix)
-
-                 | Rotate the residue around its center of mass with a given rotation matrix.
-
-                                                                                                                  |
-| `update_from_molecule_top`(self, mtop)
-
-          | Modifies the Residue atoms name to match the mtop.
-
-                                                                                                                                          |
-| `write_gro`(self, fout)
-
-                         | Writes a .gro file with the residue conformation.
-
-                                                                                                                                           |
-<!-- !! processed by numpydoc !! -->
-
-#### property atoms()
-List with a copy of the atoms of the residue.
-
-
-* **Type**
-
-    list of AtomGro
-
-
-<!-- !! processed by numpydoc !! -->
-
-* **Return type**
-
-    [`List`](https://docs.python.org/3/library/typing.html#typing.List)[`AtomGro`]
-
-
-
-#### property atoms_ids()
-A list with the ids of the atoms of the residue.
-
-
-* **Type**
-
-    list of int
-
-
-<!-- !! processed by numpydoc !! -->
-
-* **Return type**
-
-    [`List`](https://docs.python.org/3/library/typing.html#typing.List)[[`int`](https://docs.python.org/3/library/functions.html#int)]
-
-
-
-#### property atoms_positions()
-An array with the atoms positions.
-
-
-* **Type**
-
-    [numpy.ndarray](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)((N, 3))
-
-
-<!-- !! processed by numpydoc !! -->
-
-* **Return type**
-
-    [`ndarray`](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)
-
-
-
-#### property atoms_velocities()
-An array with the atoms velocities.
-If one of the atoms has no velocity this returns None.
-
-
-* **Type**
-
-    [numpy.ndarray](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)((N, 3)) or [None](https://docs.python.org/3/library/constants.html#None)
-
-
-<!-- !! processed by numpydoc !! -->
-
-* **Return type**
-
-    [`Optional`](https://docs.python.org/3/library/typing.html#typing.Optional)[[`ndarray`](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)]
-
-
-
-#### copy(self)
-Returns a copy of the residue.
-
-
-* **Returns**
-
-    **residue** – The copy of the residue.
-
-
-
-* **Return type**
-
-    Residue
-
-
-<!-- !! processed by numpydoc !! -->
-
-#### distance_to(self, residue: Union[ForwardRef('Residue'), numpy.ndarray], box_vects: numpy.ndarray = None, inv: bool = False)
-Returns the distance between self and residue.
-
-residue can be a Residue instance or a 3D vector.
-
-
-* **Parameters**
-
-    
-    * **residue** (*Residue** or *[*numpy.ndarray*](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)) – The residue or a point to compute the distance.
-
-
-    * **box_vects** ([*numpy.ndarray*](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)) – The box vectors to apply periodic boundary conditions.
-
-
-    * **inv** ([*bool*](https://docs.python.org/3/library/functions.html#bool)) – If it is True, box_vects are considered as the inverse matrix of
-    the actual box_vects for a better performance.
-
-
-
-* **Returns**
-
-    **distance** – The euclidean distance.
-
-
-
-* **Return type**
-
-    [float](https://docs.python.org/3/library/functions.html#float)
-
-
-<!-- !! processed by numpydoc !! -->
-
-#### property distance_to_zero()
-The distance between the geometric_center and (0, 0, 0)
-without applying periodic boundary conditions.
-
-
-* **Type**
-
-    [float](https://docs.python.org/3/library/functions.html#float)
-
-
-<!-- !! processed by numpydoc !! -->
-
-* **Return type**
-
-    [`float`](https://docs.python.org/3/library/functions.html#float)
-
-
-
-#### property geometric_center()
-Coordinates of the geometric center of the residue.
-
-
-* **Type**
-
-    [numpy.ndarray](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)(3)
-
-
-<!-- !! processed by numpydoc !! -->
-
-* **Return type**
-
-    [`ndarray`](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)
-
-
-
-#### move(self, displacement: numpy.ndarray)
-Moves the residue a given displacement vector.
-
-
-* **Parameters**
-
-    **displacement** ([*numpy.ndarray*](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)*(**3**)*) – An array with the displacement vector.
-
-
-<!-- !! processed by numpydoc !! -->
-
-#### move_to(self, new_position: numpy.ndarray)
-Moves the residue geometric_center to new_position.
-
-
-* **Parameters**
-
-    **new_position** ([*numpy.ndarray*](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)*(**3**)*) – An array with the new position coordinates.
-
-
-<!-- !! processed by numpydoc !! -->
-
-#### remove_atom(self, atom: 'AtomGro')
-Removes a given atom from the residue.
-
-
-* **Parameters**
-
-    **atom** (*AtomGro*) – The atom you want to remove from the residue.
-
-
-<!-- !! processed by numpydoc !! -->
-
-#### property resid()
-Residue number of the residue.
-
-
-* **Type**
-
-    [int](https://docs.python.org/3/library/functions.html#int)
-
-
-<!-- !! processed by numpydoc !! -->
-
-* **Return type**
-
-    [`int`](https://docs.python.org/3/library/functions.html#int)
-
-
-
-#### property residname()
-An identifier of the residue (resid+name)
-
-
-* **Type**
-
-    string
-
-
-<!-- !! processed by numpydoc !! -->
-
-* **Return type**
-
-    [`str`](https://docs.python.org/3/library/stdtypes.html#str)
-
-
-
-#### property resname()
-Resname of the residue.
-
-
-* **Type**
-
-    string
-
-
-<!-- !! processed by numpydoc !! -->
-
-* **Return type**
-
-    [`str`](https://docs.python.org/3/library/stdtypes.html#str)
-
-
-
-#### rotate(self, rotation_matrix: numpy.ndarray)
-Rotate the residue around its center of mass with a given rotation
-matrix.
-
-
-* **Parameters**
-
-    **rotation_matrix** ([*numpy.ndarray*](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)) – 3x3 array with the rotation matrix.
-    ADVICE: create the matrix with the help of “rotation_matrix”
-    function placed in the root of the package.
-
-
-<!-- !! processed by numpydoc !! -->
-
-#### update_from_molecule_top(self, mtop: 'MoleculeTop')
-Modifies the Residue atoms name to match the mtop.
-
-This method is very useful when you have a miss-match between the
-atom names in the topology and gro files. This will modify the Residue
-atoms names to match the names in the topology. Make sure that all the
-atoms in the topology are in the Residue.
-
-
-* **Parameters**
-
-    **mtop** (*MoleculeTop*) – The molecule to match.
-
-
-
-* **Raises**
-
-    [**ValueError**](https://docs.python.org/3/library/exceptions.html#ValueError) – If number of atoms in self and in mtop does not match.
-
-
-<!-- !! processed by numpydoc !! -->
-
-#### write_gro(self, fout: str)
-Writes a .gro file with the residue conformation.
-
-
-* **Parameters**
-
-    **fout** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – The path with the file to write the information.
-
-
-<!-- !! processed by numpydoc !! -->
-
-#### property x()
-The x coordinate of the geometric center of the residue.
-
-
-* **Type**
-
-    [float](https://docs.python.org/3/library/functions.html#float)
-
-
-<!-- !! processed by numpydoc !! -->
-
-* **Return type**
-
-    [`float`](https://docs.python.org/3/library/functions.html#float)
-
-
-
-#### property y()
-The y coordinate of the geometric center of the residue.
-
-
-* **Type**
-
-    [float](https://docs.python.org/3/library/functions.html#float)
-
-
-<!-- !! processed by numpydoc !! -->
-
-* **Return type**
-
-    [`float`](https://docs.python.org/3/library/functions.html#float)
-
-
-
-#### property z()
-The z coordinate of the geometric center of the residue.
-
-
-* **Type**
-
-    [float](https://docs.python.org/3/library/functions.html#float)
-
-
-<!-- !! processed by numpydoc !! -->
-
-* **Return type**
-
-    [`float`](https://docs.python.org/3/library/functions.html#float)
-
-
-
-### class gaddlemaps.components.MoleculeTop(ftop, file_format=None)
-Bases: [`object`](https://docs.python.org/3/library/functions.html#object)
-
-Loads molecules from a topology file.
-
-This class behaves like a list of atoms which has bonds defined. The
-appropriate parser will be used based on the input file extension. The
-available parsers are summarized in the class attribute “PARSERS”. In this
-attribute, the keys are the files extensions and the values the
-corresponding functions that extracts the information from the files with
-that extensions. These functions should return:
-
-> 
-> * The name of the molecule
-
-
-> * A list with tuples with the atoms and residues names in order of
-
-> appearance in the file.
-> - A list with tuples with atoms index (referred to the atoms_info
-> indexes) that are bonded.
-
-
-* **Parameters**
-
-    
-    * **ftop** (*string*) – The path to the file with the molecule name and bonds information.
-
-
-    * **file_format** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)*, **Optional*) – The file extension of ftop. If it is None this will be taken from
-    ftop.
-
-
-
-* **Raises**
-
-    
-    * [**ValueError**](https://docs.python.org/3/library/exceptions.html#ValueError) – If the file format is not supported.
-
-
-    * [**IOError**](https://docs.python.org/3/library/exceptions.html#IOError) – If the input file misses information.
-
-
-
-* **Attributes**
-
-    `resids`
-
-        list of str: Residue names of the atoms without consecutive
-
-    `resname_len_list`
-
-        list of tuple(str, int) :
-
-    `resnames`
-
-        list of str: Residue names of the atoms without consecutive
-
-
-### Methods
-
-| `copy`(self)
-
-                                    | Returns a copy of the molecule_top.
-
-                                                                                                                                                         |
-| `index`(self, atom)
-
-                             | Returns the index of the atom in the molecule.
-
-                                                                                                                                              |
-<!-- !! processed by numpydoc !! -->
-
-#### copy(self)
-Returns a copy of the molecule_top.
-
-The atoms forming the copy are not the same objects as the original
-molecule so you do not have to worry about linked objects.
-
-
-* **Returns**
-
-    **molecule_top** – The copy of the molecule.
-
-
-
-* **Return type**
-
-    MoleculeTop
-
-
-<!-- !! processed by numpydoc !! -->
-
-#### index(self, atom: 'AtomTop')
-Returns the index of the atom in the molecule.
-
-
-* **Parameters**
-
-    **atom** (*AtomTop*) – The atom to find the index.
-
-
-
-* **Returns**
-
-    **index** – The index of the atom in the molecule.
-
-
-
-* **Return type**
-
-    [int](https://docs.python.org/3/library/functions.html#int)
-
-
-<!-- !! processed by numpydoc !! -->
-
-#### property resids()
-Residue names of the atoms without consecutive
-
-    repetitions.
-
-To set this property a list with the same length of residues must be
-passed.
-
-
-* **Type**
-
-    list of str
-
-
-<!-- !! processed by numpydoc !! -->
-
-* **Return type**
-
-    [`List`](https://docs.python.org/3/library/typing.html#typing.List)[[`int`](https://docs.python.org/3/library/functions.html#int)]
-
-
-
-#### property resname_len_list()
-list of tuple(str, int):
-[(resname_1, number_of_atoms_with_resname_1),
-(resname_2, number_of_atoms_with_resname_2), …]
-
-<!-- !! processed by numpydoc !! -->
-
-* **Return type**
-
-    [`List`](https://docs.python.org/3/library/typing.html#typing.List)[[`Tuple`](https://docs.python.org/3/library/typing.html#typing.Tuple)[[`str`](https://docs.python.org/3/library/stdtypes.html#str), [`int`](https://docs.python.org/3/library/functions.html#int)]]
-
-
-
-#### property resnames()
-Residue names of the atoms without consecutive
-
-    repetitions.
-
-To set this property a list with the same length of residues must be
-passed.
-
-
-* **Type**
-
-    list of str
-
-
-<!-- !! processed by numpydoc !! -->
-
-* **Return type**
-
-    [`List`](https://docs.python.org/3/library/typing.html#typing.List)[[`str`](https://docs.python.org/3/library/stdtypes.html#str)]
 
 
 
@@ -1205,57 +579,57 @@ inherits from Residue so they have the same methods and properties
 
 ### Methods
 
-| `copy`(self, new_residues)
+| `copy`([new_residues])
 
-                      | Returns a copy of the molecule.
+                    | Returns a copy of the molecule.
 
                                                                                                                                                              |
-| `deep_copy`(self, new_residues)
+| `deep_copy`([new_residues])
 
-                 | Returns a deep copy of the molecule.
+               | Returns a deep copy of the molecule.
 
                                                                                                                                                         |
-| `distance_to`(self, residue, numpy.ndarray], …)
+| `distance_to`(residue[, box_vects, inv])
 
- | Returns the distance between self and residue.
+  | Returns the distance between self and residue.
 
                                                                                                                                               |
 | `from_files`(fgro, ftop)
 
-                        | Loads the molecule from gro and a compatible topology file.
+                  | Loads the molecule from gro and a compatible topology file.
 
                                                                                                                                  |
-| `index`(self, atom)
+| `index`(atom)
 
                              | Returns the index of the atom in the molecule.
 
                                                                                                                                               |
-| `move`(self, displacement)
+| `move`(displacement)
 
                       | Moves the residue a given displacement vector.
 
                                                                                                                                               |
-| `move_to`(self, new_position)
+| `move_to`(new_position)
 
                    | Moves the residue geometric_center to new_position.
 
                                                                                                                                          |
-| `remove_atom`(self, atom)
+| `remove_atom`(atom)
 
                        | Removes a given atom from the residue.
 
                                                                                                                                                       |
-| `rotate`(self, rotation_matrix)
+| `rotate`(rotation_matrix)
 
                  | Rotate the residue around its center of mass with a given rotation matrix.
 
                                                                                                                   |
-| `update_from_molecule_top`(self, mtop)
+| `update_from_molecule_top`(mtop)
 
           | Modifies the Residue atoms name to match the mtop.
 
                                                                                                                                           |
-| `write_gro`(self, fout)
+| `write_gro`(fout)
 
                          | Writes a .gro file with the residue conformation.
 
@@ -1302,14 +676,14 @@ An array with the atoms positions.
 
 * **Type**
 
-    [numpy.ndarray](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)((N, 3))
+    [numpy.ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)((N, 3))
 
 
 <!-- !! processed by numpydoc !! -->
 
 * **Return type**
 
-    [`ndarray`](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)
+    [`ndarray`](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)
 
 
 
@@ -1320,14 +694,14 @@ If one of the atoms has no velocity this returns None.
 
 * **Type**
 
-    [numpy.ndarray](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)((N, 3)) or [None](https://docs.python.org/3/library/constants.html#None)
+    [numpy.ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)((N, 3)) or [None](https://docs.python.org/3/library/constants.html#None)
 
 
 <!-- !! processed by numpydoc !! -->
 
 * **Return type**
 
-    [`Optional`](https://docs.python.org/3/library/typing.html#typing.Optional)[[`ndarray`](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)]
+    [`Optional`](https://docs.python.org/3/library/typing.html#typing.Optional)[[`ndarray`](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)]
 
 
 
@@ -1354,7 +728,7 @@ maps.
 
 
 
-#### copy(self, new_residues: List[gaddlemaps.components._residue.Residue] = None)
+#### copy(new_residues=None)
 Returns a copy of the molecule.
 
 If new_molecule_gro is passed, the old residues will be replaced
@@ -1385,7 +759,7 @@ completely independent new molecule use “deep_copy” method.
 
 <!-- !! processed by numpydoc !! -->
 
-#### deep_copy(self, new_residues: List[gaddlemaps.components._residue.Residue] = None)
+#### deep_copy(new_residues=None)
 Returns a deep copy of the molecule.
 
 If new_molecule_gro is passed, the old residues will be replaced
@@ -1413,7 +787,7 @@ the original one.
 
 <!-- !! processed by numpydoc !! -->
 
-#### distance_to(self, residue: Union[ForwardRef('Residue'), numpy.ndarray], box_vects: numpy.ndarray = None, inv: bool = False)
+#### distance_to(residue, box_vects=None, inv=False)
 Returns the distance between self and residue.
 
 residue can be a Residue instance or a 3D vector.
@@ -1422,10 +796,10 @@ residue can be a Residue instance or a 3D vector.
 * **Parameters**
 
     
-    * **residue** (*Residue** or *[*numpy.ndarray*](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)) – The residue or a point to compute the distance.
+    * **residue** (*Residue** or *[*numpy.ndarray*](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)) – The residue or a point to compute the distance.
 
 
-    * **box_vects** ([*numpy.ndarray*](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)) – The box vectors to apply periodic boundary conditions.
+    * **box_vects** ([*numpy.ndarray*](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)) – The box vectors to apply periodic boundary conditions.
 
 
     * **inv** ([*bool*](https://docs.python.org/3/library/functions.html#bool)) – If it is True, box_vects are considered as the inverse matrix of
@@ -1464,7 +838,7 @@ without applying periodic boundary conditions.
 
 
 
-#### classmethod from_files(fgro: str, ftop: str)
+#### classmethod from_files(fgro, ftop)
 Loads the molecule from gro and a compatible topology file.
 
 
@@ -1497,18 +871,18 @@ Coordinates of the geometric center of the residue.
 
 * **Type**
 
-    [numpy.ndarray](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)(3)
+    [numpy.ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)(3)
 
 
 <!-- !! processed by numpydoc !! -->
 
 * **Return type**
 
-    [`ndarray`](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)
+    [`ndarray`](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)
 
 
 
-#### index(self, atom: 'Atom')
+#### index(atom)
 Returns the index of the atom in the molecule.
 
 
@@ -1548,29 +922,29 @@ The object with the topology information of the molecule.
 
 
 
-#### move(self, displacement: numpy.ndarray)
+#### move(displacement)
 Moves the residue a given displacement vector.
 
 
 * **Parameters**
 
-    **displacement** ([*numpy.ndarray*](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)*(**3**)*) – An array with the displacement vector.
+    **displacement** ([*numpy.ndarray*](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)*(**3**)*) – An array with the displacement vector.
 
 
 <!-- !! processed by numpydoc !! -->
 
-#### move_to(self, new_position: numpy.ndarray)
+#### move_to(new_position)
 Moves the residue geometric_center to new_position.
 
 
 * **Parameters**
 
-    **new_position** ([*numpy.ndarray*](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)*(**3**)*) – An array with the new position coordinates.
+    **new_position** ([*numpy.ndarray*](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)*(**3**)*) – An array with the new position coordinates.
 
 
 <!-- !! processed by numpydoc !! -->
 
-#### remove_atom(self, atom: 'AtomGro')
+#### remove_atom(atom)
 Removes a given atom from the residue.
 
 
@@ -1698,21 +1072,21 @@ same value.
 
 
 
-#### rotate(self, rotation_matrix: numpy.ndarray)
+#### rotate(rotation_matrix)
 Rotate the residue around its center of mass with a given rotation
 matrix.
 
 
 * **Parameters**
 
-    **rotation_matrix** ([*numpy.ndarray*](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)) – 3x3 array with the rotation matrix.
+    **rotation_matrix** ([*numpy.ndarray*](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)) – 3x3 array with the rotation matrix.
     ADVICE: create the matrix with the help of “rotation_matrix”
     function placed in the root of the package.
 
 
 <!-- !! processed by numpydoc !! -->
 
-#### update_from_molecule_top(self, mtop: 'MoleculeTop')
+#### update_from_molecule_top(mtop)
 Modifies the Residue atoms name to match the mtop.
 
 This method is very useful when you have a miss-match between the
@@ -1734,7 +1108,7 @@ atoms in the topology are in the Residue.
 
 <!-- !! processed by numpydoc !! -->
 
-#### write_gro(self, fout: str)
+#### write_gro(fout)
 Writes a .gro file with the residue conformation.
 
 
@@ -1796,6 +1170,724 @@ The z coordinate of the geometric center of the residue.
 
 
 
+### class gaddlemaps.components.MoleculeTop(ftop, file_format=None)
+Bases: [`object`](https://docs.python.org/3/library/functions.html#object)
+
+Loads molecules from a topology file.
+
+This class behaves like a list of atoms which has bonds defined. The
+appropriate parser will be used based on the input file extension. The
+available parsers are summarized in the class attribute “PARSERS”. In this
+attribute, the keys are the files extensions and the values the
+corresponding functions that extracts the information from the files with
+that extensions. These functions should return:
+
+> 
+> * The name of the molecule
+
+
+> * A list with tuples with the atoms and residues names in order of
+
+> appearance in the file.
+> - A list with tuples with atoms index (referred to the atoms_info
+> indexes) that are bonded.
+
+
+* **Parameters**
+
+    
+    * **ftop** (*string*) – The path to the file with the molecule name and bonds information.
+
+
+    * **file_format** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)*, **Optional*) – The file extension of ftop. If it is None this will be taken from
+    ftop.
+
+
+
+* **Raises**
+
+    
+    * [**ValueError**](https://docs.python.org/3/library/exceptions.html#ValueError) – If the file format is not supported.
+
+
+    * [**IOError**](https://docs.python.org/3/library/exceptions.html#IOError) – If the input file misses information.
+
+
+
+* **Attributes**
+
+    `resids`
+
+        list of str: Residue names of the atoms without consecutive
+
+    `resname_len_list`
+
+        list of tuple(str, int) :
+
+    `resnames`
+
+        list of str: Residue names of the atoms without consecutive
+
+
+### Methods
+
+| `copy`()
+
+                                  | Returns a copy of the molecule_top.
+
+                                                                                                                                                         |
+| `index`(atom)
+
+                             | Returns the index of the atom in the molecule.
+
+                                                                                                                                              |
+<!-- !! processed by numpydoc !! -->
+
+#### copy()
+Returns a copy of the molecule_top.
+
+The atoms forming the copy are not the same objects as the original
+molecule so you do not have to worry about linked objects.
+
+
+* **Returns**
+
+    **molecule_top** – The copy of the molecule.
+
+
+
+* **Return type**
+
+    MoleculeTop
+
+
+<!-- !! processed by numpydoc !! -->
+
+#### index(atom)
+Returns the index of the atom in the molecule.
+
+
+* **Parameters**
+
+    **atom** (*AtomTop*) – The atom to find the index.
+
+
+
+* **Returns**
+
+    **index** – The index of the atom in the molecule.
+
+
+
+* **Return type**
+
+    [int](https://docs.python.org/3/library/functions.html#int)
+
+
+<!-- !! processed by numpydoc !! -->
+
+#### property resids()
+Residue names of the atoms without consecutive
+
+    repetitions.
+
+To set this property a list with the same length of residues must be
+passed.
+
+
+* **Type**
+
+    list of str
+
+
+<!-- !! processed by numpydoc !! -->
+
+* **Return type**
+
+    [`List`](https://docs.python.org/3/library/typing.html#typing.List)[[`int`](https://docs.python.org/3/library/functions.html#int)]
+
+
+
+#### property resname_len_list()
+list of tuple(str, int):
+[(resname_1, number_of_atoms_with_resname_1),
+(resname_2, number_of_atoms_with_resname_2), …]
+
+<!-- !! processed by numpydoc !! -->
+
+* **Return type**
+
+    [`List`](https://docs.python.org/3/library/typing.html#typing.List)[[`Tuple`](https://docs.python.org/3/library/typing.html#typing.Tuple)[[`str`](https://docs.python.org/3/library/stdtypes.html#str), [`int`](https://docs.python.org/3/library/functions.html#int)]]
+
+
+
+#### property resnames()
+Residue names of the atoms without consecutive
+
+    repetitions.
+
+To set this property a list with the same length of residues must be
+passed.
+
+
+* **Type**
+
+    list of str
+
+
+<!-- !! processed by numpydoc !! -->
+
+* **Return type**
+
+    [`List`](https://docs.python.org/3/library/typing.html#typing.List)[[`str`](https://docs.python.org/3/library/stdtypes.html#str)]
+
+
+
+### class gaddlemaps.components.Residue(atoms)
+Bases: [`object`](https://docs.python.org/3/library/functions.html#object)
+
+A class with the information of a residue in a .gro file.
+
+This class creates objects that are enumerations of AtomGro instances. It
+has methods to manipulate atoms positions maintaining the shape of the
+residue. This class have to be initialized with non empty list of atoms.
+
+You can add two residues if the atoms from both residues have the same
+residue name and number. This can also be done with just one atom and the
+same check will be done.
+
+
+* **Parameters**
+
+    **atoms** (*list of AtomGro*) – A list with the atoms of the residue.
+
+
+:raises ValueError : If the the input list of atoms is empty or they have different: residue number or name.
+
+
+* **Attributes**
+
+    `atoms`
+
+        list of AtomGro: List with a copy of the atoms of the residue.
+
+    `atoms_ids`
+
+        list of int: A list with the ids of the atoms of the residue.
+
+    `atoms_positions`
+
+        numpy.ndarray((N, 3)) : An array with the atoms positions.
+
+    `atoms_velocities`
+
+        numpy.ndarray((N, 3)) or None : An array with the atoms velocities.
+
+    `distance_to_zero`
+
+        float : The distance between the geometric_center and (0, 0, 0)
+
+    `geometric_center`
+
+        numpy.ndarray(3): Coordinates of the geometric center of the residue.
+
+    `resid`
+
+        int: Residue number of the residue.
+
+    `residname`
+
+        string: An identifier of the residue (resid+name)
+
+    `resname`
+
+        string: Resname of the residue.
+
+    `x`
+
+        float: The x coordinate of the geometric center of the residue.
+
+    `y`
+
+        float: The y coordinate of the geometric center of the residue.
+
+    `z`
+
+        float: The z coordinate of the geometric center of the residue.
+
+
+### Methods
+
+| `copy`()
+
+                                  | Returns a copy of the residue.
+
+                                                                                                                                                              |
+| `distance_to`(residue[, box_vects, inv])
+
+  | Returns the distance between self and residue.
+
+                                                                                                                                              |
+| `move`(displacement)
+
+                      | Moves the residue a given displacement vector.
+
+                                                                                                                                              |
+| `move_to`(new_position)
+
+                   | Moves the residue geometric_center to new_position.
+
+                                                                                                                                         |
+| `remove_atom`(atom)
+
+                       | Removes a given atom from the residue.
+
+                                                                                                                                                      |
+| `rotate`(rotation_matrix)
+
+                 | Rotate the residue around its center of mass with a given rotation matrix.
+
+                                                                                                                  |
+| `update_from_molecule_top`(mtop)
+
+          | Modifies the Residue atoms name to match the mtop.
+
+                                                                                                                                          |
+| `write_gro`(fout)
+
+                         | Writes a .gro file with the residue conformation.
+
+                                                                                                                                           |
+<!-- !! processed by numpydoc !! -->
+
+#### property atoms()
+List with a copy of the atoms of the residue.
+
+
+* **Type**
+
+    list of AtomGro
+
+
+<!-- !! processed by numpydoc !! -->
+
+* **Return type**
+
+    [`List`](https://docs.python.org/3/library/typing.html#typing.List)[`AtomGro`]
+
+
+
+#### property atoms_ids()
+A list with the ids of the atoms of the residue.
+
+
+* **Type**
+
+    list of int
+
+
+<!-- !! processed by numpydoc !! -->
+
+* **Return type**
+
+    [`List`](https://docs.python.org/3/library/typing.html#typing.List)[[`int`](https://docs.python.org/3/library/functions.html#int)]
+
+
+
+#### property atoms_positions()
+An array with the atoms positions.
+
+
+* **Type**
+
+    [numpy.ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)((N, 3))
+
+
+<!-- !! processed by numpydoc !! -->
+
+* **Return type**
+
+    [`ndarray`](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)
+
+
+
+#### property atoms_velocities()
+An array with the atoms velocities.
+If one of the atoms has no velocity this returns None.
+
+
+* **Type**
+
+    [numpy.ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)((N, 3)) or [None](https://docs.python.org/3/library/constants.html#None)
+
+
+<!-- !! processed by numpydoc !! -->
+
+* **Return type**
+
+    [`Optional`](https://docs.python.org/3/library/typing.html#typing.Optional)[[`ndarray`](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)]
+
+
+
+#### copy()
+Returns a copy of the residue.
+
+
+* **Returns**
+
+    **residue** – The copy of the residue.
+
+
+
+* **Return type**
+
+    Residue
+
+
+<!-- !! processed by numpydoc !! -->
+
+#### distance_to(residue, box_vects=None, inv=False)
+Returns the distance between self and residue.
+
+residue can be a Residue instance or a 3D vector.
+
+
+* **Parameters**
+
+    
+    * **residue** (*Residue** or *[*numpy.ndarray*](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)) – The residue or a point to compute the distance.
+
+
+    * **box_vects** ([*numpy.ndarray*](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)) – The box vectors to apply periodic boundary conditions.
+
+
+    * **inv** ([*bool*](https://docs.python.org/3/library/functions.html#bool)) – If it is True, box_vects are considered as the inverse matrix of
+    the actual box_vects for a better performance.
+
+
+
+* **Returns**
+
+    **distance** – The euclidean distance.
+
+
+
+* **Return type**
+
+    [float](https://docs.python.org/3/library/functions.html#float)
+
+
+<!-- !! processed by numpydoc !! -->
+
+#### property distance_to_zero()
+The distance between the geometric_center and (0, 0, 0)
+without applying periodic boundary conditions.
+
+
+* **Type**
+
+    [float](https://docs.python.org/3/library/functions.html#float)
+
+
+<!-- !! processed by numpydoc !! -->
+
+* **Return type**
+
+    [`float`](https://docs.python.org/3/library/functions.html#float)
+
+
+
+#### property geometric_center()
+Coordinates of the geometric center of the residue.
+
+
+* **Type**
+
+    [numpy.ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)(3)
+
+
+<!-- !! processed by numpydoc !! -->
+
+* **Return type**
+
+    [`ndarray`](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)
+
+
+
+#### move(displacement)
+Moves the residue a given displacement vector.
+
+
+* **Parameters**
+
+    **displacement** ([*numpy.ndarray*](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)*(**3**)*) – An array with the displacement vector.
+
+
+<!-- !! processed by numpydoc !! -->
+
+#### move_to(new_position)
+Moves the residue geometric_center to new_position.
+
+
+* **Parameters**
+
+    **new_position** ([*numpy.ndarray*](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)*(**3**)*) – An array with the new position coordinates.
+
+
+<!-- !! processed by numpydoc !! -->
+
+#### remove_atom(atom)
+Removes a given atom from the residue.
+
+
+* **Parameters**
+
+    **atom** (*AtomGro*) – The atom you want to remove from the residue.
+
+
+<!-- !! processed by numpydoc !! -->
+
+#### property resid()
+Residue number of the residue.
+
+
+* **Type**
+
+    [int](https://docs.python.org/3/library/functions.html#int)
+
+
+<!-- !! processed by numpydoc !! -->
+
+* **Return type**
+
+    [`int`](https://docs.python.org/3/library/functions.html#int)
+
+
+
+#### property residname()
+An identifier of the residue (resid+name)
+
+
+* **Type**
+
+    string
+
+
+<!-- !! processed by numpydoc !! -->
+
+* **Return type**
+
+    [`str`](https://docs.python.org/3/library/stdtypes.html#str)
+
+
+
+#### property resname()
+Resname of the residue.
+
+
+* **Type**
+
+    string
+
+
+<!-- !! processed by numpydoc !! -->
+
+* **Return type**
+
+    [`str`](https://docs.python.org/3/library/stdtypes.html#str)
+
+
+
+#### rotate(rotation_matrix)
+Rotate the residue around its center of mass with a given rotation
+matrix.
+
+
+* **Parameters**
+
+    **rotation_matrix** ([*numpy.ndarray*](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)) – 3x3 array with the rotation matrix.
+    ADVICE: create the matrix with the help of “rotation_matrix”
+    function placed in the root of the package.
+
+
+<!-- !! processed by numpydoc !! -->
+
+#### update_from_molecule_top(mtop)
+Modifies the Residue atoms name to match the mtop.
+
+This method is very useful when you have a miss-match between the
+atom names in the topology and gro files. This will modify the Residue
+atoms names to match the names in the topology. Make sure that all the
+atoms in the topology are in the Residue.
+
+
+* **Parameters**
+
+    **mtop** (*MoleculeTop*) – The molecule to match.
+
+
+
+* **Raises**
+
+    [**ValueError**](https://docs.python.org/3/library/exceptions.html#ValueError) – If number of atoms in self and in mtop does not match.
+
+
+<!-- !! processed by numpydoc !! -->
+
+#### write_gro(fout)
+Writes a .gro file with the residue conformation.
+
+
+* **Parameters**
+
+    **fout** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – The path with the file to write the information.
+
+
+<!-- !! processed by numpydoc !! -->
+
+#### property x()
+The x coordinate of the geometric center of the residue.
+
+
+* **Type**
+
+    [float](https://docs.python.org/3/library/functions.html#float)
+
+
+<!-- !! processed by numpydoc !! -->
+
+* **Return type**
+
+    [`float`](https://docs.python.org/3/library/functions.html#float)
+
+
+
+#### property y()
+The y coordinate of the geometric center of the residue.
+
+
+* **Type**
+
+    [float](https://docs.python.org/3/library/functions.html#float)
+
+
+<!-- !! processed by numpydoc !! -->
+
+* **Return type**
+
+    [`float`](https://docs.python.org/3/library/functions.html#float)
+
+
+
+#### property z()
+The z coordinate of the geometric center of the residue.
+
+
+* **Type**
+
+    [float](https://docs.python.org/3/library/functions.html#float)
+
+
+<!-- !! processed by numpydoc !! -->
+
+* **Return type**
+
+    [`float`](https://docs.python.org/3/library/functions.html#float)
+
+
+
+### class gaddlemaps.components.System(fgro, \*ftops)
+Bases: [`object`](https://docs.python.org/3/library/functions.html#object)
+
+Class to manage simulation systems.
+
+A System object is formed by Molecule objects. Only the molecules
+corresponding to the input ftops will be loaded.
+
+
+* **Parameters**
+
+    
+    * **fgro** (*string*) – Gromacs file with the system information.
+
+
+    * **\*ftops** (*string*) – Paths with the files with the bonds information to load molecules.
+
+
+
+* **Raises**
+
+    [**IOError**](https://docs.python.org/3/library/exceptions.html#IOError) – If one of the topology files do not match with any molecule in the
+    system.
+
+
+
+* **Attributes**
+
+    `composition`
+
+        Counter of str: int : For each molecule name (key), how many molecules there are (value).
+
+    **fgro**
+
+
+### Methods
+
+| `add_ftop`(ftop)
+
+                          | Adds and identifies the molecule from the ftop to the system.
+
+                                                                                                                               |
+| `add_molecule_top`(mol_top)
+
+               | Adds a molecule to the system and find it in the gro file.
+
+                                                                                                                                  |
+<!-- !! processed by numpydoc !! -->
+
+#### add_ftop(ftop)
+Adds and identifies the molecule from the ftop to the system.
+
+<!-- !! processed by numpydoc !! -->
+
+#### add_molecule_top(mol_top)
+Adds a molecule to the system and find it in the gro file.
+
+<!-- !! processed by numpydoc !! -->
+
+#### property composition()
+For each molecule name (key), how many
+molecules there are (value).
+
+
+* **Type**
+
+    Counter of str
+
+
+
+* **Type**
+
+    [int](https://docs.python.org/3/library/functions.html#int)
+
+
+<!-- !! processed by numpydoc !! -->
+
+* **Return type**
+
+    [`Counter`](https://docs.python.org/3/library/typing.html#typing.Counter)[[`str`](https://docs.python.org/3/library/stdtypes.html#str)]
+
+
+
+#### property fgro()
+<!-- !! processed by numpydoc !! -->
+
+* **Return type**
+
+    [`str`](https://docs.python.org/3/library/stdtypes.html#str)
+
+
+
 ### class gaddlemaps.components.SystemGro(fgro)
 Bases: [`object`](https://docs.python.org/3/library/functions.html#object)
 
@@ -1848,14 +1940,14 @@ the 3 lattice vectors of the box.
 
 * **Type**
 
-    [numpy.ndarray](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray) (3,3)
+    [numpy.ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray) (3,3)
 
 
 <!-- !! processed by numpydoc !! -->
 
 * **Return type**
 
-    [`ndarray`](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)
+    [`ndarray`](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)
 
 
 
@@ -1914,7 +2006,7 @@ different_molecules attribute in order of appearance.
 
 * **Return type**
 
-    [`Generator`](https://docs.python.org/3/library/typing.html#typing.Generator)[[`int`](https://docs.python.org/3/library/functions.html#int), `None`, `None`]
+    [`Generator`](https://docs.python.org/3/library/typing.html#typing.Generator)[[`int`](https://docs.python.org/3/library/functions.html#int), [`None`](https://docs.python.org/3/library/constants.html#None), [`None`](https://docs.python.org/3/library/constants.html#None)]
 
 
 
@@ -1955,99 +2047,7 @@ The number of atoms in the system.
 
 
 
-### class gaddlemaps.components.System(fgro, \*ftops)
-Bases: [`object`](https://docs.python.org/3/library/functions.html#object)
-
-Class to manage simulation systems.
-
-A System object is formed by Molecule objects. Only the molecules
-corresponding to the input ftops will be loaded.
-
-
-* **Parameters**
-
-    
-    * **fgro** (*string*) – Gromacs file with the system information.
-
-
-    * **\*ftops** (*string*) – Paths with the files with the bonds information to load molecules.
-
-
-
-* **Raises**
-
-    [**IOError**](https://docs.python.org/3/library/exceptions.html#IOError) – If one of the topology files do not match with any molecule in the
-    system.
-
-
-
-* **Attributes**
-
-    `composition`
-
-        Counter of str: int : For each molecule name (key), how many molecules there are (value).
-
-    **fgro**
-
-
-### Methods
-
-| `add_ftop`(self, ftop)
-
-                          | Adds and identifies the molecule from the ftop to the system.
-
-                                                                                                                               |
-| `add_molecule_top`(self, mol_top)
-
-               | Adds a molecule to the system and find it in the gro file.
-
-                                                                                                                                  |
-<!-- !! processed by numpydoc !! -->
-
-#### add_ftop(self, ftop: str)
-Adds and identifies the molecule from the ftop to the system.
-
-<!-- !! processed by numpydoc !! -->
-
-#### add_molecule_top(self, mol_top: gaddlemaps.components._components_top.MoleculeTop)
-Adds a molecule to the system and find it in the gro file.
-
-<!-- !! processed by numpydoc !! -->
-
-#### property composition()
-For each molecule name (key), how many
-molecules there are (value).
-
-
-* **Type**
-
-    Counter of str
-
-
-
-* **Type**
-
-    [int](https://docs.python.org/3/library/functions.html#int)
-
-
-<!-- !! processed by numpydoc !! -->
-
-* **Return type**
-
-    [`Counter`](https://docs.python.org/3/library/typing.html#typing.Counter)[[`str`](https://docs.python.org/3/library/stdtypes.html#str)]
-
-
-
-#### property fgro()
-<!-- !! processed by numpydoc !! -->
-
-* **Return type**
-
-    [`str`](https://docs.python.org/3/library/stdtypes.html#str)
-
-
-
-### gaddlemaps.components.are_connected(atoms: Union[List[gaddlemaps.components._components.Atom], List[gaddlemaps.components._components_top.AtomTop]])
+### gaddlemaps.components.are_connected(atoms)
 Check if the input atoms are connected.
 
 

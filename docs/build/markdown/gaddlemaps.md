@@ -35,421 +35,6 @@ TODO: Complete this description
 
 <!-- !! processed by numpydoc !! -->
 
-### gaddlemaps.rotation_matrix(axis: numpy.ndarray, theta: float)
-Returns the rotation matrix associated to an angle and an axis.
-
-
-* **Parameters**
-
-    
-    * **axis** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)* or *[*numpy.ndarray*](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)) – A vector in 3D space that defines the axis of rotation
-
-
-    * **theta** ([*float*](https://docs.python.org/3/library/functions.html#float)) – The angle to rotate in radians in counter clockwise.
-
-
-<!-- !! processed by numpydoc !! -->
-
-* **Return type**
-
-    [`ndarray`](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)
-
-
-
-### gaddlemaps.calcule_base(pos: List[numpy.ndarray])
-Calculates a orthonormal base from a list of 3 atoms.
-
-Given a list of three vectors with the position of three atoms, this
-function returns a vector basis and the application point. The first
-vector goes from the application point to the last atom. The second one
-is normal to the plane which contains the three atoms and perpendicular
-to the first vector. The last is perpendicular to the others. All are
-unitary forming an orthonormal basis. In case of collinear points, the
-second vector is set to ([vec1[1], -vec1[0], 0]).
-
-
-* **Parameters**
-
-    **pos** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – List with three vectors (numpy.ndarray) with the position of the
-    atoms.
-
-
-
-* **Return type**
-
-    [`Tuple`](https://docs.python.org/3/library/typing.html#typing.Tuple)[[`Tuple`](https://docs.python.org/3/library/typing.html#typing.Tuple)[[`ndarray`](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray), …], [`ndarray`](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)]
-
-
-
-* **Returns**
-
-    
-    * **base** (*tuple of numpy.ndarray*) – A tuple with the three vectors of the base.
-
-
-    * **app_point** (*float*) – The application point of the base. It corresponds to pos[0]
-
-
-
-<!-- !! processed by numpydoc !! -->
-
-### class gaddlemaps.ExchangeMap(refmolecule, targetmolecule, scale_factor=0.5)
-Bases: [`object`](https://docs.python.org/3/library/functions.html#object)
-
-Functor to extrapolate atomic resolution to other configurations.
-
-When this class is initialized, a functor is created. It has to be
-initialized with the molecules in the initial and final resolution
-overlapped. Then you can call this method with new molecules in the
-initial resolution to obtain its representation in the final one. The new
-coordinates of the extrapolated molecules are scaled by the “scale_factor”.
-This factor should be smaller than one if you want to extrapolate a complete
-system for future simulations. This avoids molecular overlapping and
-prevents the simulations to crash.
-
-
-* **Parameters**
-
-    
-    * **refmolecule** (*Molecule*) – Molecule in the initial resolution.
-
-
-    * **targetmolecule** (*Molecule*) – Molecule in the final resolution.
-
-
-    * **scale_factor** ([*float*](https://docs.python.org/3/library/functions.html#float)*, **Optional*) – The factor that modulates the scale of the atoms positions in the new
-    resolution respect it closest atom in the initial resolution.
-
-
-### Examples
-
-```python
->>> BmimCG_ref = Molecule(fgro, fitp)
->>> BmimAA_target = Molecule(groAA, itpAA)
-```
-
-```python
->>> transformation = ExchangeMap(BmimCG_ref, BmimAA_target)
-```
-
-```python
->>> BmimCG_new = Molecule(fgro2, fitp)
->>> BmimAA_new = transformation(BmimCG_new)
-```
-
-
-* **Attributes**
-
-    `equivalences`
-
-        dict of int to list of int : {r1_atom_index: [closest_r2_atoms_indexs]}
-
-
-### Methods
-
-| `__call__`(self, refmolecule)
-
- | This function takes as argument a molecule like the refmolecule, but in other position and returns its targetmolecule equivalent as a new molecule with the same res_number than the input.
-
- |
-<!-- !! processed by numpydoc !! -->
-
-#### property equivalences()
-[closest_r2_atoms_indexs]}
-
-
-* **Type**
-
-    dict of int to list of int
-
-
-
-* **Type**
-
-    {r1_atom_index
-
-
-<!-- !! processed by numpydoc !! -->
-
-* **Return type**
-
-    [`Dict`](https://docs.python.org/3/library/typing.html#typing.Dict)[[`int`](https://docs.python.org/3/library/functions.html#int), [`List`](https://docs.python.org/3/library/typing.html#typing.List)[[`int`](https://docs.python.org/3/library/functions.html#int)]]
-
-
-
-### gaddlemaps.find_atom_random_displ(atoms_pos: numpy.ndarray, bonds_info: Dict[int, List[Tuple[int, float]]], atom_index: int, sigma_scale: float = 0.5)
-Finds a random displacement for the atom with a given index.
-
-This displacement is chosen in a perpendicular direction according to the
-number of bonded atoms.
-
-
-* **Parameters**
-
-    
-    * **atoms_pos** ([*numpy.ndarray*](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)) – An array with the positions of the molecule atoms in rows.
-
-
-    * **bonds_info** (*dictionary*) – A dict with the information of the bonds. Example:
-
-        bonds_info = {0:[(1, 5.4), (2, 6.4)], 1:[(0, 5.4), ], …}
-
-    The keys refers to atom index and values are lists with tuples. Each
-    tuple contains the bonded atom index and the bond length.
-
-
-
-    * **atom_index** (*integer** (**Optional**)*) – The index of the atom to move (respecting the index of atoms_pos). If
-    None is given a random one is taken.
-
-
-    * **sigma_scale** ([*float*](https://docs.python.org/3/library/functions.html#float)) – A factor to scale the sigma of the distribution of the displacement
-    module.
-
-
-
-* **Returns**
-
-    **displ** – The displacement vector to sum to the position of the interest atom.
-
-
-
-* **Return type**
-
-    [numpy.ndarray](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)
-
-
-<!-- !! processed by numpydoc !! -->
-
-### gaddlemaps.move_mol_atom(atoms_pos: numpy.ndarray, bonds_info: Dict[int, List[Tuple[int, float]]], atom_index: int = None, displ: numpy.ndarray = None, sigma_scale: float = 0.5)
-Moves an atom of a molecule respecting almost all bond distances.
-
-By default, a random atom is picked from atom_pos and moved randomly in a
-certain direction (see the published article for a better description of
-this step).
-
-
-* **Parameters**
-
-    
-    * **atoms_pos** ([*numpy.ndarray*](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)) – An array with the positions of the molecule atoms in rows.
-
-
-    * **bonds_info** (*dictionary*) – A dict with the information of the bonds. Example:
-
-        bonds_info = {0:[(1, 5.4), (2, 6.4)], 1:[(0, 5.4), ], …}
-
-    The keys refers to atom index and values are lists with tuples. Each
-    tuple contains the bonded atom index and the bond length.
-
-
-
-    * **atom_index** (*integer** (**Optional**)*) – The index of the atom to move (respecting the index of atoms_pos). If
-    None is given a random one is taken.
-
-
-    * **displ** ([*numpy.ndarray*](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)* (**Optional**)*) – The displacement vector. If None is given a random displacement is
-    calculated in the normal plane to the line jointing most nearest atoms.
-
-
-    * **sigma_scale** ([*float*](https://docs.python.org/3/library/functions.html#float)) – A factor to scale the sigma of the distribution of the
-    displacement module.
-
-
-
-* **Returns**
-
-    **modified_atoms_pos** – An array with the modified positions of the atoms in rows.
-
-
-
-* **Return type**
-
-    [numpy.ndarray](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)
-
-
-<!-- !! processed by numpydoc !! -->
-
-### class gaddlemaps.Chi2Calculator(mol1, mol2, restrictions=None)
-Bases: [`object`](https://docs.python.org/3/library/functions.html#object)
-
-Functor that calculates the chi2 between 2 positions arrays.
-
-This class is initialized with the restrictions that must be taken into
-account. This avoid repeating array accessing. Once the object is
-initialized it can be called with new atomic positions  to calculate the new
-chi2 value associated with the distance between set of points. This distance
-is calculated quite differently depending on the given restrictions. In case
-of no restrictions see “chi2_molecules” method. If some restrictions are
-given the distances between atoms is calculated between of pairs of atoms
-specified in the restrictions instead of between closest atoms.
-
-
-* **Parameters**
-
-    
-    * **mol1** ([*numpy.ndarray*](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)*(**(**N**, **3**)**)*) – Array with the atomic positions of the molecule that will be still.
-    These positions will remain constant in  future object call.
-
-
-    * **mol2** ([*numpy.ndarray*](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)*(**(**N**, **3**)**)*) – Array with the atomic positions of the molecule that will be changing
-    during the optimum overlap finding process.
-
-
-    * **restriction** ([*numpy.ndarray*](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)*(**(**N**, **2**)**) or **array convertible**, **optional*) – A list of tuples with pairs of atom numbers corresponding to mol1
-    and mol2 atoms molecules. The align will be performed privileging
-    configurations where those atoms are close. By default is set to [].
-
-    ### Example
-
-    ```python
-    >>> restrictions = [(1, 3), (4, 5)]
-    ```
-
-    **IMPORTANT: INDEX ARE REFERENCED TO THE ATOM INDEX IN THE MOLECULE**
-
-
-
-### Methods
-
-| `__call__`(self, mol2)
-
-        | Call self as a function.
-
-                                                                                                                                                                    |
-| `chi2_molecules`(self, mol2)
-
-  | Computes the chi2 by calculating the distance between molecules.
-
-                                                                                                                            |
-<!-- !! processed by numpydoc !! -->
-
-#### chi2_molecules(self, mol2: numpy.ndarray)
-Computes the chi2 by calculating the distance between molecules.
-
-This function computes a chi2 based on the distance between nearest
-atoms of two molecules. Basically sums the distance between the atoms
-of mol2 and the nearest atom of mol1.
-
-
-* **Parameters**
-
-    **mol2** ([*numpy.ndarray*](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray)*(**(**N**,**3**)**)*) – Position of the second molecule atoms.
-
-
-
-* **Returns**
-
-    **chi2** – Computed chi2.
-
-
-
-* **Return type**
-
-    [float](https://docs.python.org/3/library/functions.html#float)
-
-
-<!-- !! processed by numpydoc !! -->
-
-### gaddlemaps.accept_metropolis(energy_0: float, energy_1: float, acceptance: float = 0.01)
-Evaluates if the new configuration with energy_1 is accepted or not.
-
-This function returns True if the configuration with energy_1 is accepted
-and False otherwise. If energy_1 <= energy_0 the configuration is accepted.
-Else, it will be also accepted if a random number between 0 and 1 is
-smaller than acceptance\*energy_0/energy_1.
-
-
-* **Parameters**
-
-    
-    * **energy_0** ([*float*](https://docs.python.org/3/library/functions.html#float)) – The value of the energy before the change.
-
-
-    * **energy_1** ([*float*](https://docs.python.org/3/library/functions.html#float)) – The value of the energy after the change.
-
-
-    * **acceptance** ([*float*](https://docs.python.org/3/library/functions.html#float)* (**Optional**)*) – acceptance factor that regulates how many unfavorable cases are accepted
-
-
-
-* **Returns**
-
-    **change** – True if the change is accepted and False if not.
-
-
-
-* **Return type**
-
-    Bool
-
-
-<!-- !! processed by numpydoc !! -->
-
-### gaddlemaps.minimize_molecules(mol1_positions: numpy.ndarray, mol2_positions: numpy.ndarray, mol2_com: numpy.ndarray, sigma_scale: float, n_steps: int, restriction: List[Tuple[int, int]], mol2_bonds_info: Dict[int, List[Tuple[int, float]]], displacement_module: float, sim_type: Tuple[int, ...])
-Minimizes the distance between two molecules.
-
-
-* **Parameters**
-
-    
-    * **mol1_positions** (*np.array**(**(**N**, **3**)**)*) – The positions of the atoms of the static molecule.
-
-
-    * **mol2_positions** (*np.array**(**(**N**, **3**)**)*) – The positions of the atoms of the mobile molecule.
-
-
-    * **mol2_com** (*np.array**(**3**)*) – The center of mass (or the geometric center) of the mobile molecule.
-    This will be used to apply de rotations.
-
-
-    * **sigma_scale** ([*float*](https://docs.python.org/3/library/functions.html#float)) – A number that module the amplitude of the single atom displacements.
-
-
-    * **n_steps** ([*int*](https://docs.python.org/3/library/functions.html#int)) – The number of steps without changes in the chi2 in the Monte-Carlo
-    alignment.
-
-
-    * **restriction** (*list of tuple of int*) – A list of tuples with pairs of atom numbers corresponding to mol1
-    and mol2 atoms molecules. The align will be performed privileging
-    configurations where those atoms are close.
-
-    ### Example
-
-    ```python
-    >>> restrictions = [(1, 3), (4, 5)]
-    ```
-
-    **IMPORTANT: INDEX ARE REFERENCED TO THE ATOM INDEX IN THE MOLECULE
-    (STARTS IN 0).**
-
-
-
-    * **mol2_bonds_info** (*defaultdict of int: list of tuple**(*[*int*](https://docs.python.org/3/library/functions.html#int)*, *[*float*](https://docs.python.org/3/library/functions.html#float)*)*) – A complex data structure that collect the information of the bond
-    distances. The key of the property corresponds to the atom index in the
-    molecule. The value is a list with tuples. For each tuple, the first
-    value corresponds with the index of the bonded atom and the second is
-    the length of the bond.
-
-
-    * **same_com** ([*bool*](https://docs.python.org/3/library/functions.html#bool)) – If True, translations are not allowed.
-
-
-    * **anchura** ([*float*](https://docs.python.org/3/library/functions.html#float)) – A number that modules the amplitude in the translations displacements.
-
-
-    * **sim_type** (*tuple of int*) – Specifies the type of the minimization. Possible options:
-
-        0 : Translation
-        1 : Rotation
-        2 : Individual atom move
-
-    If it is a list, all specified methods are combined.
-
-
-
-<!-- !! processed by numpydoc !! -->
-
 ### class gaddlemaps.Alignment(start=None, end=None)
 Bases: [`object`](https://docs.python.org/3/library/functions.html#object)
 
@@ -528,28 +113,33 @@ Monte-Carlo alignment.
 
 ### Methods
 
-| `align_molecules`(self, restrictions, …)
+| `align_molecules`([restrictions, …])
 
  | Starts the alignment engine to find the optimal overlap between molecs.
 
-                                                                                                                     |
-| `init_exchange_map`(self, scale_factor)
+ |
+| `init_exchange_map`([scale_factor])
 
   | Initializes the exchange map with the current molecules configuration.
 
-                                                                                                                      |
-| `write_comparative_gro`(self, fname)
+  |
+| `interactive_restrictions`()
+
+         | Creates the widget to visually generate the restrictions for alignment.
+
+ |
+| `write_comparative_gro`([fname])
 
      | Writes a .gro file with start and end molecules to check the overlap.
 
-                                                                                                                       |
+   |
 <!-- !! processed by numpydoc !! -->
 
 #### SIGMA_SCALE( = 0.5)
 
 #### STEPS_FACTOR( = 5000)
 
-#### align_molecules(self, restrictions: List[Tuple[int, int]] = None, deformation_types: Tuple[int, ...] = None, ignore_hydrogens: bool = True, auto_guess_protein_restrictions: bool = True)
+#### align_molecules(restrictions=None, deformation_types=None, ignore_hydrogens=True, auto_guess_protein_restrictions=True)
 Starts the alignment engine to find the optimal overlap between molecs.
 
 NOTE: If None is input as restrictions and the molecules to align
@@ -628,7 +218,7 @@ The molecule in the final resolution.
 
 
 
-#### init_exchange_map(self, scale_factor: float = 0.5)
+#### init_exchange_map(scale_factor=0.5)
 Initializes the exchange map with the current molecules configuration.
 
 
@@ -636,6 +226,29 @@ Initializes the exchange map with the current molecules configuration.
 
     **scale_factor** ([*float*](https://docs.python.org/3/library/functions.html#float)) – The compression factor to apply to mapped molecules (see the
     ExchangeMap class documentation for more information).
+
+
+<!-- !! processed by numpydoc !! -->
+
+#### interactive_restrictions()
+Creates the widget to visually generate the restrictions for alignment.
+
+
+* **Return type**
+
+    [`Tuple`](https://docs.python.org/3/library/typing.html#typing.Tuple)[[`ForwardRef`](https://docs.python.org/3/library/typing.html#typing.ForwardRef), [`Optional`](https://docs.python.org/3/library/typing.html#typing.Optional)[[`List`](https://docs.python.org/3/library/typing.html#typing.List)[[`Tuple`](https://docs.python.org/3/library/typing.html#typing.Tuple)[[`int`](https://docs.python.org/3/library/functions.html#int), [`int`](https://docs.python.org/3/library/functions.html#int)]]]]
+
+
+
+* **Returns**
+
+    
+    * **restriction_widget** (*ipywidgets.Widget*) – The widget that contains the constraint generator.
+
+
+    * **restrictions** (*List[Tuple[int, int]]*) – The restrictions that will be generated by the widget. This will
+    be initially empty and it will be filled as the widget is used.
+
 
 
 <!-- !! processed by numpydoc !! -->
@@ -651,7 +264,7 @@ The molecule in the initial resolution.
 
 
 
-#### write_comparative_gro(self, fname: str = None)
+#### write_comparative_gro(fname=None)
 Writes a .gro file with start and end molecules to check the overlap.
 
 The molecules have START and END residue names respectively to ease the
@@ -666,79 +279,170 @@ representation.
 
 <!-- !! processed by numpydoc !! -->
 
-### gaddlemaps.interactive_restrictions(manager: gaddlemaps._manager.Manager, style: int = None)
-Creates the widget to generate the restrictions of all the species in the
-alignment. It generates the final representation fo the widget.
+### class gaddlemaps.Chi2Calculator(mol1, mol2, restrictions=None)
+Bases: [`object`](https://docs.python.org/3/library/functions.html#object)
+
+Functor that calculates the chi2 between 2 positions arrays.
+
+This class is initialized with the restrictions that must be taken into
+account. This avoid repeating array accessing. Once the object is
+initialized it can be called with new atomic positions  to calculate the new
+chi2 value associated with the distance between set of points. This distance
+is calculated quite differently depending on the given restrictions. In case
+of no restrictions see “chi2_molecules” method. If some restrictions are
+given the distances between atoms is calculated between of pairs of atoms
+specified in the restrictions instead of between closest atoms.
 
 
 * **Parameters**
 
     
-    * **manager** (*Manager*) – The object that manages all the alignment process
+    * **mol1** ([*numpy.ndarray*](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)*(**(**N**, **3**)**)*) – Array with the atomic positions of the molecule that will be still.
+    These positions will remain constant in  future object call.
 
 
-    * **style** (*Optional**[*[*int*](https://docs.python.org/3/library/functions.html#int)*]*) – An integer that determine which style will be used to represent the
-    widget for each specie.
-
-    > 0: One tab per specie.
-    > 1: Accordion, when one specie opens the other collapse
-    > 2: Vertically aligned, one over the other
-
-    The default value is 2. This is the only one fully operational, in the
-    other ones it is necessary to manually refresh the widget in the
-    notebook when changing between species.
+    * **mol2** ([*numpy.ndarray*](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)*(**(**N**, **3**)**)*) – Array with the atomic positions of the molecule that will be changing
+    during the optimum overlap finding process.
 
 
+    * **restriction** ([*numpy.ndarray*](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)*(**(**N**, **2**)**) or **array convertible**, **optional*) – A list of tuples with pairs of atom numbers corresponding to mol1
+    and mol2 atoms molecules. The align will be performed privileging
+    configurations where those atoms are close. By default is set to [].
+
+    ### Example
+
+    ```python
+    >>> restrictions = [(1, 3), (4, 5)]
+    ```
+
+    **IMPORTANT: INDEX ARE REFERENCED TO THE ATOM INDEX IN THE MOLECULE**
 
 
-* **Return type**
 
-    [`Tuple`](https://docs.python.org/3/library/typing.html#typing.Tuple)[`Widget`, [`Dict`](https://docs.python.org/3/library/typing.html#typing.Dict)[[`str`](https://docs.python.org/3/library/stdtypes.html#str), [`Optional`](https://docs.python.org/3/library/typing.html#typing.Optional)[[`List`](https://docs.python.org/3/library/typing.html#typing.List)[[`Tuple`](https://docs.python.org/3/library/typing.html#typing.Tuple)[[`int`](https://docs.python.org/3/library/functions.html#int), [`int`](https://docs.python.org/3/library/functions.html#int)]]]]]
+### Methods
+
+| `__call__`(mol2)
+
+                     | Call self as a function.
+
+                                                |
+| `chi2_molecules`(mol2)
+
+               | Computes the chi2 by calculating the distance between molecules.
+
+        |
+<!-- !! processed by numpydoc !! -->
+
+#### chi2_molecules(mol2)
+Computes the chi2 by calculating the distance between molecules.
+
+This function computes a chi2 based on the distance between nearest
+atoms of two molecules. Basically sums the distance between the atoms
+of mol2 and the nearest atom of mol1.
+
+
+* **Parameters**
+
+    **mol2** ([*numpy.ndarray*](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)*(**(**N**,**3**)**)*) – Position of the second molecule atoms.
 
 
 
 * **Returns**
 
-    
-    * **restriction_widget** (*ipywidgets.Widget*) – The widget that contains the constraint generator for all the species
+    **chi2** – Computed chi2.
 
 
-    * **restrictions** (*Dict[str, List[Tuple[int, int]]]*) – The dictionary with the restrictions that will be generated by the
-    widget for each specie. This will be initially empty and it will be
-    filled as the widget is used.
 
+* **Return type**
+
+    [float](https://docs.python.org/3/library/functions.html#float)
 
 
 <!-- !! processed by numpydoc !! -->
 
-### gaddlemaps.comparate_alignment(manager: gaddlemaps._manager.Manager, radius: float = None)
-Creates a vertical stack of views for comparing the results of the whole
-alignment.
+### class gaddlemaps.ExchangeMap(refmolecule, targetmolecule, scale_factor=0.5)
+Bases: [`object`](https://docs.python.org/3/library/functions.html#object)
+
+Functor to extrapolate atomic resolution to other configurations.
+
+When this class is initialized, a functor is created. It has to be
+initialized with the molecules in the initial and final resolution
+overlapped. Then you can call this method with new molecules in the
+initial resolution to obtain its representation in the final one. The new
+coordinates of the extrapolated molecules are scaled by the “scale_factor”.
+This factor should be smaller than one if you want to extrapolate a complete
+system for future simulations. This avoids molecular overlapping and
+prevents the simulations to crash.
 
 
 * **Parameters**
 
     
-    * **manager** (*Manager*) – The manager of the alignment.
+    * **refmolecule** (*Molecule*) – Molecule in the initial resolution.
 
 
-    * **radius** (*Optional**[*[*float*](https://docs.python.org/3/library/functions.html#float)*]*) – The radius of the atoms in the low resolution representation. Default
-    2.5
+    * **targetmolecule** (*Molecule*) – Molecule in the final resolution.
+
+
+    * **scale_factor** ([*float*](https://docs.python.org/3/library/functions.html#float)*, **Optional*) – The factor that modulates the scale of the atoms positions in the new
+    resolution respect it closest atom in the initial resolution.
+
+
+### Examples
+
+```python
+>>> BmimCG_ref = Molecule(fgro, fitp)
+>>> BmimAA_target = Molecule(groAA, itpAA)
+```
+
+```python
+>>> transformation = ExchangeMap(BmimCG_ref, BmimAA_target)
+```
+
+```python
+>>> BmimCG_new = Molecule(fgro2, fitp)
+>>> BmimAA_new = transformation(BmimCG_new)
+```
+
+
+* **Attributes**
+
+    `equivalences`
+
+        dict of int to list of int : {r1_atom_index: [closest_r2_atoms_indexs]}
+
+
+### Methods
+
+| `__call__`(refmolecule)
+
+              | This function takes as argument a molecule like the refmolecule, but in other position and returns its targetmolecule equivalent as a new molecule with the same res_number than the input.
+
+ |
+<!-- !! processed by numpydoc !! -->
+
+#### property equivalences()
+[closest_r2_atoms_indexs]}
+
+
+* **Type**
+
+    dict of int to list of int
 
 
 
-* **Returns**
+* **Type**
 
-    **box** – A vertical box with al the views ready to be visualizaed in jupyter.
-
-
-
-* **Return type**
-
-    ipywidgets.Box
+    {r1_atom_index
 
 
 <!-- !! processed by numpydoc !! -->
+
+* **Return type**
+
+    [`Dict`](https://docs.python.org/3/library/typing.html#typing.Dict)[[`int`](https://docs.python.org/3/library/functions.html#int), [`List`](https://docs.python.org/3/library/typing.html#typing.List)[[`int`](https://docs.python.org/3/library/functions.html#int)]]
+
+
 
 ### class gaddlemaps.Manager(system)
 Bases: [`object`](https://docs.python.org/3/library/functions.html#object)
@@ -805,44 +509,49 @@ Alignment objects as value.
 
 ### Methods
 
-| `add_end_molecule`(self, molecule)
+| `add_end_molecule`(molecule)
 
-       | Add a new molecule in the end resolution to the correct Alignment.
+         | Add a new molecule in the end resolution to the correct Alignment.
 
                                                                                                                           |
-| `add_end_molecules`(self, \\\*molecules)
+| `add_end_molecules`(\*molecules)
 
-   | Add multiple molecules at once.
+      | Add multiple molecules at once.
 
                                                                                                                                                              |
-| `align_molecules`(self, restrictions, …)
+| `align_molecules`([restrictions, …])
 
  | Starts the alignment engine to find the optimal overlap between molecules
 
                                                                                                                    |
-| `calculate_exchange_maps`(self, scale_factor)
+| `calculate_exchange_maps`([scale_factor])
 
  | Runs the alignment engine and calculate the exchange maps.
 
                                                                                                                                   |
-| `extrapolate_system`(self, fgro_out)
+| `extrapolate_system`(fgro_out)
 
-          | Loops over the molecules in self.system and applies the exchange map.
-
-                                                                                                                       |
-| `from_files`(f_system_gro, \\\*ftops)
-
-           | Build the object using the system .gro file and molecules topologies.
+            | Loops over the molecules in self.system and applies the exchange map.
 
                                                                                                                        |
-| `parse_restrictions`(self, restrictions, …)
+| `from_files`(f_system_gro, \*ftops)
+
+        | Build the object using the system .gro file and molecules topologies.
+
+                                                                                                                       |
+| `interactive_restrictions`([style])
+
+       | Creates the widget to generate the restrictions of all the species in the alignment.
+
+                                                                                                        |
+| `parse_restrictions`([restrictions, …])
 
    | Checks the format and validates of the restrictions for the alignment.
 
                                                                                                                       |
 <!-- !! processed by numpydoc !! -->
 
-#### add_end_molecule(self, molecule: gaddlemaps.components._components.Molecule)
+#### add_end_molecule(molecule)
 Add a new molecule in the end resolution to the correct Alignment.
 
 
@@ -866,7 +575,7 @@ Add a new molecule in the end resolution to the correct Alignment.
 
 <!-- !! processed by numpydoc !! -->
 
-#### add_end_molecules(self, \*molecules: gaddlemaps.components._components.Molecule)
+#### add_end_molecules(\*molecules)
 Add multiple molecules at once.
 
 
@@ -890,7 +599,7 @@ Add multiple molecules at once.
 
 <!-- !! processed by numpydoc !! -->
 
-#### align_molecules(self, restrictions: Dict[str, Union[List[Tuple[int, int]], NoneType]] = None, deformation_types: Dict[str, Union[Tuple[int, ...], NoneType]] = None, ignore_hydrogens: Dict[str, bool] = None, parse_restrictions: bool = True)
+#### align_molecules(restrictions=None, deformation_types=None, ignore_hydrogens=None, parse_restrictions=True)
 Starts the alignment engine to find the optimal overlap between molecules
 
 
@@ -941,7 +650,7 @@ Starts the alignment engine to find the optimal overlap between molecules
 
 <!-- !! processed by numpydoc !! -->
 
-#### calculate_exchange_maps(self, scale_factor: float = 0.5)
+#### calculate_exchange_maps(scale_factor=0.5)
 Runs the alignment engine and calculate the exchange maps.
 
 
@@ -971,7 +680,7 @@ Alignment objects as value if it has start and end init.
 
 
 
-#### extrapolate_system(self, fgro_out: str)
+#### extrapolate_system(fgro_out)
 Loops over the molecules in self.system and applies the exchange map.
 
 
@@ -988,7 +697,7 @@ Loops over the molecules in self.system and applies the exchange map.
 
 <!-- !! processed by numpydoc !! -->
 
-#### classmethod from_files(f_system_gro: str, \*ftops: str)
+#### classmethod from_files(f_system_gro, \*ftops)
 Build the object using the system .gro file and molecules topologies.
 
 
@@ -1015,7 +724,48 @@ Build the object using the system .gro file and molecules topologies.
 
 <!-- !! processed by numpydoc !! -->
 
-#### parse_restrictions(self, restrictions: Dict[str, Union[List[Tuple[int, int]], NoneType]] = None, guess_proteins: bool = False)
+#### interactive_restrictions(style=None)
+Creates the widget to generate the restrictions of all the species in the
+alignment. It generates the final representation for the widget.
+
+
+* **Parameters**
+
+    **style** (*Optional**[*[*int*](https://docs.python.org/3/library/functions.html#int)*]*) – An integer that determine which style will be used to represent the
+    widget for each specie.
+
+    > 0: One tab per specie.
+    > 1: Accordion, when one specie opens the other collapse
+    > 2: Vertically aligned, one over the other
+
+    The default value is 2. This is the only one fully operational, in the
+    other ones it is necessary to manually refresh the widget in the
+    notebook when changing between species.
+
+
+
+
+* **Return type**
+
+    [`Tuple`](https://docs.python.org/3/library/typing.html#typing.Tuple)[[`ForwardRef`](https://docs.python.org/3/library/typing.html#typing.ForwardRef), [`Dict`](https://docs.python.org/3/library/typing.html#typing.Dict)[[`str`](https://docs.python.org/3/library/stdtypes.html#str), [`Optional`](https://docs.python.org/3/library/typing.html#typing.Optional)[[`List`](https://docs.python.org/3/library/typing.html#typing.List)[[`Tuple`](https://docs.python.org/3/library/typing.html#typing.Tuple)[[`int`](https://docs.python.org/3/library/functions.html#int), [`int`](https://docs.python.org/3/library/functions.html#int)]]]]]
+
+
+
+* **Returns**
+
+    
+    * **restriction_widget** (*ipywidgets.Widget*) – The widget that contains the constraint generator for all the species
+
+
+    * **restrictions** (*Dict[str, List[Tuple[int, int]]]*) – The dictionary with the restrictions that will be generated by the
+    widget for each specie. This will be initially empty and it will be
+    filled as the widget is used.
+
+
+
+<!-- !! processed by numpydoc !! -->
+
+#### parse_restrictions(restrictions=None, guess_proteins=False)
 Checks the format and validates of the restrictions for the alignment.
 
 
@@ -1072,95 +822,123 @@ Checks the format and validates of the restrictions for the alignment.
 
 <!-- !! processed by numpydoc !! -->
 
-### gaddlemaps.remove_hydrogens(molecule: gaddlemaps.components._components.Molecule, restrictions: List[Tuple[int, int]])
-Returns positions of atoms that are not hydrogens and fixes restrictions.
+### gaddlemaps.accept_metropolis(energy_0, energy_1, acceptance=0.01)
+Evaluates if the new configuration with energy_1 is accepted or not.
+
+This function returns True if the configuration with energy_1 is accepted
+and False otherwise. If energy_1 <= energy_0 the configuration is accepted.
+Else, it will be also accepted if a random number between 0 and 1 is
+smaller than acceptance\*energy_0/energy_1.
 
 
 * **Parameters**
 
     
-    * **molecule** (*Molecule*) – The molecule to remove hydrogens.
+    * **energy_0** ([*float*](https://docs.python.org/3/library/functions.html#float)) – The value of the energy before the change.
 
 
-    * **restrictions** (*list of tuple of int*) – A list of tuples with pairs of atom numbers corresponding to start
-    and end atoms molecules. The align will be performed privileging
-    configurations where those atoms are close. By default is set to [].
+    * **energy_1** ([*float*](https://docs.python.org/3/library/functions.html#float)) – The value of the energy after the change.
 
-    ### Example
 
-    ```python
-    >>> restrictions = [(1, 3), (4, 5)]
-    ```
+    * **acceptance** ([*float*](https://docs.python.org/3/library/functions.html#float)* (**Optional**)*) – acceptance factor that regulates how many unfavorable cases are accepted
 
-    **IMPORTANT: INDEX ARE REFERENCED TO THE ATOM INDEX IN THE MOLECULE**
 
+
+* **Returns**
+
+    **change** – True if the change is accepted and False if not.
 
 
 
 * **Return type**
 
-    [`Tuple`](https://docs.python.org/3/library/typing.html#typing.Tuple)[[`ndarray`](https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray), [`List`](https://docs.python.org/3/library/typing.html#typing.List)[[`Tuple`](https://docs.python.org/3/library/typing.html#typing.Tuple)[[`int`](https://docs.python.org/3/library/functions.html#int), [`int`](https://docs.python.org/3/library/functions.html#int)]]]
+    Bool
+
+
+<!-- !! processed by numpydoc !! -->
+
+### gaddlemaps.calcule_base(pos)
+Calculates a orthonormal base from a list of 3 atoms.
+
+Given a list of three vectors with the position of three atoms, this
+function returns a vector basis and the application point. The first
+vector goes from the application point to the last atom. The second one
+is normal to the plane which contains the three atoms and perpendicular
+to the first vector. The last is perpendicular to the others. All are
+unitary forming an orthonormal basis. In case of collinear points, the
+second vector is set to ([vec1[1], -vec1[0], 0]).
+
+
+* **Parameters**
+
+    **pos** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – List with three vectors (numpy.ndarray) with the position of the
+    atoms.
+
+
+
+* **Return type**
+
+    [`Tuple`](https://docs.python.org/3/library/typing.html#typing.Tuple)[[`Tuple`](https://docs.python.org/3/library/typing.html#typing.Tuple)[[`ndarray`](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray), …], [`ndarray`](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)]
 
 
 
 * **Returns**
 
     
-    * **new_positions** (*numpy.ndarray*) – The positions of the atoms that are not hydrogens.
+    * **base** (*tuple of numpy.ndarray*) – A tuple with the three vectors of the base.
 
 
-    * **new_restrictions** (*list of tuple of int*) – The restrictions with the correct indexes.
+    * **app_point** (*float*) – The application point of the base. It corresponds to pos[0]
 
 
 
 <!-- !! processed by numpydoc !! -->
 
-### gaddlemaps.guess_residue_restrains(res1: gaddlemaps.components._residue.Residue, res2: gaddlemaps.components._residue.Residue, offset1: int = 0, offset2: int = 0)
-Guess restrains for molecules with one residue.
+### gaddlemaps.find_atom_random_displ(atoms_pos, bonds_info, atom_index, sigma_scale=0.5)
+Finds a random displacement for the atom with a given index.
+
+This displacement is chosen in a perpendicular direction according to the
+number of bonded atoms.
 
 
 * **Parameters**
 
     
-    * **res1** (*Residue*) – The first residue to find the restrains.
+    * **atoms_pos** ([*numpy.ndarray*](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)) – An array with the positions of the molecule atoms in rows.
 
 
-    * **res2** (*Residue*) – The second residue to find the restrains.
+    * **bonds_info** (*dictionary*) – A dict with the information of the bonds. Example:
+
+        bonds_info = {0:[(1, 5.4), (2, 6.4)], 1:[(0, 5.4), ], …}
+
+    The keys refers to atom index and values are lists with tuples. Each
+    tuple contains the bonded atom index and the bond length.
 
 
-    * **offset1** ([*int*](https://docs.python.org/3/library/functions.html#int)) – An offset to add to the atom index of res1.
+
+    * **atom_index** (*integer** (**Optional**)*) – The index of the atom to move (respecting the index of atoms_pos). If
+    None is given a random one is taken.
 
 
-    * **offset2** ([*int*](https://docs.python.org/3/library/functions.html#int)) – An offset to add to the atom index of res2.
+    * **sigma_scale** ([*float*](https://docs.python.org/3/library/functions.html#float)) – A factor to scale the sigma of the distribution of the displacement
+    module.
 
 
 
 * **Returns**
 
-    **restrains** – A list of tuples with pairs of atom numbers corresponding to start
-    and end atoms residues. The align will be performed privileging
-    configurations where those atoms are close. By default is set to [].
-
-    ### Example
-
-    ```python
-    >>> restrictions = [(1, 3), (4, 5)]
-    ```
-
-    **IMPORTANT: INDEX ARE REFERENCED TO THE ATOM INDEX IN THE MOLECULE
-    (STARTS IN 0).**
-
+    **displ** – The displacement vector to sum to the position of the interest atom.
 
 
 
 * **Return type**
 
-    list of tuple of int
+    [numpy.ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)
 
 
 <!-- !! processed by numpydoc !! -->
 
-### gaddlemaps.guess_protein_restrains(mol1: gaddlemaps.components._components.Molecule, mol2: gaddlemaps.components._components.Molecule)
+### gaddlemaps.guess_protein_restrains(mol1, mol2)
 Guess restrains for molecules with multiple residues.
 
 Checks if mol1 and mol2 have the same residue names and create restrains
@@ -1208,3 +986,268 @@ molecules with multiple residues.
 
 
 <!-- !! processed by numpydoc !! -->
+
+### gaddlemaps.guess_residue_restrains(res1, res2, offset1=0, offset2=0)
+Guess restrains for molecules with one residue.
+
+
+* **Parameters**
+
+    
+    * **res1** (*Residue*) – The first residue to find the restrains.
+
+
+    * **res2** (*Residue*) – The second residue to find the restrains.
+
+
+    * **offset1** ([*int*](https://docs.python.org/3/library/functions.html#int)) – An offset to add to the atom index of res1.
+
+
+    * **offset2** ([*int*](https://docs.python.org/3/library/functions.html#int)) – An offset to add to the atom index of res2.
+
+
+
+* **Returns**
+
+    **restrains** – A list of tuples with pairs of atom numbers corresponding to start
+    and end atoms residues. The align will be performed privileging
+    configurations where those atoms are close. By default is set to [].
+
+    ### Example
+
+    ```python
+    >>> restrictions = [(1, 3), (4, 5)]
+    ```
+
+    **IMPORTANT: INDEX ARE REFERENCED TO THE ATOM INDEX IN THE MOLECULE
+    (STARTS IN 0).**
+
+
+
+
+* **Return type**
+
+    list of tuple of int
+
+
+<!-- !! processed by numpydoc !! -->
+
+### gaddlemaps.interactive_restrictions(correspondence, style=None)
+Creates the widget to generate the restrictions of all the species in the
+alignment. It generates the final representation fo the widget.
+
+
+* **Parameters**
+
+    
+    * **manager** (*Manager*) – The object that manages all the alignment process
+
+
+    * **style** (*Optional**[*[*int*](https://docs.python.org/3/library/functions.html#int)*]*) – An integer that determine which style will be used to represent the
+    widget for each specie.
+
+    > 0: One tab per specie.
+    > 1: Accordion, when one specie opens the other collapse
+    > 2: Vertically aligned, one over the other
+
+    The default value is 2. This is the only one fully operational, in the
+    other ones it is necessary to manually refresh the widget in the
+    notebook when changing between species.
+
+
+
+
+* **Return type**
+
+    [`Tuple`](https://docs.python.org/3/library/typing.html#typing.Tuple)[`Widget`, [`Dict`](https://docs.python.org/3/library/typing.html#typing.Dict)[[`str`](https://docs.python.org/3/library/stdtypes.html#str), [`Optional`](https://docs.python.org/3/library/typing.html#typing.Optional)[[`List`](https://docs.python.org/3/library/typing.html#typing.List)[[`Tuple`](https://docs.python.org/3/library/typing.html#typing.Tuple)[[`int`](https://docs.python.org/3/library/functions.html#int), [`int`](https://docs.python.org/3/library/functions.html#int)]]]]]
+
+
+
+* **Returns**
+
+    
+    * **restriction_widget** (*ipywidgets.Widget*) – The widget that contains the constraint generator for all the species
+
+
+    * **restrictions** (*Dict[str, List[Tuple[int, int]]]*) – The dictionary with the restrictions that will be generated by the
+    widget for each specie. This will be initially empty and it will be
+    filled as the widget is used.
+
+
+
+<!-- !! processed by numpydoc !! -->
+
+### gaddlemaps.minimize_molecules(mol1_positions, mol2_positions, mol2_com, sigma_scale, n_steps, restriction, mol2_bonds_info, displacement_module, sim_type)
+Minimizes the distance between two molecules.
+
+
+* **Parameters**
+
+    
+    * **mol1_positions** (*np.array**(**(**N**, **3**)**)*) – The positions of the atoms of the static molecule.
+
+
+    * **mol2_positions** (*np.array**(**(**N**, **3**)**)*) – The positions of the atoms of the mobile molecule.
+
+
+    * **mol2_com** (*np.array**(**3**)*) – The center of mass (or the geometric center) of the mobile molecule.
+    This will be used to apply de rotations.
+
+
+    * **sigma_scale** ([*float*](https://docs.python.org/3/library/functions.html#float)) – A number that module the amplitude of the single atom displacements.
+
+
+    * **n_steps** ([*int*](https://docs.python.org/3/library/functions.html#int)) – The number of steps without changes in the chi2 in the Monte-Carlo
+    alignment.
+
+
+    * **restriction** (*list of tuple of int*) – A list of tuples with pairs of atom numbers corresponding to mol1
+    and mol2 atoms molecules. The align will be performed privileging
+    configurations where those atoms are close.
+
+    ### Example
+
+    ```python
+    >>> restrictions = [(1, 3), (4, 5)]
+    ```
+
+    **IMPORTANT: INDEX ARE REFERENCED TO THE ATOM INDEX IN THE MOLECULE
+    (STARTS IN 0).**
+
+
+
+    * **mol2_bonds_info** (*defaultdict of int: list of tuple**(*[*int*](https://docs.python.org/3/library/functions.html#int)*, *[*float*](https://docs.python.org/3/library/functions.html#float)*)*) – A complex data structure that collect the information of the bond
+    distances. The key of the property corresponds to the atom index in the
+    molecule. The value is a list with tuples. For each tuple, the first
+    value corresponds with the index of the bonded atom and the second is
+    the length of the bond.
+
+
+    * **same_com** ([*bool*](https://docs.python.org/3/library/functions.html#bool)) – If True, translations are not allowed.
+
+
+    * **anchura** ([*float*](https://docs.python.org/3/library/functions.html#float)) – A number that modules the amplitude in the translations displacements.
+
+
+    * **sim_type** (*tuple of int*) – Specifies the type of the minimization. Possible options:
+
+        0 : Translation
+        1 : Rotation
+        2 : Individual atom move
+
+    If it is a list, all specified methods are combined.
+
+
+
+<!-- !! processed by numpydoc !! -->
+
+### gaddlemaps.move_mol_atom(atoms_pos, bonds_info, atom_index=None, displ=None, sigma_scale=0.5)
+Moves an atom of a molecule respecting almost all bond distances.
+
+By default, a random atom is picked from atom_pos and moved randomly in a
+certain direction (see the published article for a better description of
+this step).
+
+
+* **Parameters**
+
+    
+    * **atoms_pos** ([*numpy.ndarray*](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)) – An array with the positions of the molecule atoms in rows.
+
+
+    * **bonds_info** (*dictionary*) – A dict with the information of the bonds. Example:
+
+        bonds_info = {0:[(1, 5.4), (2, 6.4)], 1:[(0, 5.4), ], …}
+
+    The keys refers to atom index and values are lists with tuples. Each
+    tuple contains the bonded atom index and the bond length.
+
+
+
+    * **atom_index** (*integer** (**Optional**)*) – The index of the atom to move (respecting the index of atoms_pos). If
+    None is given a random one is taken.
+
+
+    * **displ** ([*numpy.ndarray*](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)* (**Optional**)*) – The displacement vector. If None is given a random displacement is
+    calculated in the normal plane to the line jointing most nearest atoms.
+
+
+    * **sigma_scale** ([*float*](https://docs.python.org/3/library/functions.html#float)) – A factor to scale the sigma of the distribution of the
+    displacement module.
+
+
+
+* **Returns**
+
+    **modified_atoms_pos** – An array with the modified positions of the atoms in rows.
+
+
+
+* **Return type**
+
+    [numpy.ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)
+
+
+<!-- !! processed by numpydoc !! -->
+
+### gaddlemaps.remove_hydrogens(molecule, restrictions)
+Returns positions of atoms that are not hydrogens and fixes restrictions.
+
+
+* **Parameters**
+
+    
+    * **molecule** (*Molecule*) – The molecule to remove hydrogens.
+
+
+    * **restrictions** (*list of tuple of int*) – A list of tuples with pairs of atom numbers corresponding to start
+    and end atoms molecules. The align will be performed privileging
+    configurations where those atoms are close. By default is set to [].
+
+    ### Example
+
+    ```python
+    >>> restrictions = [(1, 3), (4, 5)]
+    ```
+
+    **IMPORTANT: INDEX ARE REFERENCED TO THE ATOM INDEX IN THE MOLECULE**
+
+
+
+
+* **Return type**
+
+    [`Tuple`](https://docs.python.org/3/library/typing.html#typing.Tuple)[[`ndarray`](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray), [`List`](https://docs.python.org/3/library/typing.html#typing.List)[[`Tuple`](https://docs.python.org/3/library/typing.html#typing.Tuple)[[`int`](https://docs.python.org/3/library/functions.html#int), [`int`](https://docs.python.org/3/library/functions.html#int)]]]
+
+
+
+* **Returns**
+
+    
+    * **new_positions** (*numpy.ndarray*) – The positions of the atoms that are not hydrogens.
+
+
+    * **new_restrictions** (*list of tuple of int*) – The restrictions with the correct indexes.
+
+
+
+<!-- !! processed by numpydoc !! -->
+
+### gaddlemaps.rotation_matrix(axis, theta)
+Returns the rotation matrix associated to an angle and an axis.
+
+
+* **Parameters**
+
+    
+    * **axis** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)* or *[*numpy.ndarray*](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)) – A vector in 3D space that defines the axis of rotation
+
+
+    * **theta** ([*float*](https://docs.python.org/3/library/functions.html#float)) – The angle to rotate in radians in counter clockwise.
+
+
+<!-- !! processed by numpydoc !! -->
+
+* **Return type**
+
+    [`ndarray`](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray)
