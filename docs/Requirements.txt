@@ -3,3 +3,4 @@ numpy
 scipy
 ipywidgets
 sphinx_autodoc_typehints
+gaddlemaps
