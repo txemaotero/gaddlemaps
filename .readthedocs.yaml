@@ -1,7 +1,8 @@
 version: 2
 
 python:
-  setup_py_install: true
   version: 3.7
   install:
+    - method: pip
+      path: .
     - requirements: docs/Requirements.txt
