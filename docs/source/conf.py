@@ -50,7 +50,7 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
-    'sphinx_markdown_builder',
+#   'sphinx_markdown_builder',
     "sphinx_rtd_theme",
     # 'sphinx.ext.mathjax',
     'sphinx.ext.ifconfig',
