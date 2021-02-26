@@ -9,6 +9,8 @@
 [**FAQs**](#faqs)
 |
 [**Documentation**](https://gaddlemaps.readthedocs.io/)
+|
+[**Cite us**](https://doi.org/10.1021/acs.jctc.7b00861)
 
 ## What is GADDLE Maps?
 
