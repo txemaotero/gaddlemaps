@@ -240,6 +240,8 @@ class Alignment:
             restrictions = [i[::-1] for i in restrictions]
         else:
             molecules = [self.start, self.end]
+        if len(self.end) == 1:
+            return
         # Check connectivity
         if not are_connected(molecules[1].atoms):
             raise IOError((f'Problem with {molecules[1].name} molecule. In'
