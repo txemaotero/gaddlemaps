@@ -17,10 +17,11 @@
 This submodule defines the System and SystemGro classes.
 """
 
+from io import TextIOWrapper
 import typing
 from collections import Counter
 from more_itertools import islice_extended, last
-from typing import Dict, Generator, List, Mapping, Tuple, overload
+from typing import Dict, Generator, List, Mapping, Tuple, Union, overload
 
 import numpy as np
 
@@ -33,13 +34,14 @@ class System:
     Class to manage simulation systems.
 
     A System object is formed by Molecule objects. Only the molecules
-    corresponding to the input ftops will be loaded.
+    corresponding to the input ftops will be loaded. The input files can be
+    paths to files or opened files.
 
     Parameters
     ----------
-    fgro : string
+    fgro : string or TextIOWrapper
         Gromacs file with the system information.
-    *ftops : string
+    *ftops : string or TextIOWrapper
         Paths with the files with the bonds information to load molecules.
 
     Raises
@@ -49,7 +51,8 @@ class System:
         system.
 
     """
-    def __init__(self, fgro: str, *ftops: str):
+    def __init__(self, fgro: Union[str, TextIOWrapper],
+                 *ftops: Union[str, TextIOWrapper]):
         self.system_gro = SystemGro(fgro)
         self.different_molecules: List[Molecule] = []
         # (ind_mol, ind_gro_start, ammount)
@@ -153,9 +156,14 @@ class System:
             for i in range(ammount):
                 yield (index, gro_start+i*len_mol, gro_start+(i+1)*len_mol)
 
-    def add_ftop(self, ftop: str):
+    def add_ftop(self, ftop: Union[str, TextIOWrapper]):
         """
         Adds and identifies the molecule from the ftop to the system.
+        
+        Parameters
+        ----------
+        ftop : str or TextIOWrapper
+            Path to the file (or opened file) with the topology of the molecule.
         """
         self.add_molecule_top(MoleculeTop(ftop))
 
@@ -211,12 +219,12 @@ class SystemGro:
 
     Parameters
     ----------
-    fgro : string
-        Gromacs file with the system information.
+    fgro : string or TextIOWrapper
+        Gromacs file path or open file with the system information.
 
     """
-    def __init__(self, fgro: str):
-        self.fgro = fgro
+    def __init__(self, fgro: Union[str, TextIOWrapper]):
+        self.fgro = fgro if isinstance(fgro, str) else fgro.name
         self._open_fgro = open_coordinate_file(fgro)
         self.different_molecules: List[Residue] = []
         self._molecules_pk: Dict[Tuple[str, int], int] = {}   # Dictionary with {(resname, len(mol)): index}

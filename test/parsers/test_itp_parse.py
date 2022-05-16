@@ -39,6 +39,12 @@ def dna_itp() -> ItpFile:
     return ItpFile(fitp)
 
 
+def test_itp_open_file():
+    data = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/SDS_AA.itp')
+    fopen = open(data)
+    _ = ItpFile(fopen)
+
+
 def test_itp_file(itp_file: ItpFile):
     """
     Test the ItpFile class.

@@ -59,59 +59,65 @@ def test_lattice_gro():
 
 def test_gro_file():
     """
-    Test for opening a gro from string
+    Test for opening a gro from string and from open file
     """
     fname = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/BMIM_AA.gro')
-    open_fgro = GroFile(fname, 'r')
-    assert open_fgro.name == fname
+    for i in range(2):
+        if not i:
+            open_fgro = GroFile(fname, 'r')
+        else:
+            fopen = open(fname, 'r')
+            open_fgro = GroFile(fopen)
 
-    assert open_fgro.natoms == 25
-    with pytest.raises(AttributeError):
-        open_fgro.natoms = 4
+        assert open_fgro.name == fname
 
-    with pytest.raises(AttributeError):
-        open_fgro.comment = 'Test line'
+        assert open_fgro.natoms == 25
+        with pytest.raises(AttributeError):
+            open_fgro.natoms = 4
 
-    with pytest.raises(IndexError):
-        open_fgro.seek_atom(40)
+        with pytest.raises(AttributeError):
+            open_fgro.comment = 'Test line'
 
-    assert isinstance(open_fgro.position_format, tuple)
-    assert len(open_fgro.position_format) == 2
-    assert isinstance(open_fgro.position_format[0], int)
-    assert isinstance(open_fgro.position_format[1], int)
+        with pytest.raises(IndexError):
+            open_fgro.seek_atom(40)
 
-    with pytest.raises(AttributeError):
-        open_fgro.position_format = (1, 3)
+        assert isinstance(open_fgro.position_format, tuple)
+        assert len(open_fgro.position_format) == 2
+        assert isinstance(open_fgro.position_format[0], int)
+        assert isinstance(open_fgro.position_format[1], int)
 
-    with pytest.raises(AttributeError):
-        open_fgro.box_matrix = np.eye(3)
+        with pytest.raises(AttributeError):
+            open_fgro.position_format = (1, 3)
 
-    box = open_fgro.box_matrix
-    assert isinstance(box, np.ndarray)
-    assert box.shape == (3, 3)
-    box_test = np.array([
-        [0.99, 0, 0],
-        [0, 0.4, 0],
-        [0, 0, 0.178]
-    ])
-    assert np.isclose(box, box_test).all()
+        with pytest.raises(AttributeError):
+            open_fgro.box_matrix = np.eye(3)
 
-    open_fgro.seek_atom(0)
-    first_line = next(open_fgro)
-    assert isinstance(first_line, tuple)
-    assert len(first_line) == 7
-    assert first_line[0] == 1
-    assert first_line[1] == 'BMIM'
-    assert first_line[2] == 'N1'
-    assert first_line[3] == 1
-    assert first_line[4] == 1.593
-    assert first_line[5] == 1.896
-    assert first_line[6] == 0.729
-    # Second line not parsed
-    second_line = open_fgro.readline(parsed=False)
-    assert isinstance(second_line, str)
-    test_second = '1BMIM    C2    2   1.706   1.984   0.708'
-    assert second_line.strip() == test_second
+        box = open_fgro.box_matrix
+        assert isinstance(box, np.ndarray)
+        assert box.shape == (3, 3)
+        box_test = np.array([
+            [0.99, 0, 0],
+            [0, 0.4, 0],
+            [0, 0, 0.178]
+        ])
+        assert np.isclose(box, box_test).all()
+
+        open_fgro.seek_atom(0)
+        first_line = next(open_fgro)
+        assert isinstance(first_line, tuple)
+        assert len(first_line) == 7
+        assert first_line[0] == 1
+        assert first_line[1] == 'BMIM'
+        assert first_line[2] == 'N1'
+        assert first_line[3] == 1
+        assert first_line[4] == 1.593
+        assert first_line[5] == 1.896
+        assert first_line[6] == 0.729
+        # Second line not parsed
+        second_line = open_fgro.readline(parsed=False)
+        assert isinstance(second_line, str)
+        test_second = '1BMIM    C2    2   1.706   1.984   0.708'
+        assert second_line.strip() == test_second
 
 
 def test_empty_gro_file(tmp_path: Path):

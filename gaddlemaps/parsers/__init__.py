@@ -24,6 +24,7 @@ formats).
 
 '''
 
+from io import TextIOWrapper
 import warnings
 import numpy
 import abc
@@ -39,8 +40,11 @@ from ._top_parsers import read_topology, TopologyParser, TopologyParserManager
 GroLine = Union[Tuple[int, str, str, int, float, float, float],
                 Tuple[int, str, str, int, float, float, float, float, float, float]]
 
-def open_coordinate_file(filename: str, mode: str="r") -> 'CoordinatesParser':
-    name = os.path.basename(filename)
+def open_coordinate_file(filename: Union[str, TextIOWrapper], mode: str="r") -> 'CoordinatesParser':
+    if isinstance(filename, str):
+        name = os.path.basename(filename)
+    else:
+        name = os.path.basename(filename.name)
     extension = name.split(".")[-1]
 
     if extension in ParserManager.parsers:
@@ -71,7 +75,7 @@ class CoordinatesParser(metaclass=ParserRegistered):
     EXTENSIONS: Optional[Tuple[str, ...]] = None
 
     @abc.abstractmethod
-    def __init__(self, path: str, mode: str="r"):
+    def __init__(self, path: Union[str, TextIOWrapper], mode: str="r"):
         """
         Implements a file object for opening and writing coordinate files
 
@@ -90,8 +94,8 @@ class CoordinatesParser(metaclass=ParserRegistered):
 
         Parameters
         ----------
-        path: str
-            The path to the file to be opened.
+        path: str or TextIOWrapper
+            The path to the file to be opened or the opened file.
         mode: str
             "r" to open the file in read mode and "w" to open it in write mode.
 
@@ -265,8 +269,8 @@ class GroFile(CoordinatesParser):
 
     Parameters
     ----------
-    path: str
-        The path to the file to be opened.
+    path: str or TextIOWrapper
+        The path to the file to be opened or the opened file.
     mode: str
         "r" to open the file in read mode and "w" to open it in write mode.
 
@@ -286,9 +290,15 @@ class GroFile(CoordinatesParser):
     # Defines the maximum number of atoms in the file 10**NUMBER_FIGURES
     NUMBER_FIGURES = 9
 
-    def __init__(self, path: str, mode: str = "r"):
-        mode = self._correct_mode(mode)
-        self._file = open(path, mode)
+    def __init__(self, path: Union[str, TextIOWrapper], mode: str = "r"):
+        if isinstance(path, TextIOWrapper):
+            if path.mode != 'r':
+                raise IOError(f"If open file is used ({path.name}), it can only be in read mode")
+            self._file = path
+            mode = path.mode
+        else:
+            mode = self._correct_mode(mode)
+            self._file = open(path, mode) # type: ignore
         self._comment: Optional[str] = None
         self._natoms: Optional[int] = None
         self._init_position: Optional[int] = None

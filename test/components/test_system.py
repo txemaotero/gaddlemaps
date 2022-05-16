@@ -41,6 +41,13 @@ def system() -> System:
     fitpVTE = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/vitamin_E_CG.itp')
     return System(fgro, fitpDNA, fitpDPSM, fitpVTE)
 
+@pytest.fixture
+def system_open() -> System:
+    fgro = open(os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/system_CG.gro'))
+    fitpDNA = open(os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/DNA_CG.itp'))
+    fitpDPSM = open(os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/DPSM_CG.itp'))
+    fitpVTE = open(os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/vitamin_E_CG.itp'))
+    return System(fgro, fitpDNA, fitpDPSM, fitpVTE) # type: ignore
 
 @pytest.fixture
 def system_bmimbf4_gro(bmimbf4_gro_fname: str) -> SystemGro:
@@ -55,63 +62,68 @@ class TestSystemGro:
         """
         Test systemGro initialization with bmim bf4 system.
         """
-        system = SystemGro(bmimbf4_gro_fname)
-        assert system.fgro == bmimbf4_gro_fname
-        assert len(system.different_molecules) == 2
-
-        bf4 = system.different_molecules[0]
-        assert bf4.resname == 'BF4'
-        assert len(bf4) == 1
-
-        bmim = system.different_molecules[1]
-        assert bmim.resname == 'BMIM'
-        assert len(bmim) == 3
-
-        assert len(system) == 600
-        atom_index = 1
-        for index, res in enumerate(system):
-            assert res.resid == index + 1
-            if index < 300:
-                assert res.resname == 'BF4'
+        # Test from path and open file
+        for i in range(2):
+            if not i:
+                system = SystemGro(bmimbf4_gro_fname)
             else:
-                assert res.resname == 'BMIM'
-            for atom in res:
-                assert atom.atomid == atom_index
-                atom_index += 1
+                system = SystemGro(open(bmimbf4_gro_fname)) # type: ignore
+            assert system.fgro == bmimbf4_gro_fname
+            assert len(system.different_molecules) == 2
 
-        # Check the last positions and velocities
-        test_positions = np.array([
-            [0.288, 1.338, 0.925],
-            [0.352, 1.069, 0.807],
-            [0.540, 0.960, 0.772]
-        ])
-        assert np.isclose(res.atoms_positions, test_positions).all()
-        test_velocities = np.array([
-            [-0.1079, 0.1208, 0.0298],
-            [0.1199, -0.0489, 0.5257],
-            [0.0236, 0.0129, -0.2678]
-        ])
-        assert np.isclose(res.atoms_velocities, test_velocities).all()
+            bf4 = system.different_molecules[0]
+            assert bf4.resname == 'BF4'
+            assert len(bf4) == 1
 
-        # Random mols positions and velocities
-        test_positions = np.array([[2.463, 0.308, 3.294]])
-        assert np.isclose(system[4].atoms_positions, test_positions).all()
-        test_velocities = np.array([[0.0639, 0.1574, -0.0145]])
-        assert np.isclose(system[9].atoms_velocities, test_velocities).all()
+            bmim = system.different_molecules[1]
+            assert bmim.resname == 'BMIM'
+            assert len(bmim) == 3
 
-        test_positions = np.array([
-            [4.031, 3.087, 1.147],
-            [4.317, 3.012, 1.097],
-            [4.098, 3.018, 1.102]
-        ])
-        assert np.isclose(system[420].atoms_positions, test_positions).all()
+            assert len(system) == 600
+            atom_index = 1
+            for index, res in enumerate(system):
+                assert res.resid == index + 1
+                if index < 300:
+                    assert res.resname == 'BF4'
+                else:
+                    assert res.resname == 'BMIM'
+                for atom in res:
+                    assert atom.atomid == atom_index
+                    atom_index += 1
 
-        test_velocities = np.array([
-            [0.1281, -0.0416, 0.0584],
-            [0.2010, -0.1297, -0.1044],
-            [0.1105, 0.3189, 0.0302]
-        ])
-        assert np.isclose(system[366].atoms_velocities, test_velocities).all()
+            # Check the last positions and velocities
+            test_positions = np.array([
+                [0.288, 1.338, 0.925],
+                [0.352, 1.069, 0.807],
+                [0.540, 0.960, 0.772]
+            ])
+            assert np.isclose(res.atoms_positions, test_positions).all()
+            test_velocities = np.array([
+                [-0.1079, 0.1208, 0.0298],
+                [0.1199, -0.0489, 0.5257],
+                [0.0236, 0.0129, -0.2678]
+            ])
+            assert np.isclose(res.atoms_velocities, test_velocities).all()
+
+            # Random mols positions and velocities
+            test_positions = np.array([[2.463, 0.308, 3.294]])
+            assert np.isclose(system[4].atoms_positions, test_positions).all()
+            test_velocities = np.array([[0.0639, 0.1574, -0.0145]])
+            assert np.isclose(system[9].atoms_velocities, test_velocities).all()
+
+            test_positions = np.array([
+                [4.031, 3.087, 1.147],
+                [4.317, 3.012, 1.097],
+                [4.098, 3.018, 1.102]
+            ])
+            assert np.isclose(system[420].atoms_positions, test_positions).all()
+
+            test_velocities = np.array([
+                [0.1281, -0.0416, 0.0584],
+                [0.2010, -0.1297, -0.1044],
+                [0.1105, 0.3189, 0.0302]
+            ])
+            assert np.isclose(system[366].atoms_velocities, test_velocities).all()
 
     def test_attributes(self, system_bmimbf4_gro: SystemGro):
         """
@@ -203,43 +215,44 @@ class TestSystem:
 
         empty.add_molecule_top(MoleculeTop(fitpADN))
 
-    def test_props(self, system: System):
+    def test_props(self, system: System, system_open: System):
         """
         Tests some system properties.
         """
-        assert len(system) == 1068
-        assert system[0].name == 'DNA'
-        assert system[1].name == 'DPSM'
-        assert system[-1].name == 'VTE'
+        for syst in (system, system_open):
+            assert len(syst) == 1068
+            assert syst[0].name == 'DNA'
+            assert syst[1].name == 'DPSM'
+            assert syst[-1].name == 'VTE'
 
-        fgro = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/system_CG.gro')
-        assert system.fgro == fgro
+            fgro = os.path.join(ACTUAL_PATH, '../../gaddlemaps/data/system_CG.gro')
+            assert syst.fgro == fgro
 
-        with pytest.raises(IndexError):
-            _ = system[-2000]
-        with pytest.raises(IndexError):
-            _ = system[2000]
+            with pytest.raises(IndexError):
+                _ = syst[-2000]
+            with pytest.raises(IndexError):
+                _ = syst[2000]
 
-        assert 'Simulation system with:' in str(system)
-        assert 'DNA   : 1' in str(system)
-        assert 'DPSM  : 67' in str(system)
-        assert 'VTE   : 1000' in str(system)
+            assert 'Simulation system with:' in str(syst)
+            assert 'DNA   : 1' in str(syst)
+            assert 'DPSM  : 67' in str(syst)
+            assert 'VTE   : 1000' in str(syst)
 
-        # Slice
-        dna, dpsm = system[:2]
-        assert dna.name == 'DNA'
-        assert len(dna) == 232
-        assert dpsm.name == 'DPSM'
-        assert len(dpsm) == 9
+            # Slice
+            dna, dpsm = syst[:2]
+            assert dna.name == 'DNA'
+            assert len(dna) == 232
+            assert dpsm.name == 'DPSM'
+            assert len(dpsm) == 9
 
-        dna = system.different_molecules[0]
-        assert dna == system[0]
-        assert dna is not system[0]
+            dna = syst.different_molecules[0]
+            assert dna == syst[0]
+            assert dna is not syst[0]
 
-        comps = system.composition
-        assert comps['DNA'] == 1
-        assert comps['DPSM'] == 67
-        assert comps['VTE'] == 1000
+            comps = syst.composition
+            assert comps['DNA'] == 1
+            assert comps['DPSM'] == 67
+            assert comps['VTE'] == 1000
 
     def test_indexing(self, system: System):
         """

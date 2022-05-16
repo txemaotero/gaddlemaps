@@ -146,24 +146,30 @@ class TestMoleculeTop:
         with pytest.raises(ValueError, match=r".*txt.*"):
             molecule = MoleculeTop('test.itp', file_format=".txt")
 
-        molecule = MoleculeTop(bf4_itp_fname)
-        assert molecule.ftop == bf4_itp_fname
-        assert molecule.name == 'BF4'
+        # Test with fname and fopen
+        for i in range(2):
+            if not i:
+                molecule = MoleculeTop(bf4_itp_fname)
+            else:
+                fopen = open(bf4_itp_fname)
+                molecule = MoleculeTop(fopen) # type: ignore
+            assert molecule.ftop == bf4_itp_fname
+            assert molecule.name == 'BF4'
 
-        atoms_info = [
-            ('B1', 'BF4', 1),
-            ('F2', 'BF4', 1),
-            ('F3', 'BF4', 1),
-            ('F4', 'BF4', 1),
-            ('F5', 'BF4', 1)
-        ]
-        atoms_test = [AtomTop(*info, i) for i, info in enumerate(atoms_info)]
-        atoms_test[0].connect(atoms_test[1])
-        atoms_test[0].connect(atoms_test[2])
-        atoms_test[0].connect(atoms_test[3])
-        atoms_test[0].connect(atoms_test[4])
-        assert molecule.atoms == atoms_test
-        assert str(molecule) == 'MoleculeTop of BF4.'
+            atoms_info = [
+                ('B1', 'BF4', 1),
+                ('F2', 'BF4', 1),
+                ('F3', 'BF4', 1),
+                ('F4', 'BF4', 1),
+                ('F5', 'BF4', 1)
+            ]
+            atoms_test = [AtomTop(*info, i) for i, info in enumerate(atoms_info)]
+            atoms_test[0].connect(atoms_test[1])
+            atoms_test[0].connect(atoms_test[2])
+            atoms_test[0].connect(atoms_test[3])
+            atoms_test[0].connect(atoms_test[4])
+            assert molecule.atoms == atoms_test
+            assert str(molecule) == 'MoleculeTop of BF4.'
 
     def test_methods(self, bf4_molecule: MoleculeTop,
                      bmim_molecule: MoleculeTop):

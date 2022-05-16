@@ -18,9 +18,10 @@ This module contains MoleculeTop and AtomTop objects which allows to load
 atom and molecule information relative to the bonds between atoms.
 """
 
+from io import TextIOWrapper
 import os
 from itertools import groupby
-from typing import Any, Generator, List, Set, Tuple, overload
+from typing import Any, Generator, List, Set, Tuple, Union, overload
 
 from ..parsers import read_topology
 
@@ -44,8 +45,9 @@ class MoleculeTop:
 
     Parameters
     ----------
-    ftop : string
-        The path to the file with the molecule name and bonds information.
+    ftop : string or TextIOWrapper
+        The path to the file (or the opened file) with the molecule name and
+        bonds information.
     file_format : str, Optional
         The file extension of ftop. If it is None this will be taken from
         ftop.
@@ -59,9 +61,9 @@ class MoleculeTop:
 
     """
 
-    def __init__(self, ftop: str, file_format: str = None):
+    def __init__(self, ftop: Union[str,TextIOWrapper], file_format: str = None):
 
-        self.ftop = ftop
+        self.ftop = ftop if isinstance(ftop, str) else ftop.name
         self.name, atoms_info, atoms_bonds = read_topology(ftop,
                                                            file_format=file_format)
         self.atoms: List['AtomTop'] = []

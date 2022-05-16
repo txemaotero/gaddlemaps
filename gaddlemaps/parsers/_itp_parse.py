@@ -18,9 +18,10 @@ This module contains useful features to parse itp files.
 '''
 
 
+from io import TextIOWrapper
 import re
 from collections import OrderedDict
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 from warnings import warn
 
 
@@ -34,20 +35,17 @@ class ItpFile(OrderedDict):
 
     Parameters
     ----------
-    fitp : string
-        The itp file to handle.
+    fitp : string or TextIOWrapper
+        The itp file to handle or the opened file.
 
     """
-    def __init__(self, fitp: str):
+    def __init__(self, fitp: Union[str, TextIOWrapper]):
         super(ItpFile, self).__init__()
-        self.fitp = fitp
+        self.fitp = fitp if isinstance(fitp, str) else fitp.name
 
-        self._parse_file()
-
-    def _parse_file(self):
         sec = None
         self['header'] = []
-        _file = open(self.fitp, encoding='utf-8')
+        _file = open(self.fitp, encoding='utf-8') if isinstance(fitp, str) else fitp
 
         for line in _file:
             # If not section line

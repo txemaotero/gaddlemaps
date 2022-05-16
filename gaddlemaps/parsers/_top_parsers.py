@@ -18,7 +18,8 @@ This module defines functions to parse topology files and return a list of the
 atoms already bonded.
 """
 
-from typing import TYPE_CHECKING, List, Tuple, Dict, Optional, Type
+from io import TextIOWrapper
+from typing import TYPE_CHECKING, List, Tuple, Dict, Optional, Type, Union
 import abc
 import os.path
 
@@ -50,7 +51,7 @@ class TopologyParser(metaclass=TopologyParserRegistered):
     EXTENSIONS: Optional[Tuple[str, ...]] = None
 
     @abc.abstractmethod
-    def __init__(self, fit: str):
+    def __init__(self, fit: Union[str, TextIOWrapper]):
         super().__init__()
 
     @property
@@ -113,15 +114,15 @@ class ItpParser(TopologyParser):
 
     Parameters
     ----------
-    fitp : str
-        The itp file name.
+    fitp : str or TextIOWrapper
+        The itp file name or the opened file.
 
     """
 
 
     EXTENSIONS = ("itp", "ITP")
 
-    def __init__(self, fitp: str):
+    def __init__(self, fitp: Union[str, TextIOWrapper]):
         itp_file = ItpFile(fitp)
 
         if 'moleculetype' not in itp_file:
@@ -161,7 +162,7 @@ class ItpParser(TopologyParser):
         return self._bonds
 
 
-def read_topology(ftop: str,
+def read_topology(ftop: Union[str, TextIOWrapper],
                   file_format: Optional[str]=None) -> Tuple[str,
                                                             List[Tuple[str, str, int]],
                                                             List[Tuple[int, int]]]:
@@ -173,8 +174,8 @@ def read_topology(ftop: str,
 
     Parameters
     ----------
-    ftop : str
-        The topology file name.
+    ftop : string or TextIOWrapper
+        The topology file name or the opened file.
 
     file_format: Optional[str]
         Force the file to be read as if it had the extension 'file_format'
@@ -191,7 +192,10 @@ def read_topology(ftop: str,
         that are bonded.
 
     """
-    name = os.path.basename(ftop)
+    if isinstance(ftop, str):
+        name = os.path.basename(ftop)
+    else:
+        name = os.path.basename(ftop.name)
     if file_format is None:
         extension = name.split(".")[-1]
     else:
