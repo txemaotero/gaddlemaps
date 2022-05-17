@@ -291,14 +291,14 @@ class GroFile(CoordinatesParser):
     NUMBER_FIGURES = 9
 
     def __init__(self, path: Union[str, TextIOWrapper], mode: str = "r"):
-        if isinstance(path, TextIOWrapper):
+        if isinstance(path, str):
+            mode = self._correct_mode(mode)
+            self._file = open(path, mode) # type: ignore
+        else:
             if path.mode != 'r':
                 raise IOError(f"If open file is used ({path.name}), it can only be in read mode")
             self._file = path
             mode = path.mode
-        else:
-            mode = self._correct_mode(mode)
-            self._file = open(path, mode) # type: ignore
         self._comment: Optional[str] = None
         self._natoms: Optional[int] = None
         self._init_position: Optional[int] = None
