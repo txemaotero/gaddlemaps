@@ -138,7 +138,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="gaddlemaps",
-    version="0.1",
+    version="0.1.1",
     author='Jose Manuel Otero Mato, Hadrián Montes Campos, Luis Miguel Varela Cabo',
     author_email='hadrianmontes@gmail.com, josemanuel.otero.mato@gmail.com',
     description="Python package to apply the GADDLE-MAPS algorithm",
