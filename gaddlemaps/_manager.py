@@ -288,8 +288,9 @@ class Manager:
             -------
             >>> restrictions = [(1, 3), (4, 5)]
 
-            **IMPORTANT:** INDEX ARE REFERENCED TO THE ATOM NUMBER IN THE .itp FILE
-            (IT USUALLY STARTS IN 1).
+            **IMPORTANT: INDEX ARE REFERENCED TO THE ATOM NUMBER IN THE
+            MOLECULE STARTING FROM 0 (YOU CAN SUBTRACT 1 TO THE INDEX IN THE
+            .itp)**
         guess_proteins : bool, optional
             If True, restriction for proteins with more than 3 residues will be
             guessed using "guess_protein_restrain" function. This will
@@ -357,7 +358,7 @@ class Manager:
 
     def _validate_index(self, restriction: List[Tuple[int, int]],
                         name: str) -> List[Tuple[int, int]]:
-        """Validates the input restrictions and change from atomid to index.
+        """Validates the input restrictions
         """
         mol_start = self.molecule_correspondence[name].start
         assert isinstance(mol_start, Molecule)
