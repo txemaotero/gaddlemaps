@@ -12,6 +12,16 @@
 |
 [**Cite us**](https://doi.org/10.1021/acs.jctc.7b00861)
 
+### New web interface!!
+
+We have recently developed a [GaddleMaps interface](https://share.streamlit.io/txemaotero/gaddlemaps_interface/gaddlemaps_app.py) 
+as a web application using [Streamlit](https://streamlit.io/) to allow the mapping
+of simulation systems. This implementation offers a very visual and easy way of
+performing your mappings, skipping any installation step. Of course, the usage of the
+module presented here offers more freedom and better performance, specially 
+when mapping large molecules, but the web interface facilitates a lot the process 
+and can be good enough for most of the cases.
+
 ## What is GADDLE Maps?
 
 [GADDLE Maps](https://doi.org/10.1021/acs.jctc.7b00861) is a general algorithm
@@ -23,7 +33,7 @@ atom to all atom or from coarse grain to fully atomistic). However the algorithm
 works for any structure than can be represented by a graph.
 
 The algorithm apply rotations and deformations to the graph (molecule) preserving the
-distance between its nodes (atoms) in order to maximize the overlapping between
+distance between its connected nodes (atoms) in order to maximize the overlapping between
 the graphs (molecules) in both resolutions. Once this is achieved, it generates
 an *exchange map* that transforms between both resolutions. These exchange maps
 use local information about the location of the neighbours to exchange between
@@ -46,7 +56,7 @@ with a series of helper classes and functions for an easy usage of the
 algorithm. Moreover a command line interface and a jupyter notebook is provided
 for an easy and visual way of performing the transformation.
 
-Besides a port of the algorithm to c++ with an interface with python using
+This module also provides a port of the algorithm to c++ with an interface with python using
 [cython](https://cython.org). This port allows for a boosted performance,
 specially for large molecules such as proteins, but the results are the same
 than as the reference implementation. This port can be installed alongside
