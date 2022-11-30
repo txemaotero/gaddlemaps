@@ -550,7 +550,7 @@ class SimplePDB(CoordinatesParser):
 
 
                 line = (f"ATOM {atom_index:6d} {atom_name} {residue_name} {residue_index:6d}"
-                        " {x_position:8.3f} {y_position:8.3f} {z_position:8.3f}\n")
+                        f" {x_position:8.3f} {y_position:8.3f} {z_position:8.3f}\n")
                 self.open_file.write(line)
             self.open_file.write("TER\n")
             self.open_file.write("ENDMDL\n")
